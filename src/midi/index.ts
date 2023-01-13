@@ -66,12 +66,7 @@ export function bindSurfaceElementsToMidi(
         midiOutput.sendMidi(context, [0xe0 + index, lowByte, highByte]);
       }
     };
-  });
 
-  // const lowerScribbleStrips = createElements(8, (index) => {
-  //   const scribbleStrip = surface.makeCustomValueVariable("scribbleStrip");
-  //   scribbleStrip.mOnTitleChange = function (activeDevice, objectTitle, valueTitle) {
-  //     console.log(objectTitle);
-  //   };
-  // });
+    channel.faderTouched.mMidiBinding.setInputPort(midiInput).bindToNote(0, 104 + index);
+  });
 }

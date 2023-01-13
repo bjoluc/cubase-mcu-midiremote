@@ -59,4 +59,7 @@ elements.channels.map((channelElements, index) => {
 
   // Fader
   trackPage.makeValueBinding(channelElements.fader.mSurfaceValue, channel.mValue.mVolume);
+  trackPage
+    .makeValueBinding(channelElements.faderTouched, channel.mValue.mSelected)
+    .setTypeToggle();
 });
