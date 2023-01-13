@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "midiremote_api_v1": [".api/v1"]
+    },
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "checkJs": true,
+    "lib": ["es5"],
+    "strict": true
+  }
+}
