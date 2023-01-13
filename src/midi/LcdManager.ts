@@ -1,4 +1,4 @@
-import { sendSysexMessage } from "./util/midi";
+import { sendSysexMessage } from ".";
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
 
@@ -24,15 +24,15 @@ export class LcdManager {
 
   constructor(private midiOutput: MR_DeviceMidiOutput) {}
 
-  sendText(device: MR_ActiveDevice, startIndex: number, text: string) {
+  sendText(context: MR_ActiveDevice, startIndex: number, text: string) {
     const chars = LcdManager.stringToUtf8CharArray(text.slice(0, 112));
-    sendSysexMessage(this.midiOutput, device, [0x12, startIndex, ...chars]);
+    sendSysexMessage(this.midiOutput, context, [0x12, startIndex, ...chars]);
   }
 
-  setChannelText(device: MR_ActiveDevice, row: 0 | 1, channelIndex: number, text: string) {
+  setChannelText(context: MR_ActiveDevice, row: 0 | 1, channelIndex: number, text: string) {
     while (text.length < 7) {
       text += " ";
     }
-    this.sendText(device, row * 56 + channelIndex * 7, text);
+    this.sendText(context, row * 56 + channelIndex * 7, text);
   }
 }

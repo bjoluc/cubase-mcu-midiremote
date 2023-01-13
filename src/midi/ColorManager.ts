@@ -1,5 +1,5 @@
-import { sendSysexMessage } from "./util/midi";
-import { createElements } from "./util";
+import { sendSysexMessage } from ".";
+import { createElements } from "../util";
 
 export enum ScribbleStripColor {
   black = 0x00,
@@ -42,22 +42,22 @@ export class ColorManager {
 
   constructor(private midiOutput: MR_DeviceMidiOutput) {}
 
-  setChannelColor(device: MR_ActiveDevice, channelIndex: number, color: ScribbleStripColor) {
+  setChannelColor(context: MR_ActiveDevice, channelIndex: number, color: ScribbleStripColor) {
     this.colors[channelIndex] = color;
-    this.sendColors(device);
+    this.sendColors(context);
   }
 
   setChannelColorRgb(
-    device: MR_ActiveDevice,
+    context: MR_ActiveDevice,
     channelIndex: number,
     r: number,
     g: number,
     b: number
   ) {
-    this.setChannelColor(device, channelIndex, ColorManager.rgbToScribbleStripColor(r, g, b));
+    this.setChannelColor(context, channelIndex, ColorManager.rgbToScribbleStripColor(r, g, b));
   }
 
-  private sendColors(device: MR_ActiveDevice) {
-    sendSysexMessage(this.midiOutput, device, [0x72, ...this.colors, 0xf7]);
+  private sendColors(context: MR_ActiveDevice) {
+    sendSysexMessage(this.midiOutput, context, [0x72, ...this.colors, 0xf7]);
   }
 }
