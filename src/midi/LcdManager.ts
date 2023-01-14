@@ -29,7 +29,7 @@ export class LcdManager {
     sendSysexMessage(this.midiOutput, context, [0x12, startIndex, ...chars]);
   }
 
-  setChannelText(context: MR_ActiveDevice, row: 0 | 1, channelIndex: number, text: string) {
+  setChannelText(context: MR_ActiveDevice, row: number, channelIndex: number, text: string) {
     while (text.length < 7) {
       text += " ";
     }

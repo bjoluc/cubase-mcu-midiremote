@@ -1,9 +1,8 @@
 import midiremoteApi from "midiremote_api_v1";
 
-import { bindSurfaceElementsToMidi } from "./midi";
-import { LcdManager } from "./midi/LcdManager";
+import { bindSurfaceElementsToMidi, EncoderDisplayMode } from "./midi";
 import { createSurfaceElements } from "./surface";
-import { makePage } from "./util/mapping";
+import { makeCallbackCollection } from "./util";
 
 const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "bjoluc.de");
 
@@ -30,9 +29,9 @@ bindSurfaceElementsToMidi(elements, midiInput, midiOutput);
 // 3. HOST MAPPING - create mapping pages and host bindings
 //-----------------------------------------------------------------------------
 
-const lcdManager = new LcdManager(midiOutput);
+const trackPage = driver.mMapping.makePage("Default");
+const onActivate = makeCallbackCollection(trackPage, "mOnActivate");
 
-const trackPage = makePage(driver, "Track");
 const mixerBankZone = trackPage.mHostAccess.mMixConsole.makeMixerBankZone("Current Bank");
 
 elements.channels.map((channelElements, index) => {
@@ -40,11 +39,12 @@ elements.channels.map((channelElements, index) => {
 
   // Push encoder
   trackPage.makeValueBinding(channelElements.encoder.mEncoderValue, channel.mValue.mPan);
+  onActivate.addCallback((context) => {
+    channelElements.encoderDisplayMode.setProcessValue(context, EncoderDisplayMode.BoostOrCut);
+  });
 
   // Scribble strip
-  trackPage.makeCallbackBinding(channel, "mOnTitleChange", (context, mapping, title) => {
-    lcdManager.setChannelText(context, 1, index, LcdManager.abbreviateString(title));
-  });
+  trackPage.makeValueBinding(channelElements.scribbleStrip.row2, channel.mValue.mVolume);
 
   // Buttons
   const buttons = channelElements.buttons;
