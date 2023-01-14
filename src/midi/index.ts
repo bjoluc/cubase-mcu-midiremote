@@ -56,6 +56,7 @@ export function bindSurfaceElementsToMidi(
   const lcdManager = new LcdManager(midiOutput);
 
   elements.channels.forEach((channel, index) => {
+    // Push Encoder
     channel.encoder.mEncoderValue.mMidiBinding
       .setInputPort(midiInput)
       .bindToControlChange(0, 16 + index)
@@ -79,17 +80,32 @@ export function bindSurfaceElementsToMidi(
       colorManager.setChannelColorRgb(context, index, r, g, b);
     };
 
+    // Scribble Strip
     [channel.scribbleStrip.row1, channel.scribbleStrip.row2].forEach((scribbleStripText, row) => {
       scribbleStripText.mOnTitleChange = (context, title) => {
         lcdManager.setChannelText(context, row, index, LcdManager.abbreviateString(title));
       };
     });
 
+    // VU Meter
+    let lastMeterUpdateTime = 0;
+    channel.vuMeter.mOnProcessValueChange = (context, newValue) => {
+      // @ts-ignore `performance` exists in the runtime environment
+      const now: number = performance.now(); // ms
+
+      if (now - lastMeterUpdateTime > 125) {
+        lastMeterUpdateTime = now;
+        midiOutput.sendMidi(context, [0xd0, (index << 4) + Math.round(newValue * 14)]);
+      }
+    };
+
+    // Buttons
     const buttons = channel.buttons;
     [buttons.record, buttons.solo, buttons.mute, buttons.select].forEach((button, row) => {
       bindButton(button, row * 8 + index);
     });
 
+    // Fader
     bindFader(channel.fader, index);
     channel.faderTouched.mMidiBinding.setInputPort(midiInput).bindToNote(0, 104 + index);
   });

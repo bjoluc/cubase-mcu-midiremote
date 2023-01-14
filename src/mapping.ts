@@ -11,14 +11,17 @@ export function createHostMapping(mapping: MR_FactoryMapping, elements: SurfaceE
   elements.channels.map((channelElements, index) => {
     const channel = mixerBankZone.makeMixerBankChannel();
 
-    // Push encoder
-    trackPage.makeValueBinding(channelElements.encoder.mEncoderValue, channel.mValue.mPan);
+    // Push Encoder
     onActivate.addCallback((context) => {
       channelElements.encoderDisplayMode.setProcessValue(context, EncoderDisplayMode.BoostOrCut);
     });
+    trackPage.makeValueBinding(channelElements.encoder.mEncoderValue, channel.mValue.mPan);
 
-    // Scribble strip
+    // Scribble Strip
     trackPage.makeValueBinding(channelElements.scribbleStrip.row2, channel.mValue.mVolume);
+
+    // VU Meter
+    trackPage.makeValueBinding(channelElements.vuMeter, channel.mValue.mVUMeter);
 
     // Buttons
     const buttons = channelElements.buttons;

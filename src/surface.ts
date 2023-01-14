@@ -5,9 +5,7 @@ export function createSurfaceElements(surface: MR_DeviceSurface) {
   surface.makeBlindPanel(41, 6, 23.25, 4); // Time display
   surface.makeBlindPanel(53, 29.25, 8.5, 8.5).setShapeCircle(); // Jog wheel
 
-  function makeSquareButton(x: number, y: number) {
-    return surface.makeButton(x + 0.25, y, 1.5, 1.5);
-  }
+  const makeSquareButton = (x: number, y: number) => surface.makeButton(x + 0.25, y, 1.5, 1.5);
 
   const miscControlButtons = createElements(21, (index) =>
     makeSquareButton(
@@ -15,9 +13,8 @@ export function createSurfaceElements(surface: MR_DeviceSurface) {
       17 + Math.floor(index / 7) * 2.5 + (index < 14 ? 0 : 0.5)
     )
   );
-  function getMiscControlButtons(indices: number[]) {
-    return indices.map((index) => miscControlButtons[index]);
-  }
+  const getMiscControlButtons = (indices: number[]) =>
+    indices.map((index) => miscControlButtons[index]);
 
   return {
     channels: createElements(8, (index) => {
@@ -31,12 +28,14 @@ export function createSurfaceElements(surface: MR_DeviceSurface) {
           row1: surface.makeCustomValueVariable("scribbleStripRow1"),
           row2: surface.makeCustomValueVariable("scribbleStripRow2"),
         },
+        vuMeter: surface.makeCustomValueVariable("vuMeter"),
         buttons: {
           record: makeSquareButton(2 + index * 5, 10),
           solo: makeSquareButton(2 + index * 5, 12),
           mute: makeSquareButton(2 + index * 5, 14),
           select: surface.makeButton(2 + index * 5, 16, 2, 1.5),
         },
+
         fader: surface.makeFader(2 + index * 5, 20, 2, 16),
         faderTouched: surface.makeCustomValueVariable("faderTouched"),
       };
