@@ -82,6 +82,13 @@ export function createSurfaceElements(surface: MR_DeviceSurface) {
         scrub: makeSquareButton(61.75, 28),
       },
     },
+
+    display: {
+      onTimeUpdated(context: MR_ActiveDevice, newTime: string, oldTime: string) {},
+      smpteLed: surface.makeCustomValueVariable("displaySmpteLed"),
+      beatsLed: surface.makeCustomValueVariable("displayBeatsLed"),
+      soloLed: surface.makeCustomValueVariable("displaySoloLed"),
+    },
   };
 }
 

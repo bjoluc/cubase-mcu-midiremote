@@ -1,6 +1,6 @@
-import { ColorManager } from "src/midi/ColorManager";
 import { SurfaceElements } from "src/surface";
-import { LcdManager } from "./LcdManager";
+import { MidiManagers } from "./managers";
+import { LcdManager } from "./managers/LcdManager";
 
 export enum EncoderDisplayMode {
   SingleDot = 0,
@@ -30,7 +30,8 @@ function sendNoteOn(
 export function bindSurfaceElementsToMidi(
   elements: SurfaceElements,
   midiInput: MR_DeviceMidiInput,
-  midiOutput: MR_DeviceMidiOutput
+  midiOutput: MR_DeviceMidiOutput,
+  managers: MidiManagers
 ) {
   function bindButton(button: MR_Button, note: number) {
     button.mSurfaceValue.mMidiBinding.setInputPort(midiInput).bindToNote(0, note);
@@ -51,9 +52,6 @@ export function bindSurfaceElementsToMidi(
       }
     };
   }
-
-  const colorManager = new ColorManager(midiOutput);
-  const lcdManager = new LcdManager(midiOutput);
 
   elements.channels.forEach((channel, index) => {
     // Push Encoder
@@ -77,13 +75,13 @@ export function bindSurfaceElementsToMidi(
     };
 
     channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isColorAssigned) => {
-      colorManager.setChannelColorRgb(context, index, r, g, b);
+      managers.color.setChannelColorRgb(context, index, r, g, b);
     };
 
     // Scribble Strip
     [channel.scribbleStrip.row1, channel.scribbleStrip.row2].forEach((scribbleStripText, row) => {
       scribbleStripText.mOnTitleChange = (context, title) => {
-        lcdManager.setChannelText(context, row, index, LcdManager.abbreviateString(title));
+        managers.lcd.setChannelText(context, row, index, LcdManager.abbreviateString(title));
       };
     });
 
@@ -140,4 +138,13 @@ export function bindSurfaceElementsToMidi(
   ].forEach((button, index) => {
     bindButton(button, 40 + index);
   });
+
+  // Display
+  elements.display.onTimeUpdated = (context, time) => {
+    managers.segmentDisplay.setTimeString(context, time);
+  };
+
+  elements.display.smpteLed.mMidiBinding.setOutputPort(midiOutput).bindToNote(0, 0x71);
+  elements.display.beatsLed.mMidiBinding.setOutputPort(midiOutput).bindToNote(0, 0x72);
+  elements.display.soloLed.mMidiBinding.setOutputPort(midiOutput).bindToNote(0, 0x73);
 }

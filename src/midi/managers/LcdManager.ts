@@ -1,6 +1,7 @@
-import { sendSysexMessage } from ".";
+import { sendSysexMessage } from "..";
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
+import { createElements } from "src/util";
 
 export class LcdManager {
   /**
@@ -34,5 +35,9 @@ export class LcdManager {
       text += " ";
     }
     this.sendText(context, row * 56 + channelIndex * 7, text);
+  }
+
+  clearDisplays(context: MR_ActiveDevice) {
+    this.sendText(context, 0, Array(112).join(" "));
   }
 }

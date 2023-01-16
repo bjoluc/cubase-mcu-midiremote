@@ -1,6 +1,8 @@
 import midiremoteApi from "midiremote_api_v1";
 import { createHostMapping } from "./mapping";
 import { bindSurfaceElementsToMidi } from "./midi";
+import { setupDeviceConnectionHandling } from "./midi/connection";
+import { createMidiManagers } from "./midi/managers";
 import { createSurfaceElements } from "./surface";
 
 const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "bjoluc.de");
@@ -16,13 +18,17 @@ driver
   .expectInputNameEquals("X-Touch")
   .expectOutputNameEquals("X-Touch");
 
+const midiManagers = createMidiManagers(midiOutput);
+
+setupDeviceConnectionHandling(driver, midiInput, midiOutput, midiManagers);
+
 //-----------------------------------------------------------------------------
 // 2. SURFACE LAYOUT - create control elements and midi bindings
 //-----------------------------------------------------------------------------
 
 const elements = createSurfaceElements(driver.mSurface);
 
-bindSurfaceElementsToMidi(elements, midiInput, midiOutput);
+bindSurfaceElementsToMidi(elements, midiInput, midiOutput, midiManagers);
 
 //-----------------------------------------------------------------------------
 // 3. HOST MAPPING - create mapping pages and host bindings
