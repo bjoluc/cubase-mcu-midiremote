@@ -22,9 +22,9 @@ function sendNoteOn(
   context: MR_ActiveDevice,
   channel: number,
   pitch: number,
-  velocity: boolean
+  velocity: number | boolean
 ) {
-  midiOutput.sendMidi(context, [0x90 + channel, pitch, +velocity * 0xff]);
+  midiOutput.sendMidi(context, [0x90 + channel, pitch, +Boolean(velocity) * 0xff]);
 }
 
 export function bindSurfaceElementsToMidi(
@@ -36,7 +36,13 @@ export function bindSurfaceElementsToMidi(
   function bindButton(button: MR_Button, note: number) {
     button.mSurfaceValue.mMidiBinding.setInputPort(midiInput).bindToNote(0, note);
     button.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      sendNoteOn(midiOutput, context, 0, note, Boolean(newValue));
+      sendNoteOn(midiOutput, context, 0, note, newValue);
+    };
+  }
+
+  function bindLamp(lamp: MR_Lamp, note: number) {
+    lamp.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
+      sendNoteOn(midiOutput, context, 0, note, newValue);
     };
   }
 
@@ -141,15 +147,52 @@ export function bindSurfaceElementsToMidi(
 
   buttons.navigation.directions.centerLed.mMidiBinding.setOutputPort(midiOutput);
   buttons.navigation.directions.centerLed.mOnProcessValueChange = (context, value) => {
-    sendNoteOn(midiOutput, context, 0, 100, Boolean(value));
+    sendNoteOn(midiOutput, context, 0, 100, value);
   };
 
   // Display
-  elements.display.onTimeUpdated = (context, time) => {
-    managers.segmentDisplay.setTimeString(context, time);
-  };
+  const displayLeds = elements.display.leds;
+  [displayLeds.smpte, displayLeds.beats, displayLeds.solo].forEach((lamp, index) => {
+    bindLamp(lamp, 0x71 + index);
+  });
 
-  elements.display.smpteLed.mMidiBinding.setOutputPort(midiOutput).bindToNote(0, 0x71);
-  elements.display.beatsLed.mMidiBinding.setOutputPort(midiOutput).bindToNote(0, 0x72);
-  elements.display.soloLed.mMidiBinding.setOutputPort(midiOutput).bindToNote(0, 0x73);
+  let lastTimeFormat = "";
+  let isInitialized = false;
+  elements.display.onTimeUpdated = (context, time, timeFormat) => {
+    const hasTimeFormatChanged = timeFormat !== lastTimeFormat;
+    if (hasTimeFormatChanged) {
+      lastTimeFormat = timeFormat;
+    }
+
+    const isTimeFormatSupported =
+      timeFormat === "Bars+Beats" ||
+      timeFormat === "Timecode" ||
+      timeFormat === "60 fps (User)" ||
+      timeFormat === "Seconds";
+
+    if (isTimeFormatSupported) {
+      managers.segmentDisplay.setTimeString(context, time);
+    }
+
+    if (hasTimeFormatChanged)
+      if (!isTimeFormatSupported) {
+        managers.segmentDisplay.clearAllSegments(context);
+      }
+
+    // Adapt time mode LEDs to time format
+    if (!isInitialized) {
+      // Using `setProcessValue` on initialization somehow crashes the host, so we don't do it on
+      // initialization.
+      isInitialized = true;
+    } else {
+      elements.display.leds.smpte.mSurfaceValue.setProcessValue(
+        context,
+        +(timeFormat === "Timecode" || timeFormat === "60 fps (User)")
+      );
+      elements.display.leds.beats.mSurfaceValue.setProcessValue(
+        context,
+        +(timeFormat === "Bars+Beats")
+      );
+    }
+  };
 }

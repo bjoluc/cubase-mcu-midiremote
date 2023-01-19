@@ -87,10 +87,12 @@ export function createSurfaceElements(surface: MR_DeviceSurface) {
     },
 
     display: {
-      onTimeUpdated(context: MR_ActiveDevice, newTime: string, oldTime: string) {},
-      smpteLed: surface.makeCustomValueVariable("displaySmpteLed"),
-      beatsLed: surface.makeCustomValueVariable("displayBeatsLed"),
-      soloLed: surface.makeCustomValueVariable("displaySoloLed"),
+      onTimeUpdated: (context: MR_ActiveDevice, time: string, timeFormat: string) => {},
+      leds: {
+        smpte: surface.makeLamp(61.25, 6.5, 0.75, 0.5),
+        beats: surface.makeLamp(61.25, 9, 0.75, 0.5),
+        solo: surface.makeLamp(47.75, 7.75, 0.75, 0.5),
+      },
     },
   };
 }

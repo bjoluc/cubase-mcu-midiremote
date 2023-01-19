@@ -6,14 +6,8 @@ export function createHostMapping(mapping: MR_FactoryMapping, elements: SurfaceE
   const page = mapping.makePage("Mixer");
   const host = page.mHostAccess;
 
-  host.mTransport.mTimeDisplay.mPrimary.mTransportLocator.mOnChange = (
-    context,
-    mapping,
-    newTime,
-    oldTime
-  ) => {
-    elements.display.onTimeUpdated(context, newTime, oldTime);
-  };
+  // 7-segment display
+  bindSegmentDisplaySection(page, elements);
 
   const onActivate = makeCallbackCollection(page, "mOnActivate");
 
@@ -84,6 +78,26 @@ export function createHostMapping(mapping: MR_FactoryMapping, elements: SurfaceE
   // Navigation section
   bindNavigationButtons(page, elements, mixerBankZone);
   bindDirectionButtons(page, elements);
+}
+
+function bindSegmentDisplaySection(page: MR_FactoryMappingPage, elements: SurfaceElements) {
+  page.mHostAccess.mTransport.mTimeDisplay.mPrimary.mTransportLocator.mOnChange = (
+    context,
+    mapping,
+    time,
+    timeFormat
+  ) => {
+    elements.display.onTimeUpdated(context, time, timeFormat);
+  };
+
+  page.makeCommandBinding(
+    elements.control.buttons.timeMode.mSurfaceValue,
+    "Transport",
+    "Exchange Time Formats"
+  );
+
+  // There's no "is solo mode active on any chanel" host value, is it?
+  // page.makeValueBinding(elements.display.leds.solo, ? )
 }
 
 function bindNavigationButtons(
