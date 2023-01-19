@@ -139,6 +139,11 @@ export function bindSurfaceElementsToMidi(
     bindButton(button, 40 + index);
   });
 
+  buttons.navigation.directions.centerLed.mMidiBinding.setOutputPort(midiOutput);
+  buttons.navigation.directions.centerLed.mOnProcessValueChange = (context, value) => {
+    sendNoteOn(midiOutput, context, 0, 100, Boolean(value));
+  };
+
   // Display
   elements.display.onTimeUpdated = (context, time) => {
     managers.segmentDisplay.setTimeString(context, time);

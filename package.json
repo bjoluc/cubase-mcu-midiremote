@@ -4,7 +4,8 @@
     "build": "tsup",
     "start": "tsup --watch",
     "transpile": "babel dist/behringer/xtouch/behringer_xtouch.js --out-file dist/behringer/xtouch/behringer_xtouch.js",
-    "copy": "sshpass -p User scp -P 2222 -r ./dist/behringer User@localhost:'\"Documents\\Steinberg\\Cubase\\MIDI Remote\\Driver Scripts\\Local\"'"
+    "copy": "sshpass -p User scp -P 2222 -r ./dist/behringer User@localhost:'\"Documents\\Steinberg\\Cubase\\MIDI Remote\\Driver Scripts\\Local\"'",
+    "clear": "echo '' > ./dist/behringer/xtouch/behringer_xtouch.js && npm run copy"
   },
   "author": "bjoluc",
   "license": "MIT",

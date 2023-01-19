@@ -75,6 +75,9 @@ export function createSurfaceElements(surface: MR_DeviceSurface) {
             right: makeSquareButton(49.75, 34),
             up: makeSquareButton(48, 32.25),
             center: makeSquareButton(48, 34),
+            centerLed: surface.makeCustomValueVariable(
+              "controlButtonsNavigationDirectionsCenterLed"
+            ),
             down: makeSquareButton(48, 35.75),
           },
         },
