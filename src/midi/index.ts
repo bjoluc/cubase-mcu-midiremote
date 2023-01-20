@@ -48,8 +48,12 @@ export function bindSurfaceElementsToMidi(
 
   function bindFader(fader: MR_Fader, faderIndex: number) {
     fader.mSurfaceValue.mMidiBinding.setInputPort(midiInput).bindToPitchBend(faderIndex);
+
+    let isInitialChangeEvent = true;
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      if (difference !== 0) {
+      if (difference !== 0 || isInitialChangeEvent) {
+        isInitialChangeEvent = false;
+
         newValue *= 0x3fff;
         var lowByte = newValue & 0x7f;
         var highByte = newValue >> 7;
