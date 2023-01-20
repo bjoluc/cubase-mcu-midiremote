@@ -78,6 +78,32 @@ export function createHostMapping(mapping: MR_FactoryMapping, elements: SurfaceE
   // Navigation section
   bindNavigationButtons(page, elements, mixerBankZone);
   bindDirectionButtons(page, elements);
+
+  // Jog wheel
+  bindJogWheelSection(page, elements);
+}
+
+function bindJogWheelSection(page: MR_FactoryMappingPage, elements: SurfaceElements) {
+  const jogWheelSubPageArea = page.makeSubPageArea("jogWeel");
+  const scrubSubPage = jogWheelSubPageArea.makeSubPage("scrub");
+  const jogSubPage = jogWheelSubPageArea.makeSubPage("jog");
+
+  const { scrub, scrubLed } = elements.control.buttons;
+
+  page.makeActionBinding(scrub.mSurfaceValue, jogWheelSubPageArea.mAction.mNext);
+
+  jogSubPage.mOnActivate = (context) => {
+    scrubLed.setProcessValue(context, 1);
+  };
+  scrubSubPage.mOnActivate = (context) => {
+    scrubLed.setProcessValue(context, 0);
+  };
+
+  const { jogLeft, jogRight } = elements.control;
+  page.makeCommandBinding(jogLeft, "Transport", "Jog Left").setSubPage(jogSubPage);
+  page.makeCommandBinding(jogRight, "Transport", "Jog Right").setSubPage(jogSubPage);
+  page.makeCommandBinding(jogLeft, "Transport", "Nudge Cursor Left").setSubPage(scrubSubPage);
+  page.makeCommandBinding(jogRight, "Transport", "Nudge Cursor Right").setSubPage(scrubSubPage);
 }
 
 function bindSegmentDisplaySection(page: MR_FactoryMappingPage, elements: SurfaceElements) {
@@ -105,23 +131,11 @@ function bindNavigationButtons(
   elements: SurfaceElements,
   mixerBankZone: MR_MixerBankZone
 ) {
-  const buttons = elements.control.buttons;
-  page.makeActionBinding(
-    buttons.navigation.bank.left.mSurfaceValue,
-    mixerBankZone.mAction.mPrevBank
-  );
-  page.makeActionBinding(
-    buttons.navigation.bank.right.mSurfaceValue,
-    mixerBankZone.mAction.mNextBank
-  );
-  page.makeActionBinding(
-    buttons.navigation.channel.left.mSurfaceValue,
-    mixerBankZone.mAction.mShiftLeft
-  );
-  page.makeActionBinding(
-    buttons.navigation.channel.right.mSurfaceValue,
-    mixerBankZone.mAction.mShiftRight
-  );
+  const { bank, channel } = elements.control.buttons.navigation;
+  page.makeActionBinding(bank.left.mSurfaceValue, mixerBankZone.mAction.mPrevBank);
+  page.makeActionBinding(bank.right.mSurfaceValue, mixerBankZone.mAction.mNextBank);
+  page.makeActionBinding(channel.left.mSurfaceValue, mixerBankZone.mAction.mShiftLeft);
+  page.makeActionBinding(channel.right.mSurfaceValue, mixerBankZone.mAction.mShiftRight);
 }
 
 function bindDirectionButtons(page: MR_FactoryMappingPage, elements: SurfaceElements) {

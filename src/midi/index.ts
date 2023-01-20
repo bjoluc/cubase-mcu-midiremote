@@ -149,9 +149,11 @@ export function bindSurfaceElementsToMidi(
     bindButton(button, 40 + index);
   });
 
-  buttons.navigation.directions.centerLed.mMidiBinding.setOutputPort(midiOutput);
   buttons.navigation.directions.centerLed.mOnProcessValueChange = (context, value) => {
     sendNoteOn(midiOutput, context, 0, 100, value);
+  };
+  buttons.scrubLed.mOnProcessValueChange = (context, value) => {
+    sendNoteOn(midiOutput, context, 0, 0x65, value);
   };
 
   // Display
@@ -197,6 +199,42 @@ export function bindSurfaceElementsToMidi(
         context,
         +(timeFormat === "Bars+Beats")
       );
+    }
+  };
+
+  // Jog wheel
+  const jogWheelValue = elements.control.jogWheel.mSurfaceValue;
+  jogWheelValue.mMidiBinding
+    .setInputPort(midiInput)
+    .bindToControlChange(0, 0x3c)
+    .setTypeRelativeSignedBit();
+  jogWheelValue.mOnProcessValueChange = (context, value, difference) => {
+    const jumpOffset = 0.4;
+
+    // Prevent value from reaching its limits
+    if (value < 0.5 - jumpOffset) {
+      jogWheelValue.setProcessValue(context, value + jumpOffset);
+    } else if (value > 0.5 + jumpOffset) {
+      jogWheelValue.setProcessValue(context, value - jumpOffset);
+    }
+
+    // Compensate for the difference value offsets introduced above
+    if (Math.abs(difference) >= jumpOffset - 0.1) {
+      if (difference > 0) {
+        difference -= jumpOffset;
+      } else {
+        difference += jumpOffset;
+      }
+    }
+
+    // Handle jog events
+    if (difference !== 0) {
+      const isLeftJog = difference < 0;
+      if (isLeftJog) {
+        elements.control.jogLeft.setProcessValue(context, 1);
+      } else {
+        elements.control.jogRight.setProcessValue(context, 1);
+      }
     }
   };
 }

@@ -3,7 +3,6 @@ import { createElements } from "./util";
 export function createSurfaceElements(surface: MR_DeviceSurface) {
   surface.makeBlindPanel(0, 0, 66, 40); // Frame
   surface.makeBlindPanel(41, 6, 23.25, 4); // Time display
-  surface.makeBlindPanel(53, 29.25, 8.5, 8.5).setShapeCircle(); // Jog wheel
 
   const makeSquareButton = (x: number, y: number) => surface.makeButton(x + 0.25, y, 1.5, 1.5);
 
@@ -44,11 +43,18 @@ export function createSurfaceElements(surface: MR_DeviceSurface) {
     control: {
       mainFader: surface.makeFader(42, 20, 2, 16),
       mainFaderTouched: surface.makeCustomValueVariable("mainFaderTouched"),
+
+      jogWheel: surface.makeKnob(53, 29.25, 8.5, 8.5),
+      jogRight: surface.makeCustomValueVariable("jogRight"),
+      jogLeft: surface.makeCustomValueVariable("jogLeft"),
+
       buttons: {
         display: makeSquareButton(42, 7.25),
         timeMode: makeSquareButton(61.75, 7.25),
         edit: surface.makeButton(42, 10.5, 2, 1.5),
         flip: surface.makeButton(42, 16, 2, 1.5),
+        scrub: makeSquareButton(61.75, 28),
+        scrubLed: surface.makeCustomValueVariable("controlButtonsScrubLed"),
 
         encoderAssign: createElements(6, (index) => makeSquareButton(42 + index * 2.25, 3.5)),
         number: createElements(8, (index) => makeSquareButton(46 + index * 2.25, 10.5)),
@@ -81,8 +87,6 @@ export function createSurfaceElements(surface: MR_DeviceSurface) {
             down: makeSquareButton(48, 35.75),
           },
         },
-
-        scrub: makeSquareButton(61.75, 28),
       },
     },
 
