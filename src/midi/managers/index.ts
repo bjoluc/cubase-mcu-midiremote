@@ -1,12 +1,13 @@
+import { MidiPorts } from "../MidiPorts";
 import { ColorManager } from "./ColorManager";
 import { LcdManager } from "./LcdManager";
 import { SegmentDisplayManager } from "./SegmentDisplayManager";
 
-export function createMidiManagers(midiOutput: MR_DeviceMidiOutput) {
+export function createMidiManagers(ports: MidiPorts) {
   return {
-    color: new ColorManager(midiOutput),
-    lcd: new LcdManager(midiOutput),
-    segmentDisplay: new SegmentDisplayManager(midiOutput),
+    color: new ColorManager(ports),
+    lcd: new LcdManager(ports),
+    segmentDisplay: new SegmentDisplayManager(ports.getMainPorts().output),
   };
 }
 

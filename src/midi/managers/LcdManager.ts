@@ -1,7 +1,6 @@
-import { sendSysexMessage } from "..";
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
-import { createElements } from "src/util";
+import { EnhancedMidiOutput, MidiPorts } from "../MidiPorts";
 
 export class LcdManager {
   /**
@@ -23,21 +22,38 @@ export class LcdManager {
     return chars;
   }
 
-  constructor(private midiOutput: MR_DeviceMidiOutput) {}
+  constructor(private ports: MidiPorts) {}
 
-  sendText(context: MR_ActiveDevice, startIndex: number, text: string) {
+  private sendText(
+    output: EnhancedMidiOutput,
+    context: MR_ActiveDevice,
+    startIndex: number,
+    text: string
+  ) {
     const chars = LcdManager.stringToUtf8CharArray(text.slice(0, 112));
-    sendSysexMessage(this.midiOutput, context, [0x12, startIndex, ...chars]);
+    output.sendSysex(context, [0x12, startIndex, ...chars]);
   }
 
   setChannelText(context: MR_ActiveDevice, row: number, channelIndex: number, text: string) {
     while (text.length < 7) {
       text += " ";
     }
-    this.sendText(context, row * 56 + channelIndex * 7, text);
+    this.sendText(
+      this.ports.getPortsByChannelIndex(channelIndex).output,
+      context,
+      row * 56 + (channelIndex % 8) * 7,
+      text
+    );
   }
 
   clearDisplays(context: MR_ActiveDevice) {
-    this.sendText(context, 0, Array(112).join(" "));
+    for (let i = 0; i < this.ports.getChannelCount() / 8; i++) {
+      this.sendText(
+        this.ports.getPortsByChannelIndex(i * 8).output,
+        context,
+        0,
+        Array(112).join(" ")
+      );
+    }
   }
 }

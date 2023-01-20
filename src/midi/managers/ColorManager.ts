@@ -1,5 +1,5 @@
-import { sendSysexMessage } from "..";
 import { createElements } from "../../util";
+import { MidiPorts } from "../MidiPorts";
 
 export enum ScribbleStripColor {
   black = 0x00,
@@ -38,9 +38,11 @@ export class ColorManager {
     );
   }
 
-  private colors: number[] = createElements(8, () => ScribbleStripColor.white);
+  private colors: number[];
 
-  constructor(private midiOutput: MR_DeviceMidiOutput) {}
+  constructor(private ports: MidiPorts) {
+    this.colors = createElements(ports.getChannelCount(), () => ScribbleStripColor.white);
+  }
 
   setChannelColor(context: MR_ActiveDevice, channelIndex: number, color: ScribbleStripColor) {
     this.colors[channelIndex] = color;
@@ -58,11 +60,15 @@ export class ColorManager {
   }
 
   resetColors(context: MR_ActiveDevice) {
-    this.colors = createElements(8, () => ScribbleStripColor.white);
+    this.colors = createElements(this.ports.getChannelCount(), () => ScribbleStripColor.white);
     this.sendColors(context);
   }
 
   private sendColors(context: MR_ActiveDevice) {
-    sendSysexMessage(this.midiOutput, context, [0x72, ...this.colors, 0xf7]);
+    for (let i = 0; i < this.colors.length / 8; i++) {
+      this.ports
+        .getPortsByChannelIndex(i * 8)
+        .output.sendSysex(context, [0x72, ...this.colors.slice(i * 8, (i + 1) * 8), 0xf7]);
+    }
   }
 }

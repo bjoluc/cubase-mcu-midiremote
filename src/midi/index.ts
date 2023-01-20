@@ -1,6 +1,7 @@
 import { SurfaceElements } from "src/surface";
 import { MidiManagers } from "./managers";
 import { LcdManager } from "./managers/LcdManager";
+import { MidiPorts, PortPair } from "./MidiPorts";
 
 export enum EncoderDisplayMode {
   SingleDot = 0,
@@ -9,45 +10,26 @@ export enum EncoderDisplayMode {
   Spread = 3,
 }
 
-export function sendSysexMessage(
-  midiOutput: MR_DeviceMidiOutput,
-  context: MR_ActiveDevice,
-  messageBody: any[]
-) {
-  midiOutput.sendMidi(context, [0xf0, 0x00, 0x00, 0x66, 0x14, ...messageBody, 0xf7]);
-}
-
-function sendNoteOn(
-  midiOutput: MR_DeviceMidiOutput,
-  context: MR_ActiveDevice,
-  channel: number,
-  pitch: number,
-  velocity: number | boolean
-) {
-  midiOutput.sendMidi(context, [0x90 + channel, pitch, +Boolean(velocity) * 0xff]);
-}
-
 export function bindSurfaceElementsToMidi(
   elements: SurfaceElements,
-  midiInput: MR_DeviceMidiInput,
-  midiOutput: MR_DeviceMidiOutput,
+  ports: MidiPorts,
   managers: MidiManagers
 ) {
-  function bindButton(button: MR_Button, note: number) {
-    button.mSurfaceValue.mMidiBinding.setInputPort(midiInput).bindToNote(0, note);
+  function bindButton(ports: PortPair, button: MR_Button, note: number) {
+    button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
     button.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      sendNoteOn(midiOutput, context, 0, note, newValue);
+      ports.output.sendNoteOn(context, 0, note, newValue);
     };
   }
 
-  function bindLamp(lamp: MR_Lamp, note: number) {
+  function bindLamp(ports: PortPair, lamp: MR_Lamp, note: number) {
     lamp.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      sendNoteOn(midiOutput, context, 0, note, newValue);
+      ports.output.sendNoteOn(context, 0, note, newValue);
     };
   }
 
-  function bindFader(fader: MR_Fader, faderIndex: number) {
-    fader.mSurfaceValue.mMidiBinding.setInputPort(midiInput).bindToPitchBend(faderIndex);
+  function bindFader(ports: PortPair, fader: MR_Fader, faderIndex: number) {
+    fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
 
     let isInitialChangeEvent = true;
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
@@ -58,18 +40,22 @@ export function bindSurfaceElementsToMidi(
         var lowByte = newValue & 0x7f;
         var highByte = newValue >> 7;
 
-        midiOutput.sendMidi(context, [0xe0 + faderIndex, lowByte, highByte]);
+        ports.output.sendMidi(context, [0xe0 + faderIndex, lowByte, highByte]);
       }
     };
   }
 
   elements.channels.forEach((channel, index) => {
+    const channelPorts = ports.getPortsByChannelIndex(index);
+
     // Push Encoder
     channel.encoder.mEncoderValue.mMidiBinding
-      .setInputPort(midiInput)
-      .bindToControlChange(0, 16 + index)
+      .setInputPort(channelPorts.input)
+      .bindToControlChange(0, 16 + (index % 8))
       .setTypeRelativeSignedBit();
-    channel.encoder.mPushValue.mMidiBinding.setInputPort(midiInput).bindToNote(0, 32 + index);
+    channel.encoder.mPushValue.mMidiBinding
+      .setInputPort(channelPorts.input)
+      .bindToNote(0, 32 + (index % 8));
     channel.encoder.mEncoderValue.mOnProcessValueChange = (context, newValue) => {
       const displayMode = channel.encoderDisplayMode.getProcessValue(context);
 
@@ -77,9 +63,9 @@ export function bindSurfaceElementsToMidi(
       const position =
         1 + Math.round(newValue * (displayMode === EncoderDisplayMode.Spread ? 5 : 10));
 
-      midiOutput.sendMidi(context, [
+      channelPorts.output.sendMidi(context, [
         0xb0,
-        0x30 + index,
+        0x30 + (index % 8),
         (+isCenterLedOn << 6) + (displayMode << 4) + position,
       ]);
     };
@@ -103,23 +89,29 @@ export function bindSurfaceElementsToMidi(
 
       if (now - lastMeterUpdateTime > 125) {
         lastMeterUpdateTime = now;
-        midiOutput.sendMidi(context, [0xd0, (index << 4) + Math.round(newValue * 14)]);
+        channelPorts.output.sendMidi(context, [0xd0, (index % 8 << 4) + Math.round(newValue * 14)]);
       }
     };
 
     // Buttons
     const buttons = channel.buttons;
     [buttons.record, buttons.solo, buttons.mute, buttons.select].forEach((button, row) => {
-      bindButton(button, row * 8 + index);
+      bindButton(channelPorts, button, row * 8 + (index % 8));
     });
 
     // Fader
-    bindFader(channel.fader, index);
-    channel.faderTouched.mMidiBinding.setInputPort(midiInput).bindToNote(0, 104 + index);
+    bindFader(channelPorts, channel.fader, index % 8);
+    channel.faderTouched.mMidiBinding
+      .setInputPort(channelPorts.input)
+      .bindToNote(0, 104 + (index % 8));
   });
 
-  bindFader(elements.control.mainFader, 8);
-  elements.control.mainFaderTouched.mMidiBinding.setInputPort(midiInput).bindToNote(0, 104 + 8);
+  const mainPorts = ports.getMainPorts();
+
+  bindFader(mainPorts, elements.control.mainFader, 8);
+  elements.control.mainFaderTouched.mMidiBinding
+    .setInputPort(mainPorts.input)
+    .bindToNote(0, 104 + 8);
 
   const buttons = elements.control.buttons;
 
@@ -146,20 +138,20 @@ export function bindSurfaceElementsToMidi(
     buttons.navigation.directions.center,
     buttons.scrub,
   ].forEach((button, index) => {
-    bindButton(button, 40 + index);
+    bindButton(mainPorts, button, 40 + index);
   });
 
   buttons.navigation.directions.centerLed.mOnProcessValueChange = (context, value) => {
-    sendNoteOn(midiOutput, context, 0, 100, value);
+    mainPorts.output.sendNoteOn(context, 0, 100, value);
   };
   buttons.scrubLed.mOnProcessValueChange = (context, value) => {
-    sendNoteOn(midiOutput, context, 0, 0x65, value);
+    mainPorts.output.sendNoteOn(context, 0, 0x65, value);
   };
 
   // Display
   const displayLeds = elements.display.leds;
   [displayLeds.smpte, displayLeds.beats, displayLeds.solo].forEach((lamp, index) => {
-    bindLamp(lamp, 0x71 + index);
+    bindLamp(mainPorts, lamp, 0x71 + index);
   });
 
   let lastTimeFormat = "";
@@ -205,7 +197,7 @@ export function bindSurfaceElementsToMidi(
   // Jog wheel
   const jogWheelValue = elements.control.jogWheel.mSurfaceValue;
   jogWheelValue.mMidiBinding
-    .setInputPort(midiInput)
+    .setInputPort(mainPorts.input)
     .bindToControlChange(0, 0x3c)
     .setTypeRelativeSignedBit();
   jogWheelValue.mOnProcessValueChange = (context, value, difference) => {
