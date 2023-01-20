@@ -52,7 +52,7 @@ export class LcdManager {
         this.ports.getPortsByChannelIndex(i * 8).output,
         context,
         0,
-        Array(112).join(" ")
+        Array(113).join(" ")
       );
     }
   }
