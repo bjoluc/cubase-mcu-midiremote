@@ -5,12 +5,7 @@ export interface PortPair {
 
 export interface EnhancedMidiOutput extends MR_DeviceMidiOutput {
   sendSysex: (context: MR_ActiveDevice, messageBody: number[]) => void;
-  sendNoteOn: (
-    context: MR_ActiveDevice,
-    channel: number,
-    pitch: number,
-    velocity: number | boolean
-  ) => void;
+  sendNoteOn: (context: MR_ActiveDevice, pitch: number, velocity: number | boolean) => void;
 }
 
 export class MidiPorts {

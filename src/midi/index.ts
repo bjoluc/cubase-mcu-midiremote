@@ -18,29 +18,39 @@ export function bindSurfaceElementsToMidi(
   function bindButton(ports: PortPair, button: MR_Button, note: number) {
     button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
     button.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      ports.output.sendNoteOn(context, 0, note, newValue);
+      ports.output.sendNoteOn(context, note, newValue);
     };
   }
 
   function bindLamp(ports: PortPair, lamp: MR_Lamp, note: number) {
     lamp.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      ports.output.sendNoteOn(context, 0, note, newValue);
+      ports.output.sendNoteOn(context, note, newValue);
     };
   }
 
   function bindFader(ports: PortPair, fader: MR_Fader, faderIndex: number) {
     fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
 
-    let isInitialChangeEvent = true;
+    const sendValue = (context: MR_ActiveDevice, value: number) => {
+      value *= 0x3fff;
+      ports.output.sendMidi(context, [0xe0 + faderIndex, value & 0x7f, value >> 7]);
+    };
+
+    let forceUpdate = true;
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      if (difference !== 0 || isInitialChangeEvent) {
-        isInitialChangeEvent = false;
+      // Dedupe identical messages to reduce fader noise
+      if (difference !== 0 || forceUpdate) {
+        forceUpdate = false;
+        sendValue(context, newValue);
+      }
+    };
 
-        newValue *= 0x3fff;
-        var lowByte = newValue & 0x7f;
-        var highByte = newValue >> 7;
-
-        ports.output.sendMidi(context, [0xe0 + faderIndex, lowByte, highByte]);
+    // Set fader to `0` when unused
+    fader.mSurfaceValue.mOnTitleChange = (context, title, unit) => {
+      if (unit === "") {
+        forceUpdate = true;
+        fader.mSurfaceValue.setProcessValue(context, 0);
+        sendValue(context, 0); // It somehow wouldn't happen otherwise
       }
     };
   }
@@ -142,10 +152,10 @@ export function bindSurfaceElementsToMidi(
   });
 
   buttons.navigation.directions.centerLed.mOnProcessValueChange = (context, value) => {
-    mainPorts.output.sendNoteOn(context, 0, 100, value);
+    mainPorts.output.sendNoteOn(context, 100, value);
   };
   buttons.scrubLed.mOnProcessValueChange = (context, value) => {
-    mainPorts.output.sendNoteOn(context, 0, 0x65, value);
+    mainPorts.output.sendNoteOn(context, 0x65, value);
   };
 
   // Display
