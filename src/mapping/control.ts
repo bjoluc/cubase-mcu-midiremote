@@ -37,15 +37,15 @@ export function bindJogWheelSection(page: MR_FactoryMappingPage, elements: Surfa
   const scrubSubPage = jogWheelSubPageArea.makeSubPage("scrub");
   const jogSubPage = jogWheelSubPageArea.makeSubPage("jog");
 
-  const { scrub, scrubLed } = elements.control.buttons;
+  const scrubButton = elements.control.buttons.scrub;
 
-  page.makeActionBinding(scrub.mSurfaceValue, jogWheelSubPageArea.mAction.mNext);
+  page.makeActionBinding(scrubButton.mSurfaceValue, jogWheelSubPageArea.mAction.mNext);
 
   jogSubPage.mOnActivate = (context) => {
-    scrubLed.setProcessValue(context, 1);
+    scrubButton.mLedValue.setProcessValue(context, 1);
   };
   scrubSubPage.mOnActivate = (context) => {
-    scrubLed.setProcessValue(context, 0);
+    scrubButton.mLedValue.setProcessValue(context, 0);
   };
 
   const { jogLeft, jogRight } = elements.control;
@@ -104,10 +104,10 @@ export function bindDirectionButtons(page: MR_FactoryMappingPage, elements: Surf
   const zoomSubPage = subPageArea.makeSubPage("Zoom");
 
   zoomSubPage.mOnActivate = (context) => {
-    buttons.navigation.directions.centerLed.setProcessValue(context, 1);
+    buttons.navigation.directions.center.mLedValue.setProcessValue(context, 1);
   };
   navigateSubPage.mOnActivate = (context) => {
-    buttons.navigation.directions.centerLed.setProcessValue(context, 0);
+    buttons.navigation.directions.center.mLedValue.setProcessValue(context, 0);
   };
 
   const directions = buttons.navigation.directions;

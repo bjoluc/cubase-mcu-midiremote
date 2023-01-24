@@ -1,4 +1,4 @@
-import { SurfaceElements } from "src/surface";
+import { LedButton, SurfaceElements } from "src/surface";
 import { makeCallbackCollection } from "src/util";
 import { MidiManagers } from "./managers";
 import { LcdManager } from "./managers/LcdManager";
@@ -64,9 +64,12 @@ export function bindSurfaceElementsToMidi(
   ports: MidiPorts,
   managers: MidiManagers
 ) {
-  function bindButton(ports: PortPair, button: MR_Button, note: number) {
+  function bindLedButton(ports: PortPair, button: LedButton, note: number) {
     button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
-    button.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
+    button.mSurfaceValue.mOnProcessValueChange = (context, newValue) => {
+      ports.output.sendNoteOn(context, note, newValue);
+    };
+    button.mLedValue.mOnProcessValueChange = (context, newValue) => {
       ports.output.sendNoteOn(context, note, newValue);
     };
   }
@@ -180,7 +183,7 @@ export function bindSurfaceElementsToMidi(
     // Buttons
     const buttons = channel.buttons;
     [buttons.record, buttons.solo, buttons.mute, buttons.select].forEach((button, row) => {
-      bindButton(channelPorts, button, row * 8 + (index % 8));
+      bindLedButton(channelPorts, button, row * 8 + (index % 8));
     });
 
     // Fader
@@ -222,23 +225,8 @@ export function bindSurfaceElementsToMidi(
     buttons.navigation.directions.center,
     buttons.scrub,
   ].forEach((button, index) => {
-    bindButton(mainPorts, button, 40 + index);
+    bindLedButton(mainPorts, button, 40 + index);
   });
-
-  [0, 3, 1, 4, 2, 5]
-    .map((index) => buttons.encoderAssignLeds[index])
-    .forEach((led, index) => {
-      led.mOnProcessValueChange = (context, value) => {
-        mainPorts.output.sendNoteOn(context, 40 + index, value);
-      };
-    });
-
-  buttons.navigation.directions.centerLed.mOnProcessValueChange = (context, value) => {
-    mainPorts.output.sendNoteOn(context, 100, value);
-  };
-  buttons.scrubLed.mOnProcessValueChange = (context, value) => {
-    mainPorts.output.sendNoteOn(context, 0x65, value);
-  };
 
   // Display
   const displayLeds = elements.display.leds;

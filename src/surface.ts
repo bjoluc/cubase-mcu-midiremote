@@ -2,6 +2,10 @@ import { createElements } from "./util";
 
 const channelWidth = 5;
 
+export interface LedButton extends MR_Button {
+  mLedValue: MR_SurfaceCustomValueVariable;
+}
+
 export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: number) {
   const channelsWidth = channelCount * channelWidth;
   const getChannelXPosition = (channelIndex: number) => channelIndex * channelWidth;
@@ -9,7 +13,14 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
   surface.makeBlindPanel(0, 0, channelsWidth + 26, 40); // Frame
   surface.makeBlindPanel(channelsWidth + 1, 6, 23.25, 4); // Time display
 
-  const makeSquareButton = (x: number, y: number) => surface.makeButton(x + 0.25, y, 1.5, 1.5);
+  let ledButtonCounter = 0;
+  const makeLedButton = (x: number, y: number, w: number, h: number) => {
+    const button = surface.makeButton(x, y, w, h) as LedButton;
+    button.mLedValue = surface.makeCustomValueVariable(`LedButton${++ledButtonCounter}`);
+    return button;
+  };
+
+  const makeSquareButton = (x: number, y: number) => makeLedButton(x + 0.25, y, 1.5, 1.5);
 
   const miscControlButtons = createElements(21, (index) =>
     makeSquareButton(
@@ -40,7 +51,7 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
           record: makeSquareButton(2 + getChannelXPosition(index), 10),
           solo: makeSquareButton(2 + getChannelXPosition(index), 12),
           mute: makeSquareButton(2 + getChannelXPosition(index), 14),
-          select: surface.makeButton(2 + getChannelXPosition(index), 16, 2, 1.5),
+          select: makeLedButton(2 + getChannelXPosition(index), 16, 2, 1.5),
         },
 
         fader: surface.makeFader(2 + getChannelXPosition(index), 20, 2, 16),
@@ -59,16 +70,12 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
       buttons: {
         display: makeSquareButton(channelsWidth + 2, 7.25),
         timeMode: makeSquareButton(channelsWidth + 21.75, 7.25),
-        edit: surface.makeButton(channelsWidth + 2, 10.5, 2, 1.5),
-        flip: surface.makeButton(channelsWidth + 2, 16, 2, 1.5),
+        edit: makeLedButton(channelsWidth + 2, 10.5, 2, 1.5),
+        flip: makeLedButton(channelsWidth + 2, 16, 2, 1.5),
         scrub: makeSquareButton(channelsWidth + 21.75, 28),
-        scrubLed: surface.makeCustomValueVariable("controlButtonsScrubLed"),
 
         encoderAssign: createElements(6, (index) =>
           makeSquareButton(channelsWidth + 2 + index * 2.25, 3.5)
-        ),
-        encoderAssignLeds: createElements(6, (index) =>
-          surface.makeCustomValueVariable("controlButtonsEncoderAssignLed" + index.toString())
         ),
         number: createElements(8, (index) =>
           makeSquareButton(channelsWidth + 6 + index * 2.25, 10.5)
@@ -82,7 +89,7 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
         transport: [
           ...miscControlButtons.slice(14),
           ...createElements(5, (index) =>
-            surface.makeButton(channelsWidth + 6.25 + index * 3.56, 25, 3, 2)
+            makeLedButton(channelsWidth + 6.25 + index * 3.56, 25, 3, 2)
           ),
         ],
 
@@ -100,9 +107,6 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
             right: makeSquareButton(channelsWidth + 9.75, 34),
             up: makeSquareButton(channelsWidth + 8, 32.25),
             center: makeSquareButton(channelsWidth + 8, 34),
-            centerLed: surface.makeCustomValueVariable(
-              "controlButtonsNavigationDirectionsCenterLed"
-            ),
             down: makeSquareButton(channelsWidth + 8, 35.75),
           },
         },

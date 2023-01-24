@@ -25,7 +25,6 @@ export function bindEncoders(
 ) {
   const buttons = elements.control.buttons;
   const assignmentButtons = buttons.encoderAssign;
-  const assignmentLeds = buttons.encoderAssignLeds;
   const flipButtonValue = elements.control.buttons.flip.mSurfaceValue;
 
   const subPageArea = page.makeSubPageArea("Encoders");
@@ -62,8 +61,8 @@ export function bindEncoders(
 
         onSubPageActivate.addCallback((context) => {
           elements.display.setAssignment(context, (encoderPageIndex + 1).toString());
-          assignmentLeds.forEach((led, ledNumber) => {
-            led.setProcessValue(context, +(assignmentButtonId === ledNumber));
+          assignmentButtons.forEach((button, buttonNumber) => {
+            button.mLedValue.setProcessValue(context, +(assignmentButtonId === buttonNumber));
           });
           elements.display.isValueModeActive.setProcessValue(context, 0);
         });
