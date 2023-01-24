@@ -1,6 +1,4 @@
-import { EncoderDisplayMode } from "../midi";
 import { SurfaceElements } from "../surface";
-import { makeCallbackCollection } from "../util";
 import {
   bindDirectionButtons,
   bindJogWheelSection,
@@ -8,6 +6,7 @@ import {
   bindSegmentDisplaySection,
   bindTransportButtons,
 } from "./control";
+import { bindEncoders } from "./encoders";
 
 export function createHostMapping(mapping: MR_FactoryMapping, elements: SurfaceElements) {
   const page = mapping.makePage("Mixer");
@@ -15,24 +14,16 @@ export function createHostMapping(mapping: MR_FactoryMapping, elements: SurfaceE
   // 7-segment display
   bindSegmentDisplaySection(page, elements);
 
-  const onActivate = makeCallbackCollection(page, "mOnActivate");
-
   const mixerBankZone = page.mHostAccess.mMixConsole
     .makeMixerBankZone()
     .excludeInputChannels()
     .excludeOutputChannels();
 
-  elements.channels.map((channelElements) => {
+  const mixerBankChannels = elements.channels.map((channelElements) => {
     const channel = mixerBankZone.makeMixerBankChannel();
 
-    // Push Encoder
-    onActivate.addCallback((context) => {
-      channelElements.encoderDisplayMode.setProcessValue(context, EncoderDisplayMode.BoostOrCut);
-    });
-    page.makeValueBinding(channelElements.encoder.mEncoderValue, channel.mValue.mPan);
-
-    // Scribble Strip
-    page.makeValueBinding(channelElements.scribbleStrip.row2, channel.mValue.mVolume);
+    // Scribble strips
+    page.makeValueBinding(channelElements.scribbleStrip.trackTitle, channel.mValue.mVolume);
 
     // VU Meter
     page.makeValueBinding(channelElements.vuMeter, channel.mValue.mVUMeter);
@@ -48,8 +39,11 @@ export function createHostMapping(mapping: MR_FactoryMapping, elements: SurfaceE
 
     // Fader
     page.makeValueBinding(channelElements.fader.mSurfaceValue, channel.mValue.mVolume);
-    page.makeValueBinding(channelElements.faderTouched, channel.mValue.mSelected).setTypeToggle();
+
+    return channel;
   });
+
+  bindEncoders(page, elements, mixerBankChannels);
 
   // Transport section
   bindTransportButtons(page, elements);

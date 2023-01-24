@@ -4,6 +4,18 @@ import { EnhancedMidiOutput, MidiPorts } from "../MidiPorts";
 
 export class LcdManager {
   /**
+   * Given a <= 7 characters long string, returns a left-padded version of it that appears
+   * centered on a 7-character display.
+   */
+  static centerString(input: string) {
+    if (input.length >= 7) {
+      return input;
+    }
+
+    return LcdManager.makeSpaces(Math.floor((7 - input.length) / 2)) + input;
+  }
+
+  /**
    * Given a string, returns an abbreviated version of it consisting of at most 7 characters
    */
   static abbreviateString(input: string) {
@@ -20,6 +32,10 @@ export class LcdManager {
       chars.push(input.charCodeAt(i));
     }
     return chars;
+  }
+
+  private static makeSpaces(length: number) {
+    return Array(length + 1).join(" ");
   }
 
   constructor(private ports: MidiPorts) {}
@@ -52,7 +68,7 @@ export class LcdManager {
         this.ports.getPortsByChannelIndex(i * 8).output,
         context,
         0,
-        Array(113).join(" ")
+        LcdManager.makeSpaces(112)
       );
     }
   }

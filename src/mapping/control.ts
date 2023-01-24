@@ -71,6 +71,15 @@ export function bindSegmentDisplaySection(page: MR_FactoryMappingPage, elements:
     "Exchange Time Formats"
   );
 
+  elements.control.buttons.display.mSurfaceValue.mOnProcessValueChange = (context, value) => {
+    if (value === 1) {
+      elements.display.isValueModeActive.setProcessValue(
+        context,
+        +!elements.display.isValueModeActive.getProcessValue(context)
+      );
+    }
+  };
+
   // There's no "is solo mode active on any chanel" host value, is it?
   // page.makeValueBinding(elements.display.leds.solo, ? )
 }

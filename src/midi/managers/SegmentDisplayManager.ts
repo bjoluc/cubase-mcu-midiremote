@@ -52,6 +52,11 @@ export class SegmentDisplayManager {
     this.updateSegmentsByNumberString(context, 7, 3, groups[0]);
   }
 
+  setAssignment(context: MR_ActiveDevice, assignment: string) {
+    this.updateSegment(context, 10, parseInt(assignment[0]));
+    this.updateSegment(context, 11, assignment.length > 1 ? parseInt(assignment[1]) : null);
+  }
+
   clearAllSegments(context: MR_ActiveDevice) {
     for (let i = 0; i < this.segmentValues.length; i++) {
       this.updateSegment(context, i, null);

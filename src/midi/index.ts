@@ -1,4 +1,5 @@
 import { SurfaceElements } from "src/surface";
+import { makeCallbackCollection } from "src/util";
 import { MidiManagers } from "./managers";
 import { LcdManager } from "./managers/LcdManager";
 import { MidiPorts, PortPair } from "./MidiPorts";
@@ -9,6 +10,54 @@ export enum EncoderDisplayMode {
   Wrap = 2,
   Spread = 3,
 }
+
+export enum ParameterName {
+  Unset,
+  Monitor,
+  Gain,
+  Phase,
+  Pan,
+  Eq1Freq,
+  Eq1Gain,
+  Eq1Q,
+  Eq1Type,
+  Eq2Freq,
+  Eq2Gain,
+  Eq2Q,
+  Eq2Type,
+  Eq3Freq,
+  Eq3Gain,
+  Eq3Q,
+  Eq3Type,
+  Eq4Freq,
+  Eq4Gain,
+  Eq4Q,
+  Eq4Type,
+}
+
+const parameterNameStrings: Record<number, string> = {
+  [ParameterName.Unset]: "",
+  [ParameterName.Monitor]: "Monitor",
+  [ParameterName.Gain]: "Gain",
+  [ParameterName.Phase]: "Phase",
+  [ParameterName.Pan]: "Pan L-R",
+  [ParameterName.Eq1Freq]: "EQ1Freq",
+  [ParameterName.Eq1Gain]: "EQ1Gain",
+  [ParameterName.Eq1Q]: "EQ1 Q",
+  [ParameterName.Eq1Type]: "EQ1Type",
+  [ParameterName.Eq2Freq]: "EQ2Freq",
+  [ParameterName.Eq2Gain]: "EQ2Gain",
+  [ParameterName.Eq2Q]: "EQ2 Q",
+  [ParameterName.Eq2Type]: "EQ2Type",
+  [ParameterName.Eq3Freq]: "EQ3Freq",
+  [ParameterName.Eq3Gain]: "EQ3Gain",
+  [ParameterName.Eq3Q]: "EQ3 Q",
+  [ParameterName.Eq3Type]: "EQ3Type",
+  [ParameterName.Eq4Freq]: "EQ4Freq",
+  [ParameterName.Eq4Gain]: "EQ4Gain",
+  [ParameterName.Eq4Q]: "EQ4 Q",
+  [ParameterName.Eq4Type]: "EQ4Type",
+};
 
 export function bindSurfaceElementsToMidi(
   elements: SurfaceElements,
@@ -55,6 +104,11 @@ export function bindSurfaceElementsToMidi(
     };
   }
 
+  const onNameValueDisplayModeChange = makeCallbackCollection(
+    elements.display.isValueModeActive,
+    "mOnProcessValueChange"
+  );
+
   elements.channels.forEach((channel, index) => {
     const channelPorts = ports.getPortsByChannelIndex(index);
 
@@ -85,11 +139,31 @@ export function bindSurfaceElementsToMidi(
     };
 
     // Scribble Strip
-    [channel.scribbleStrip.row1, channel.scribbleStrip.row2].forEach((scribbleStripText, row) => {
-      scribbleStripText.mOnTitleChange = (context, title) => {
-        managers.lcd.setChannelText(context, row, index, LcdManager.abbreviateString(title));
-      };
-    });
+    let parameterName = "";
+    let displayValue = "";
+
+    const updateDisplay = (context: MR_ActiveDevice, isValueModeActive: number) => {
+      managers.lcd.setChannelText(
+        context,
+        0,
+        index,
+        isValueModeActive ? displayValue : parameterName
+      );
+    };
+    channel.scribbleStrip.encoderParameterName.mOnProcessValueChange = (context, value) => {
+      parameterName = parameterNameStrings[value];
+      updateDisplay(context, elements.display.isValueModeActive.getProcessValue(context));
+    };
+    channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
+      displayValue = LcdManager.centerString(LcdManager.abbreviateString(value));
+      updateDisplay(context, elements.display.isValueModeActive.getProcessValue(context));
+    };
+
+    onNameValueDisplayModeChange.addCallback(updateDisplay);
+
+    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
+      managers.lcd.setChannelText(context, 1, index, LcdManager.abbreviateString(title));
+    };
 
     // VU Meter
     let lastMeterUpdateTime = 0;
@@ -151,6 +225,14 @@ export function bindSurfaceElementsToMidi(
     bindButton(mainPorts, button, 40 + index);
   });
 
+  [0, 3, 1, 4, 2, 5]
+    .map((index) => buttons.encoderAssignLeds[index])
+    .forEach((led, index) => {
+      led.mOnProcessValueChange = (context, value) => {
+        mainPorts.output.sendNoteOn(context, 40 + index, value);
+      };
+    });
+
   buttons.navigation.directions.centerLed.mOnProcessValueChange = (context, value) => {
     mainPorts.output.sendNoteOn(context, 100, value);
   };
@@ -202,6 +284,10 @@ export function bindSurfaceElementsToMidi(
         +(timeFormat === "Bars+Beats")
       );
     }
+  };
+
+  elements.display.setAssignment = (context, assignment) => {
+    managers.segmentDisplay.setAssignment(context, assignment);
   };
 
   // Jog wheel

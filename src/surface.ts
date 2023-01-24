@@ -26,11 +26,14 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
       surface.makeLabelField(getChannelXPosition(index) + 1, 7, 4, 2).relateTo(encoder);
 
       return {
+        index,
         encoder,
         encoderDisplayMode: surface.makeCustomValueVariable("encoderDisplayMode"),
         scribbleStrip: {
-          row1: surface.makeCustomValueVariable("scribbleStripRow1"),
-          row2: surface.makeCustomValueVariable("scribbleStripRow2"),
+          encoderParameterName: surface.makeCustomValueVariable(
+            "scribbleStripEncoderParameterName"
+          ),
+          trackTitle: surface.makeCustomValueVariable("scribbleStriptrackTitle"),
         },
         vuMeter: surface.makeCustomValueVariable("vuMeter"),
         buttons: {
@@ -63,6 +66,9 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
 
         encoderAssign: createElements(6, (index) =>
           makeSquareButton(channelsWidth + 2 + index * 2.25, 3.5)
+        ),
+        encoderAssignLeds: createElements(6, (index) =>
+          surface.makeCustomValueVariable("controlButtonsEncoderAssignLed" + index.toString())
         ),
         number: createElements(8, (index) =>
           makeSquareButton(channelsWidth + 6 + index * 2.25, 10.5)
@@ -104,12 +110,14 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
     },
 
     display: {
+      setAssignment(context: MR_ActiveDevice, assignment: string) {},
       onTimeUpdated: (context: MR_ActiveDevice, time: string, timeFormat: string) => {},
       leds: {
         smpte: surface.makeLamp(channelsWidth + 21.25, 6.5, 0.75, 0.5),
         beats: surface.makeLamp(channelsWidth + 21.25, 9, 0.75, 0.5),
         solo: surface.makeLamp(channelsWidth + 7.75, 7.75, 0.75, 0.5),
       },
+      isValueModeActive: surface.makeCustomValueVariable("displayIsValueModeActive"),
     },
   };
 }

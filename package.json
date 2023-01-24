@@ -24,7 +24,8 @@
       "midiremote_api_v1"
     ],
     "noExternal": [
-      "abbreviate"
+      "abbreviate",
+      "core-js"
     ],
     "target": "ES2015",
     "onSuccess": "npm run transpile && npm run copy"
@@ -38,6 +39,7 @@
     "printWidth": 100
   },
   "dependencies": {
-    "abbreviate": "^0.0.3"
+    "abbreviate": "^0.0.3",
+    "core-js": "^3.27.2"
   }
 }

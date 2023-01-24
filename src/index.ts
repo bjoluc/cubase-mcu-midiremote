@@ -1,6 +1,9 @@
 const USE_EXTENDER = true;
 const IS_EXTENDER_LEFT = true;
 
+// Polyfills
+import "core-js/es/array/flat-map";
+
 import midiremoteApi from "midiremote_api_v1";
 import { createHostMapping } from "./mapping";
 import { bindSurfaceElementsToMidi } from "./midi";
