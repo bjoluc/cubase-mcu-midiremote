@@ -12,7 +12,12 @@ export enum EncoderDisplayMode {
 }
 
 export enum ParameterName {
-  Unset,
+  /** Display the title of the parameter that the encoder controls */
+  Auto,
+
+  /** Display no name at all */
+  Empty,
+
   Monitor,
   Gain,
   Phase,
@@ -33,14 +38,17 @@ export enum ParameterName {
   Eq4Gain,
   Eq4Q,
   Eq4Type,
+  SendLevel,
+  PrePost,
 }
 
-const parameterNameStrings: Record<number, string> = {
-  [ParameterName.Unset]: "",
+const parameterNameStrings: Record<number, string | undefined> = {
+  [ParameterName.Auto]: undefined,
+  [ParameterName.Empty]: "",
   [ParameterName.Monitor]: "Monitor",
   [ParameterName.Gain]: "Gain",
   [ParameterName.Phase]: "Phase",
-  [ParameterName.Pan]: "Pan L-R",
+  [ParameterName.Pan]: "Pan",
   [ParameterName.Eq1Freq]: "EQ1Freq",
   [ParameterName.Eq1Gain]: "EQ1Gain",
   [ParameterName.Eq1Q]: "EQ1 Q",
@@ -57,6 +65,8 @@ const parameterNameStrings: Record<number, string> = {
   [ParameterName.Eq4Gain]: "EQ4Gain",
   [ParameterName.Eq4Q]: "EQ4 Q",
   [ParameterName.Eq4Type]: "EQ4Type",
+  [ParameterName.SendLevel]: "SendLvl",
+  [ParameterName.PrePost]: "PrePost",
 };
 
 export function bindSurfaceElementsToMidi(
@@ -142,7 +152,8 @@ export function bindSurfaceElementsToMidi(
     };
 
     // Scribble Strip
-    let parameterName = "";
+    let parameterName: string | undefined = "";
+    let parameterTitle = "";
     let displayValue = "";
 
     const updateDisplay = (context: MR_ActiveDevice, isValueModeActive: number) => {
@@ -150,7 +161,7 @@ export function bindSurfaceElementsToMidi(
         context,
         0,
         index,
-        isValueModeActive ? displayValue : parameterName
+        isValueModeActive ? displayValue : parameterName ?? parameterTitle
       );
     };
     channel.scribbleStrip.encoderParameterName.mOnProcessValueChange = (context, value) => {
@@ -159,6 +170,10 @@ export function bindSurfaceElementsToMidi(
     };
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
       displayValue = LcdManager.centerString(LcdManager.abbreviateString(value));
+      updateDisplay(context, elements.display.isValueModeActive.getProcessValue(context));
+    };
+    channel.encoder.mEncoderValue.mOnTitleChange = (context, value) => {
+      parameterTitle = LcdManager.abbreviateString(value);
       updateDisplay(context, elements.display.isValueModeActive.getProcessValue(context));
     };
 

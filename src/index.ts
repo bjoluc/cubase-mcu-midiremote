@@ -32,4 +32,4 @@ bindSurfaceElementsToMidi(elements, ports, midiManagers);
 // 3. HOST MAPPING - create mapping pages and host bindings
 //-----------------------------------------------------------------------------
 
-createHostMapping(driver.mMapping, elements);
+createHostMapping(driver.mMapping, elements, midiremoteApi.mDefaults);

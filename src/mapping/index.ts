@@ -8,7 +8,11 @@ import {
 } from "./control";
 import { bindEncoders } from "./encoders";
 
-export function createHostMapping(mapping: MR_FactoryMapping, elements: SurfaceElements) {
+export function createHostMapping(
+  mapping: MR_FactoryMapping,
+  elements: SurfaceElements,
+  hostDefaults: MR_HostDefaults
+) {
   const page = mapping.makePage("Mixer");
 
   // 7-segment display
@@ -43,7 +47,7 @@ export function createHostMapping(mapping: MR_FactoryMapping, elements: SurfaceE
     return channel;
   });
 
-  bindEncoders(page, elements, mixerBankChannels);
+  bindEncoders(page, elements, mixerBankChannels, hostDefaults);
 
   // Transport section
   bindTransportButtons(page, elements);

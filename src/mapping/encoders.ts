@@ -1,6 +1,6 @@
 import { EncoderDisplayMode, ParameterName } from "src/midi";
 import { SurfaceElements } from "src/surface";
-import { makeCallbackCollection } from "src/util";
+import { createElements, makeCallbackCollection } from "src/util";
 
 export interface EncoderAssignment {
   parameterName: ParameterName;
@@ -21,11 +21,12 @@ export interface EncoderPage {
 export function bindEncoders(
   page: MR_FactoryMappingPage,
   elements: SurfaceElements,
-  mixerBankChannels: MR_MixerBankChannel[]
+  mixerBankChannels: MR_MixerBankChannel[],
+  hostDefaults: MR_HostDefaults
 ) {
   const buttons = elements.control.buttons;
   const assignmentButtons = buttons.encoderAssign;
-  const flipButtonValue = elements.control.buttons.flip.mSurfaceValue;
+  const flipButton = elements.control.buttons.flip;
 
   const subPageArea = page.makeSubPageArea("Encoders");
 
@@ -54,18 +55,27 @@ export function bindEncoders(
         const subPage = subPageArea.makeSubPage(subPageName);
         const flipSubPage = subPageArea.makeSubPage(`${subPageName} Flip`);
 
-        page.makeActionBinding(flipButtonValue, flipSubPage.mAction.mActivate).setSubPage(subPage);
-        page.makeActionBinding(flipButtonValue, subPage.mAction.mActivate).setSubPage(flipSubPage);
+        page
+          .makeActionBinding(flipButton.mSurfaceValue, flipSubPage.mAction.mActivate)
+          .setSubPage(subPage);
+        page
+          .makeActionBinding(flipButton.mSurfaceValue, subPage.mAction.mActivate)
+          .setSubPage(flipSubPage);
 
         const onSubPageActivate = makeCallbackCollection(subPage, "mOnActivate");
-
         onSubPageActivate.addCallback((context) => {
           elements.display.setAssignment(context, (encoderPageIndex + 1).toString());
           assignmentButtons.forEach((button, buttonNumber) => {
             button.mLedValue.setProcessValue(context, +(assignmentButtonId === buttonNumber));
           });
+          flipButton.mLedValue.setProcessValue(context, 0);
+
           elements.display.isValueModeActive.setProcessValue(context, 0);
         });
+
+        flipSubPage.mOnActivate = (context) => {
+          flipButton.mLedValue.setProcessValue(context, 1);
+        };
 
         const isPerChannelAssignment = typeof assignmentsConfig === "function";
         let assignments = isPerChannelAssignment
@@ -86,6 +96,13 @@ export function bindEncoders(
             )
             .filterByValue(1)
             .setSubPage(subPage);
+
+          if (assignment.pushToggleValue) {
+            page
+              .makeValueBinding(channelElements.encoder.mPushValue, assignment.pushToggleValue)
+              .setTypeToggle()
+              .setSubPage(subPage);
+          }
 
           // Flipped encoder page sub page bindings
           page
@@ -131,7 +148,6 @@ export function bindEncoders(
   };
 
   bindEncorderAssignments(0, [
-    // Output Bus – No host values available
     {
       name: "Monitor",
       assignments: (mixerBankChannel) => ({
@@ -140,7 +156,6 @@ export function bindEncoders(
         parameterName: ParameterName.Monitor,
       }),
     },
-    // Input Bus – No host values available
     {
       name: "Input Gain",
       assignments: (mixerBankChannel) => ({
@@ -256,6 +271,70 @@ export function bindEncoders(
           displayMode: EncoderDisplayMode.SingleDot,
           encoderValue: mChannelEQ.mBand4.mFilterType,
         },
+      ],
+    },
+  ]);
+
+  const mSends = page.mHostAccess.mTrackSelection.mMixerChannel.mSends;
+  const sendSlotsCount = hostDefaults.getNumberOfSendSlots();
+  bindEncorderAssignments(3, [
+    {
+      name: "Sends Level/On",
+      assignments: [
+        ...createElements(sendSlotsCount, (slotIndex) => {
+          const sendSlot = mSends.getByIndex(slotIndex);
+          return {
+            parameterName: ParameterName.SendLevel,
+            encoderValue: sendSlot.mLevel,
+            displayMode: EncoderDisplayMode.SingleDot,
+            pushToggleValue: sendSlot.mOn,
+          };
+        }),
+        ...createElements(sendSlotsCount, (slotIndex) => {
+          const sendSlot = mSends.getByIndex(slotIndex);
+          return {
+            parameterName: ParameterName.PrePost,
+            encoderValue: sendSlot.mPrePost,
+            displayMode: EncoderDisplayMode.Wrap,
+            pushToggleValue: sendSlot.mPrePost,
+          };
+        }),
+      ],
+    },
+  ]);
+
+  const effectsViewer = page.mHostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects
+    .makeInsertEffectViewer("Inserts")
+    .followPluginWindowInFocus();
+  const parameterBankZone = effectsViewer.mParameterBankZone;
+  bindEncorderAssignments(4, [
+    {
+      name: "Plugin",
+      assignments: [
+        ...createElements(16, () => {
+          const parameterValue = parameterBankZone.makeParameterValue();
+          return {
+            parameterName: ParameterName.Auto,
+            encoderValue: parameterValue,
+            displayMode: EncoderDisplayMode.SingleDot,
+          };
+        }),
+      ],
+    },
+  ]);
+
+  const mQuickControls = page.mHostAccess.mTrackSelection.mMixerChannel.mQuickControls;
+  bindEncorderAssignments(5, [
+    {
+      name: "Quick Controls",
+      assignments: [
+        ...createElements(16, (controlIndex) => {
+          return {
+            parameterName: ParameterName.Auto,
+            encoderValue: mQuickControls.getByIndex(controlIndex),
+            displayMode: EncoderDisplayMode.SingleDot,
+          };
+        }),
       ],
     },
   ]);
