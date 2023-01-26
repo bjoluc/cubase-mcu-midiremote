@@ -11,8 +11,10 @@ import { setupDeviceConnectionHandling } from "./midi/connection";
 import { createMidiManagers } from "./midi/managers";
 import { MidiPorts } from "./midi/MidiPorts";
 import { createSurfaceElements } from "./surface";
+import { makeActivationCallbackCollection } from "./util";
 
 const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "bjoluc.de");
+const activationCallbacks = makeActivationCallbackCollection(driver);
 
 const ports = new MidiPorts(driver, USE_EXTENDER, IS_EXTENDER_LEFT);
 
@@ -26,10 +28,10 @@ setupDeviceConnectionHandling(driver, ports, midiManagers);
 
 const elements = createSurfaceElements(driver.mSurface, ports.getChannelCount());
 
-bindSurfaceElementsToMidi(elements, ports, midiManagers);
+bindSurfaceElementsToMidi(elements, ports, midiManagers, activationCallbacks);
 
 //-----------------------------------------------------------------------------
 // 3. HOST MAPPING - create mapping pages and host bindings
 //-----------------------------------------------------------------------------
 
-createHostMapping(driver.mMapping, elements, midiremoteApi.mDefaults);
+createHostMapping(driver.mMapping, elements, midiremoteApi.mDefaults, activationCallbacks);

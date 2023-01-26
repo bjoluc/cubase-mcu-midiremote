@@ -10,7 +10,7 @@ export function createElements<E>(count: number, factoryFunction: (index: number
 /**
  * A collection of callbacks that can be used as a callback itself.
  */
-interface CallbackCollection<A extends any[]> {
+export interface CallbackCollection<A extends any[]> {
   (...args: A): void;
   addCallback(callback: (...args: A) => void): void;
 }
@@ -35,4 +35,10 @@ export function makeCallbackCollection<
   // @ts-expect-error
   object[callbackName] = callbackCollection;
   return callbackCollection;
+}
+
+export type ActivationCallbacks = ReturnType<typeof makeActivationCallbackCollection>;
+
+export function makeActivationCallbackCollection(driver: MR_DeviceDriver) {
+  return makeCallbackCollection(driver, "mOnActivate");
 }

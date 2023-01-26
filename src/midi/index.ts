@@ -1,5 +1,5 @@
-import { LedButton, SurfaceElements } from "src/surface";
-import { makeCallbackCollection } from "src/util";
+import { LedButton, SurfaceElements } from "../surface";
+import { ActivationCallbacks, makeCallbackCollection } from "../util";
 import { MidiManagers } from "./managers";
 import { LcdManager } from "./managers/LcdManager";
 import { MidiPorts, PortPair } from "./MidiPorts";
@@ -69,47 +69,70 @@ const parameterNameStrings: Record<number, string | undefined> = {
   [ParameterName.Pre]: "Pre",
 };
 
+function bindLedButton(ports: PortPair, button: LedButton, note: number) {
+  let currentSurfaceValue = 0;
+  button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
+
+  button.onSurfaceValueChange.addCallback((context, newValue) => {
+    currentSurfaceValue = newValue;
+    ports.output.sendNoteOn(context, note, newValue || currentLedValue);
+  });
+
+  let currentLedValue = 0;
+  button.mLedValue.mOnProcessValueChange = (context, newValue) => {
+    currentLedValue = newValue;
+    ports.output.sendNoteOn(context, note, newValue);
+  };
+
+  button.mProxyValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
+  button.mProxyValue.mOnProcessValueChange = (context, newValue) => {
+    ports.output.sendNoteOn(context, note, newValue || currentSurfaceValue || currentLedValue);
+  };
+}
+
+function bindLamp(ports: PortPair, lamp: MR_Lamp, note: number) {
+  lamp.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
+    ports.output.sendNoteOn(context, note, newValue);
+  };
+}
+
 export function bindSurfaceElementsToMidi(
   elements: SurfaceElements,
   ports: MidiPorts,
-  managers: MidiManagers
+  managers: MidiManagers,
+  activationCallbacks: ActivationCallbacks
 ) {
-  function bindLedButton(ports: PortPair, button: LedButton, note: number) {
-    let currentSurfaceValue = 0;
-    button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
-    button.mSurfaceValue.mOnProcessValueChange = (context, newValue) => {
-      currentSurfaceValue = newValue;
-      ports.output.sendNoteOn(context, note, newValue);
-    };
+  const buttons = elements.control.buttons;
 
-    let currentLedValue = 0;
-    button.mLedValue.mOnProcessValueChange = (context, newValue) => {
-      currentLedValue = newValue;
-      ports.output.sendNoteOn(context, note, newValue);
-    };
+  const motorButton = buttons.automation[5];
 
-    button.mProxyValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
-    button.mProxyValue.mOnProcessValueChange = (context, newValue) => {
-      ports.output.sendNoteOn(context, note, newValue || currentSurfaceValue || currentLedValue);
-    };
-  }
-
-  function bindLamp(ports: PortPair, lamp: MR_Lamp, note: number) {
-    lamp.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      ports.output.sendNoteOn(context, note, newValue);
-    };
-  }
+  let areMotorsActive = true;
+  motorButton.onSurfaceValueChange.addCallback((context, value) => {
+    if (value === 1) {
+      areMotorsActive = !areMotorsActive;
+      motorButton.mLedValue.setProcessValue(context, +areMotorsActive);
+    }
+  });
+  activationCallbacks.addCallback((context) => {
+    // TODO `mOnProcessValueChange` is not executed here – why?
+    motorButton.mLedValue.setProcessValue(context, 1);
+  });
 
   function bindFader(ports: PortPair, fader: MR_Fader, faderIndex: number) {
     fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
 
     const sendValue = (context: MR_ActiveDevice, value: number) => {
-      value *= 0x3fff;
-      ports.output.sendMidi(context, [0xe0 + faderIndex, value & 0x7f, value >> 7]);
+      if (areMotorsActive) {
+        value *= 0x3fff;
+        ports.output.sendMidi(context, [0xe0 + faderIndex, value & 0x7f, value >> 7]);
+      }
     };
 
     let forceUpdate = true;
+    let lastValue = 0;
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
+      lastValue = newValue;
+
       // Dedupe identical messages to reduce fader noise
       if (difference !== 0 || forceUpdate) {
         forceUpdate = false;
@@ -122,9 +145,18 @@ export function bindSurfaceElementsToMidi(
       if (unit === "") {
         forceUpdate = true;
         fader.mSurfaceValue.setProcessValue(context, 0);
-        sendValue(context, 0); // It somehow wouldn't happen otherwise
+        // `mOnProcessValueChange` somehow isn't run here on `setProcessValue()`, hence:
+        lastValue = 0;
+        sendValue(context, 0);
       }
     };
+
+    //
+    motorButton.onSurfaceValueChange.addCallback((context) => {
+      if (areMotorsActive) {
+        sendValue(context, lastValue);
+      }
+    });
   }
 
   const onNameValueDisplayModeChange = makeCallbackCollection(
@@ -224,8 +256,6 @@ export function bindSurfaceElementsToMidi(
   elements.control.mainFaderTouched.mMidiBinding
     .setInputPort(mainPorts.input)
     .bindToNote(0, 104 + 8);
-
-  const buttons = elements.control.buttons;
 
   [
     ...[0, 3, 1, 4, 2, 5].map((index) => buttons.encoderAssign[index]),

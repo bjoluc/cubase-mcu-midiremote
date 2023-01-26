@@ -1,17 +1,18 @@
+import { ActivationCallbacks } from "src/util";
 import { SurfaceElements } from "../surface";
 import {
   bindDirectionButtons,
   bindJogWheelSection,
-  bindNavigationButtons,
+  bindControlButtons,
   bindSegmentDisplaySection,
-  bindTransportButtons,
 } from "./control";
 import { bindEncoders } from "./encoders";
 
 export function createHostMapping(
   mapping: MR_FactoryMapping,
   elements: SurfaceElements,
-  hostDefaults: MR_HostDefaults
+  hostDefaults: MR_HostDefaults,
+  activationCallbacks: ActivationCallbacks
 ) {
   const page = mapping.makePage("Mixer");
 
@@ -21,7 +22,8 @@ export function createHostMapping(
   const mixerBankZone = page.mHostAccess.mMixConsole
     .makeMixerBankZone()
     .excludeInputChannels()
-    .excludeOutputChannels();
+    .excludeOutputChannels()
+    .setFollowVisibility(true); // TODO MixConsole Visibility Presets are not taken into account here
 
   const mixerBankChannels = elements.channels.map((channelElements) => {
     const channel = mixerBankZone.makeMixerBankChannel();
@@ -49,11 +51,10 @@ export function createHostMapping(
 
   bindEncoders(page, elements, mixerBankChannels, hostDefaults);
 
-  // Transport section
-  bindTransportButtons(page, elements);
+  // 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation
+  bindControlButtons(page, elements, mixerBankZone);
 
-  // Navigation section
-  bindNavigationButtons(page, elements, mixerBankZone);
+  // Directions
   bindDirectionButtons(page, elements);
 
   // Jog wheel

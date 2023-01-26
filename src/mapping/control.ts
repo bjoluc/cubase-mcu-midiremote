@@ -1,8 +1,140 @@
 import { SurfaceElements } from "src/surface";
 
-export function bindTransportButtons(page: MR_FactoryMappingPage, elements: SurfaceElements) {
-  const mTransport = page.mHostAccess.mTransport;
+function setShiftableButtonsLedValues(
+  elements: SurfaceElements,
+  context: MR_ActiveDevice,
+  value: number
+) {
   const buttons = elements.control.buttons;
+
+  for (const button of [buttons.edit, buttons.modify[0], buttons.modify[2], buttons.utility[2]]) {
+    button.mLedValue.setProcessValue(context, value);
+  }
+}
+
+export function bindControlButtons(
+  page: MR_FactoryMappingPage,
+  elements: SurfaceElements,
+  mixerBankZone: MR_MixerBankZone
+) {
+  const host = page.mHostAccess;
+  const buttons = elements.control.buttons;
+
+  const buttonsSubPageArea = page.makeSubPageArea("Control Buttons");
+  const regularSubPage = buttonsSubPageArea.makeSubPage("Regular");
+  const shiftSubPage = buttonsSubPageArea.makeSubPage("Shift");
+
+  // 1-8
+  buttons.number.forEach((button, buttonIndex) => {
+    page.makeCommandBinding(
+      button.mSurfaceValue,
+      "Channel & Track Visibility",
+      `Channel and Rack Configuration ${buttonIndex + 1}`
+    );
+  });
+
+  // Free buttons
+  for (const button of buttons.function) {
+    page.makeCommandBinding(
+      button.mSurfaceValue,
+      "MIDI Remote",
+      "Open MIDI Remote Mapping Assistant"
+    );
+  }
+
+  // Edit
+  page
+    .makeCommandBinding(buttons.edit.mSurfaceValue, "Edit", "Edit Channel Settings")
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.edit.mSurfaceValue, "Windows", "Close All Plug-in Windows")
+    .setSubPage(shiftSubPage);
+
+  // Undo
+  page
+    .makeCommandBinding(buttons.modify[0].mSurfaceValue, "Edit", "Undo")
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.modify[0].mSurfaceValue, "Edit", "History")
+    .setSubPage(shiftSubPage);
+
+  // Redo
+  page.makeCommandBinding(buttons.modify[1].mSurfaceValue, "Edit", "Redo");
+
+  // Save
+  page
+    .makeCommandBinding(buttons.modify[2].mSurfaceValue, "File", "Save")
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.modify[2].mSurfaceValue, "File", "Save New Version")
+    .setSubPage(shiftSubPage);
+
+  // Revert
+  page.makeCommandBinding(buttons.modify[3].mSurfaceValue, "File", "Revert");
+
+  // Read/Off
+  page
+    .makeValueBinding(
+      buttons.automation[0].mSurfaceValue,
+      host.mTrackSelection.mMixerChannel.mValue.mAutomationRead
+    )
+    .setTypeToggle();
+
+  // Write
+  page
+    .makeValueBinding(
+      buttons.automation[1].mSurfaceValue,
+      host.mTrackSelection.mMixerChannel.mValue.mAutomationWrite
+    )
+    .setTypeToggle();
+
+  // Sends
+  // page.makeCommandBinding(buttons.automation[2].mSurfaceValue, );
+
+  // Project
+  page.makeCommandBinding(buttons.automation[3].mSurfaceValue, "Project", "Bring To Front");
+
+  // Mixer
+  page.makeCommandBinding(buttons.automation[4].mSurfaceValue, "Devices", "Mixer");
+
+  // Instrument
+  page.makeCommandBinding(
+    buttons.utility[0].mSurfaceValue,
+    "MixConsole History",
+    "Undo MixConsole Step"
+  );
+
+  // Main
+  page.makeCommandBinding(
+    buttons.utility[1].mSurfaceValue,
+    "MixConsole History",
+    "Redo MixConsole Step"
+  );
+
+  // Solo Defeat
+  page
+    .makeCommandBinding(buttons.utility[2].mSurfaceValue, "Edit", "Solo Defeat")
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.utility[2].mSurfaceValue, "Edit", "Deactivate All Solo")
+    .setSubPage(shiftSubPage);
+
+  // Shift button
+  page.makeActionBinding(
+    buttons.utility[3].mSurfaceValue,
+    shiftSubPage.mAction.mActivate
+  ).mOnValueChange = (context, mapping, value) => {
+    if (value) {
+      shiftSubPage.mAction.mActivate.trigger(mapping);
+      setShiftableButtonsLedValues(elements, context, 1);
+    } else {
+      regularSubPage.mAction.mActivate.trigger(mapping);
+      setShiftableButtonsLedValues(elements, context, 0);
+    }
+  };
+
+  // Transport buttons
+  const mTransport = host.mTransport;
 
   page.makeCommandBinding(buttons.transport[0].mSurfaceValue, "Transport", "To Left Locator");
   page.makeCommandBinding(buttons.transport[1].mSurfaceValue, "Transport", "To Right Locator");
@@ -30,6 +162,13 @@ export function bindTransportButtons(page: MR_FactoryMappingPage, elements: Surf
   page
     .makeValueBinding(buttons.transport[11].mSurfaceValue, mTransport.mValue.mRecord)
     .setTypeToggle();
+
+  // Navigation Buttons
+  const { bank, channel } = elements.control.buttons.navigation;
+  page.makeActionBinding(bank.left.mSurfaceValue, mixerBankZone.mAction.mPrevBank);
+  page.makeActionBinding(bank.right.mSurfaceValue, mixerBankZone.mAction.mNextBank);
+  page.makeActionBinding(channel.left.mSurfaceValue, mixerBankZone.mAction.mShiftLeft);
+  page.makeActionBinding(channel.right.mSurfaceValue, mixerBankZone.mAction.mShiftRight);
 }
 
 export function bindJogWheelSection(page: MR_FactoryMappingPage, elements: SurfaceElements) {
@@ -71,29 +210,17 @@ export function bindSegmentDisplaySection(page: MR_FactoryMappingPage, elements:
     "Exchange Time Formats"
   );
 
-  elements.control.buttons.display.mSurfaceValue.mOnProcessValueChange = (context, value) => {
+  elements.control.buttons.display.onSurfaceValueChange.addCallback((context, value) => {
     if (value === 1) {
       elements.display.isValueModeActive.setProcessValue(
         context,
         +!elements.display.isValueModeActive.getProcessValue(context)
       );
     }
-  };
+  });
 
   // There's no "is solo mode active on any chanel" host value, is it?
   // page.makeValueBinding(elements.display.leds.solo, ? )
-}
-
-export function bindNavigationButtons(
-  page: MR_FactoryMappingPage,
-  elements: SurfaceElements,
-  mixerBankZone: MR_MixerBankZone
-) {
-  const { bank, channel } = elements.control.buttons.navigation;
-  page.makeActionBinding(bank.left.mSurfaceValue, mixerBankZone.mAction.mPrevBank);
-  page.makeActionBinding(bank.right.mSurfaceValue, mixerBankZone.mAction.mNextBank);
-  page.makeActionBinding(channel.left.mSurfaceValue, mixerBankZone.mAction.mShiftLeft);
-  page.makeActionBinding(channel.right.mSurfaceValue, mixerBankZone.mAction.mShiftRight);
 }
 
 export function bindDirectionButtons(page: MR_FactoryMappingPage, elements: SurfaceElements) {

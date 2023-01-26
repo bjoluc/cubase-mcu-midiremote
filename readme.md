@@ -19,12 +19,19 @@ However, the X-Touch has some unique features which set it apart from other MCU-
 The MIDI Remote Script developed in this repository serves as a full-featured replacement for the default Mackie Control setup.
 Its mapping is widely similar to [Cubase's default Mackie MCU Pro mapping](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf), with a few exceptions that are listed below:
 
-- The 8 channel type buttons do not apply channel visibility presets and channel types, but are freely assignable in the MIDI Remote Mapping Assistant. I believe average users will not need 8 buttons for loading visibility presets. If they do need some, they can assign the buttons accordingly.
-- The Channel Left/Right buttons below the Fader Bank buttons do not navigate between encoder parameter pages, but move the fader bank left/right by one channel – a feature I have often wished for in the default MCU mapping. Navigating parameter banks can be achieved by pressing the respective Encoder Assign button multiple times to cycle through the available parameter pages in a round-robin fashion.
+**Encoder Assignments**
+
 - Parameter page numbers are not shown on the lower row of the scribble strip displays, but on the otherwise unused two-digit Assignment display below the Encoder Assign buttons. Only the number of the currently active page is displayed. Given the small number of parameter pages for most encoder assignments, I believe users will quickly get used to the missing parameter page count and appreciate that the lower scribble strip row keeps showing track names.
 - Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages now. The "Level" and "On" pages are combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses.
 - The "Plug-In" encoder assignment always follows the currently focused plugin window to avoid tedious plugin selection via push encoders.
 - The "Inst" encoder assignment maps to the VST Quick Controls of the currently selected instrument track instead of channel strip parameters.
+
+**Buttons**
+
+- Like in the MCU default mapping, the 8 channel type buttons apply MixConsole channel visibility presets 1-8. In the likely case that you you don't want to waste 8 prominent buttons for loading visibility presets, feel free to re-assign some buttons in the MIDI Remote Mapping Assistant.
+- The Channel Left/Right buttons below the Fader Bank buttons do not navigate between encoder parameter pages, but move the fader bank left/right by one channel. Navigating parameter banks can be achieved by pressing the respective Encoder Assign button multiple times to cycle through the available parameter pages in a round-robin fashion.
+- Pressing "Shift + Edit" closes all plugin windows instead of only the currently active window (I couldn't find a command to "close the currently active window").
+- The "Instrument" and "Master" buttons are assigned to the handy MixConsole History Undo and Redo commands, respectively. In the default MCU mapping, they would activate instrument and main effects encoder assignments. I never really found a use case for these encoder assignments and I think they are more complicated than using the mouse for the same tasks.
 
 ## Setup
 
@@ -35,3 +42,8 @@ Its mapping is widely similar to [Cubase's default Mackie MCU Pro mapping](https
 - The "Track" encoder assignment is missing the "Input Bus" and "Output Bus" pages which are not exposed by the MIDI Remote API. I prefer to use the mouse for routing anyway, as apposed to a push encoder and a tiny single-row string on a scribble strip display.
 - The "Pan/Surround" encoder assignment is missing a second page for vertical panning which is not exposed by the MIDI Remote API.
 - The "Send" encoder assignment doesn't include a "Bus" page because send busses are not exposed by the MIDI Remote API.
+
+- The punch button doesn't light up when "Auto Punch In" is activated – no host value available
+- The global "Solo" LED doesn't light up when a channel is in solo mode – no host value available
+- The "Motor" button LED doesn't light up initially although the motors are activated
+- Channel visibility presets do not affect channel assignments since the `MixerBankZone` of the MIDI Remote API doesn't respect channel visibility presets.

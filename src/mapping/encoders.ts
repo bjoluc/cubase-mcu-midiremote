@@ -183,6 +183,7 @@ export function bindEncoders(
         displayMode: EncoderDisplayMode.BoostOrCut,
         encoderValue: mixerBankChannel.mValue.mPan,
         parameterName: ParameterName.Pan,
+        pushToggleValue: mixerBankChannel.mValue.mMonitorEnable,
       }),
     },
   ]);
