@@ -75,12 +75,22 @@ export function bindSurfaceElementsToMidi(
   managers: MidiManagers
 ) {
   function bindLedButton(ports: PortPair, button: LedButton, note: number) {
+    let currentSurfaceValue = 0;
     button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
     button.mSurfaceValue.mOnProcessValueChange = (context, newValue) => {
+      currentSurfaceValue = newValue;
       ports.output.sendNoteOn(context, note, newValue);
     };
+
+    let currentLedValue = 0;
     button.mLedValue.mOnProcessValueChange = (context, newValue) => {
+      currentLedValue = newValue;
       ports.output.sendNoteOn(context, note, newValue);
+    };
+
+    button.mProxyValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
+    button.mProxyValue.mOnProcessValueChange = (context, newValue) => {
+      ports.output.sendNoteOn(context, note, newValue || currentSurfaceValue || currentLedValue);
     };
   }
 

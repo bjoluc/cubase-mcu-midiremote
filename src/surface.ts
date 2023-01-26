@@ -4,6 +4,7 @@ const channelWidth = 5;
 
 export interface LedButton extends MR_Button {
   mLedValue: MR_SurfaceCustomValueVariable;
+  mProxyValue: MR_SurfaceCustomValueVariable;
 }
 
 export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: number) {
@@ -16,7 +17,8 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
   let ledButtonCounter = 0;
   const makeLedButton = (x: number, y: number, w: number, h: number) => {
     const button = surface.makeButton(x, y, w, h) as LedButton;
-    button.mLedValue = surface.makeCustomValueVariable(`LedButton${++ledButtonCounter}`);
+    button.mLedValue = surface.makeCustomValueVariable(`LedButton${++ledButtonCounter}Led`);
+    button.mProxyValue = surface.makeCustomValueVariable(`LedButton${ledButtonCounter}Proxy`);
     return button;
   };
 
