@@ -39,7 +39,7 @@ export enum ParameterName {
   Eq4Q,
   Eq4Type,
   SendLevel,
-  PrePost,
+  Pre,
 }
 
 const parameterNameStrings: Record<number, string | undefined> = {
@@ -66,7 +66,7 @@ const parameterNameStrings: Record<number, string | undefined> = {
   [ParameterName.Eq4Q]: "EQ4 Q",
   [ParameterName.Eq4Type]: "EQ4Type",
   [ParameterName.SendLevel]: "SendLvl",
-  [ParameterName.PrePost]: "PrePost",
+  [ParameterName.Pre]: "Pre",
 };
 
 export function bindSurfaceElementsToMidi(

@@ -9,13 +9,13 @@ export interface EncoderAssignment {
   pushToggleValue?: MR_HostValue;
 }
 
-export type EncoderAssignments = Array<
-  EncoderAssignment | ((channel: MR_MixerBankChannel) => EncoderAssignment)
->;
+export type EncoderAssignments =
+  | EncoderAssignment[]
+  | ((channel: MR_MixerBankChannel, channelIndex: number) => EncoderAssignment);
 
 export interface EncoderPage {
   name?: string;
-  assignments: EncoderAssignment[] | ((channel: MR_MixerBankChannel) => EncoderAssignment);
+  assignments: EncoderAssignments;
 }
 
 export function bindEncoders(
@@ -79,7 +79,9 @@ export function bindEncoders(
 
         const isPerChannelAssignment = typeof assignmentsConfig === "function";
         let assignments = isPerChannelAssignment
-          ? mixerBankChannels.map((channel) => assignmentsConfig(channel))
+          ? mixerBankChannels.map((channel, channelIndex) =>
+              assignmentsConfig(channel, channelIndex)
+            )
           : assignmentsConfig;
 
         assignments.forEach((assignment, channelIndex) => {
@@ -293,7 +295,7 @@ export function bindEncoders(
         ...createElements(sendSlotsCount, (slotIndex) => {
           const sendSlot = mSends.getByIndex(slotIndex);
           return {
-            parameterName: ParameterName.PrePost,
+            parameterName: ParameterName.Pre,
             encoderValue: sendSlot.mPrePost,
             displayMode: EncoderDisplayMode.Wrap,
             pushToggleValue: sendSlot.mPrePost,
@@ -310,16 +312,14 @@ export function bindEncoders(
   bindEncorderAssignments(4, [
     {
       name: "Plugin",
-      assignments: [
-        ...createElements(16, () => {
-          const parameterValue = parameterBankZone.makeParameterValue();
-          return {
-            parameterName: ParameterName.Auto,
-            encoderValue: parameterValue,
-            displayMode: EncoderDisplayMode.SingleDot,
-          };
-        }),
-      ],
+      assignments: () => {
+        const parameterValue = parameterBankZone.makeParameterValue();
+        return {
+          parameterName: ParameterName.Auto,
+          encoderValue: parameterValue,
+          displayMode: EncoderDisplayMode.SingleDot,
+        };
+      },
     },
   ]);
 
@@ -327,15 +327,13 @@ export function bindEncoders(
   bindEncorderAssignments(5, [
     {
       name: "Quick Controls",
-      assignments: [
-        ...createElements(16, (controlIndex) => {
-          return {
-            parameterName: ParameterName.Auto,
-            encoderValue: mQuickControls.getByIndex(controlIndex),
-            displayMode: EncoderDisplayMode.SingleDot,
-          };
-        }),
-      ],
+      assignments: (mixerBankChannel, channelIndex) => {
+        return {
+          parameterName: ParameterName.Auto,
+          encoderValue: mQuickControls.getByIndex(channelIndex),
+          displayMode: EncoderDisplayMode.SingleDot,
+        };
+      },
     },
   ]);
 }
