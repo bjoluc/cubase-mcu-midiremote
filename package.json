@@ -5,14 +5,15 @@
     "start": "tsup --watch",
     "transpile": "babel dist/behringer/xtouch/behringer_xtouch.js --out-file dist/behringer/xtouch/behringer_xtouch.js",
     "copy": "sshpass -p User scp -P 2222 -r ./dist/behringer User@localhost:'\"Documents\\Steinberg\\Cubase\\MIDI Remote\\Driver Scripts\\Local\"'",
-    "clear": "echo '' > ./dist/behringer/xtouch/behringer_xtouch.js && npm run copy"
+    "tsc": "tsc"
   },
   "author": "bjoluc",
   "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.20.7",
     "@babel/preset-env": "^7.20.2",
-    "tsup": "^6.5.0"
+    "tsup": "^6.5.0",
+    "typescript": "^4.9.4"
   },
   "tsup": {
     "entry": {

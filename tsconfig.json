@@ -10,6 +10,9 @@
     "target": "es5",
     "checkJs": true,
     "lib": ["ES2021"],
-    "strict": true
-  }
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "exclude": ["dist/"]
 }
