@@ -1,4 +1,4 @@
-import { LedButton, SurfaceElements } from "../surface";
+import { LedButton, SurfaceElements, TouchSensitiveFader } from "../surface";
 import { makeCallbackCollection } from "../util";
 import { ActivationCallbacks } from "./connection";
 import { MidiManagers } from "./managers";
@@ -119,14 +119,12 @@ export function bindSurfaceElementsToMidi(
     motorButton.mLedValue.setProcessValue(context, 1);
   });
 
-  function bindFader(
-    ports: PortPair,
-    fader: MR_Fader,
-    faderTouched: MR_SurfaceCustomValueVariable,
-    faderIndex: number
-  ) {
+  function bindFader(ports: PortPair, fader: TouchSensitiveFader, faderIndex: number) {
     fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
-    faderTouched.mMidiBinding.setInputPort(ports.input).bindToNote(0, 104 + faderIndex);
+    fader.mTouchedValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 104 + faderIndex);
+    fader.mTouchedValueInternal.mMidiBinding
+      .setInputPort(ports.input)
+      .bindToNote(0, 104 + faderIndex);
 
     const sendValue = (context: MR_ActiveDevice, value: number) => {
       value *= 0x3fff;
@@ -134,7 +132,7 @@ export function bindSurfaceElementsToMidi(
     };
 
     let isFaderTouched = false;
-    faderTouched.mOnProcessValueChange = (context, value) => {
+    fader.mTouchedValueInternal.mOnProcessValueChange = (context, value) => {
       isFaderTouched = Boolean(value);
       if (!isFaderTouched) {
         sendValue(context, lastFaderValue);
@@ -265,12 +263,12 @@ export function bindSurfaceElementsToMidi(
     });
 
     // Fader
-    bindFader(channelPorts, channel.fader, channel.faderTouchedInternal, index % 8);
+    bindFader(channelPorts, channel.fader, index % 8);
   });
 
   const mainPorts = ports.getMainPorts();
 
-  bindFader(mainPorts, elements.control.mainFader, elements.control.mainFaderTouchedInternal, 8);
+  bindFader(mainPorts, elements.control.mainFader, 8);
 
   [
     ...[0, 3, 1, 4, 2, 5].map((index) => buttons.encoderAssign[index]),

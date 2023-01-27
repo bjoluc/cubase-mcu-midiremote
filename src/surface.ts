@@ -10,6 +10,11 @@ export interface LedButton extends MR_Button {
   >;
 }
 
+export interface TouchSensitiveFader extends MR_Fader {
+  mTouchedValue: MR_SurfaceCustomValueVariable;
+  mTouchedValueInternal: MR_SurfaceCustomValueVariable;
+}
+
 export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: number) {
   const channelsWidth = channelCount * channelWidth;
   const getChannelXPosition = (channelIndex: number) => channelIndex * channelWidth;
@@ -32,6 +37,17 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
   };
 
   const makeSquareButton = (x: number, y: number) => makeLedButton(x + 0.25, y, 1.5, 1.5);
+
+  const makeTouchSensitiveFader = (x: number) => {
+    const fader = surface.makeFader(x, 20, 2, 16) as TouchSensitiveFader;
+
+    fader.mTouchedValue = surface.makeCustomValueVariable("faderTouched");
+    // Workaround because `filterByValue` in the encoder bindings hides zero values from
+    // `mOnProcessValueChange`
+    fader.mTouchedValueInternal = surface.makeCustomValueVariable("faderTouchedInternal");
+
+    return fader;
+  };
 
   const miscControlButtons = createElements(21, (index) =>
     makeSquareButton(
@@ -65,18 +81,12 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
           select: makeLedButton(2 + getChannelXPosition(index), 16, 2, 1.5),
         },
 
-        fader: surface.makeFader(2 + getChannelXPosition(index), 20, 2, 16),
-        faderTouched: surface.makeCustomValueVariable("faderTouched"),
-        // Workaround because `filterByValue` in the encoder bindings hides zero values from
-        // `mOnProcessValueChange`
-        faderTouchedInternal: surface.makeCustomValueVariable("faderTouchedInternal"),
+        fader: makeTouchSensitiveFader(2 + getChannelXPosition(index)),
       };
     }),
 
     control: {
-      mainFader: surface.makeFader(channelsWidth + 2, 20, 2, 16),
-      mainFaderTouched: surface.makeCustomValueVariable("mainFaderTouched"),
-      mainFaderTouchedInternal: surface.makeCustomValueVariable("mainFaderTouchedInternal"),
+      mainFader: makeTouchSensitiveFader(channelsWidth + 2),
 
       jogWheel: surface.makeKnob(channelsWidth + 13, 29.25, 8.5, 8.5),
       jogRight: surface.makeCustomValueVariable("jogRight"),

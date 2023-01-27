@@ -93,7 +93,7 @@ export function bindEncoders(
             .setSubPage(subPage);
           page
             .makeValueBinding(
-              channelElements.faderTouched,
+              channelElements.fader.mTouchedValue,
               mixerBankChannels[channelIndex].mValue.mSelected
             )
             .filterByValue(1)
@@ -112,7 +112,7 @@ export function bindEncoders(
             .setSubPage(flipSubPage);
           page
             .makeValueBinding(
-              channelElements.faderTouched,
+              channelElements.fader.mTouchedValue,
               mixerBankChannels[channelIndex].mValue.mSelected
             )
             // Don't select mixer channels on touch when a fader's value does not belong to its
