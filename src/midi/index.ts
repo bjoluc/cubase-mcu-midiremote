@@ -118,23 +118,35 @@ export function bindSurfaceElementsToMidi(
     motorButton.mLedValue.setProcessValue(context, 1);
   });
 
-  function bindFader(ports: PortPair, fader: MR_Fader, faderIndex: number) {
+  function bindFader(
+    ports: PortPair,
+    fader: MR_Fader,
+    faderTouched: MR_SurfaceCustomValueVariable,
+    faderIndex: number
+  ) {
     fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
+    faderTouched.mMidiBinding.setInputPort(ports.input).bindToNote(0, 104 + faderIndex);
 
     const sendValue = (context: MR_ActiveDevice, value: number) => {
-      if (areMotorsActive) {
-        value *= 0x3fff;
-        ports.output.sendMidi(context, [0xe0 + faderIndex, value & 0x7f, value >> 7]);
+      value *= 0x3fff;
+      ports.output.sendMidi(context, [0xe0 + faderIndex, value & 0x7f, value >> 7]);
+    };
+
+    let isFaderTouched = false;
+    faderTouched.mOnProcessValueChange = (context, value) => {
+      isFaderTouched = Boolean(value);
+      if (!isFaderTouched) {
+        sendValue(context, lastFaderValue);
       }
     };
 
     let forceUpdate = true;
-    let lastValue = 0;
+    let lastFaderValue = 0;
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      lastValue = newValue;
+      lastFaderValue = newValue;
 
-      // Dedupe identical messages to reduce fader noise
-      if (difference !== 0 || forceUpdate) {
+      // Prevent identical messages to reduce fader noise
+      if (areMotorsActive && !isFaderTouched && (difference !== 0 || forceUpdate)) {
         forceUpdate = false;
         sendValue(context, newValue);
       }
@@ -146,15 +158,17 @@ export function bindSurfaceElementsToMidi(
         forceUpdate = true;
         fader.mSurfaceValue.setProcessValue(context, 0);
         // `mOnProcessValueChange` somehow isn't run here on `setProcessValue()`, hence:
-        lastValue = 0;
-        sendValue(context, 0);
+        if (areMotorsActive) {
+          lastFaderValue = 0;
+          forceUpdate = false;
+          sendValue(context, 0);
+        }
       }
     };
 
-    //
     motorButton.onSurfaceValueChange.addCallback((context) => {
       if (areMotorsActive) {
-        sendValue(context, lastValue);
+        sendValue(context, lastFaderValue);
       }
     });
   }
@@ -250,18 +264,12 @@ export function bindSurfaceElementsToMidi(
     });
 
     // Fader
-    bindFader(channelPorts, channel.fader, index % 8);
-    channel.faderTouched.mMidiBinding
-      .setInputPort(channelPorts.input)
-      .bindToNote(0, 104 + (index % 8));
+    bindFader(channelPorts, channel.fader, channel.faderTouchedInternal, index % 8);
   });
 
   const mainPorts = ports.getMainPorts();
 
-  bindFader(mainPorts, elements.control.mainFader, 8);
-  elements.control.mainFaderTouched.mMidiBinding
-    .setInputPort(mainPorts.input)
-    .bindToNote(0, 104 + 8);
+  bindFader(mainPorts, elements.control.mainFader, elements.control.mainFaderTouchedInternal, 8);
 
   [
     ...[0, 3, 1, 4, 2, 5].map((index) => buttons.encoderAssign[index]),

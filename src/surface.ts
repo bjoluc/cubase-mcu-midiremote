@@ -67,12 +67,16 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
 
         fader: surface.makeFader(2 + getChannelXPosition(index), 20, 2, 16),
         faderTouched: surface.makeCustomValueVariable("faderTouched"),
+        // Workaround because `filterByValue` in the encoder bindings hides zero values from
+        // `mOnProcessValueChange`
+        faderTouchedInternal: surface.makeCustomValueVariable("faderTouchedInternal"),
       };
     }),
 
     control: {
       mainFader: surface.makeFader(channelsWidth + 2, 20, 2, 16),
       mainFaderTouched: surface.makeCustomValueVariable("mainFaderTouched"),
+      mainFaderTouchedInternal: surface.makeCustomValueVariable("mainFaderTouchedInternal"),
 
       jogWheel: surface.makeKnob(channelsWidth + 13, 29.25, 8.5, 8.5),
       jogRight: surface.makeCustomValueVariable("jogRight"),
