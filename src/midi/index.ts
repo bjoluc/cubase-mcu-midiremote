@@ -232,8 +232,14 @@ export function bindSurfaceElementsToMidi(
       const now: number = performance.now(); // ms
 
       if (now - lastMeterUpdateTime > 125) {
+        // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
+        newValue = 1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)));
+
         lastMeterUpdateTime = now;
-        channelPorts.output.sendMidi(context, [0xd0, (index % 8 << 4) + Math.round(newValue * 14)]);
+        channelPorts.output.sendMidi(context, [
+          0xd0,
+          (index % 8 << 4) + Math.ceil(newValue * 14 - 0.25),
+        ]);
       }
     };
 
