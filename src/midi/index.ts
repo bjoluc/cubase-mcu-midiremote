@@ -1,5 +1,6 @@
 import { LedButton, SurfaceElements } from "../surface";
-import { ActivationCallbacks, makeCallbackCollection } from "../util";
+import { makeCallbackCollection } from "../util";
+import { ActivationCallbacks } from "./connection";
 import { MidiManagers } from "./managers";
 import { LcdManager } from "./managers/LcdManager";
 import { MidiPorts, PortPair } from "./MidiPorts";
@@ -152,7 +153,7 @@ export function bindSurfaceElementsToMidi(
       }
     };
 
-    // Set fader to `0` when unused
+    // Set fader to `0` when unassigned
     fader.mSurfaceValue.mOnTitleChange = (context, title, unit) => {
       if (unit === "") {
         forceUpdate = true;

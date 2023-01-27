@@ -65,4 +65,11 @@ export class MidiPorts {
     }
     return this.extenderPorts!;
   }
+
+  forEachPortPair(callback: (portPair: PortPair, firstChannelIndex: number) => void) {
+    for (let i = 0; i < this.getChannelCount() / 8; i++) {
+      const firstChannelIndex = i * 8;
+      callback(this.getPortsByChannelIndex(firstChannelIndex), firstChannelIndex);
+    }
+  }
 }

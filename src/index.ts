@@ -8,20 +8,15 @@ import "core-js/es/string/replace-all";
 import midiremoteApi from "midiremote_api_v1";
 import { createHostMapping } from "./mapping";
 import { bindSurfaceElementsToMidi } from "./midi";
-import { setupDeviceConnectionHandling } from "./midi/connection";
-import { createMidiManagers } from "./midi/managers";
+import { setupDeviceConnection } from "./midi/connection";
 import { MidiPorts } from "./midi/MidiPorts";
 import { createSurfaceElements } from "./surface";
-import { makeActivationCallbackCollection } from "./util";
 
 const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "bjoluc.de");
-const activationCallbacks = makeActivationCallbackCollection(driver);
 
 const ports = new MidiPorts(driver, USE_EXTENDER, IS_EXTENDER_LEFT);
 
-const midiManagers = createMidiManagers(ports);
-
-setupDeviceConnectionHandling(driver, ports, midiManagers);
+const { activationCallbacks, midiManagers } = setupDeviceConnection(driver, ports);
 
 //-----------------------------------------------------------------------------
 // 2. SURFACE LAYOUT - create control elements and midi bindings

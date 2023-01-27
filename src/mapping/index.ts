@@ -1,9 +1,9 @@
-import { ActivationCallbacks } from "src/util";
+import { ActivationCallbacks } from "../midi/connection";
 import { SurfaceElements } from "../surface";
 import {
+  bindControlButtons,
   bindDirectionButtons,
   bindJogWheelSection,
-  bindControlButtons,
   bindSegmentDisplaySection,
 } from "./control";
 import { bindEncoders } from "./encoders";

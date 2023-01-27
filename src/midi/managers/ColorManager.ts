@@ -65,10 +65,12 @@ export class ColorManager {
   }
 
   private sendColors(context: MR_ActiveDevice) {
-    for (let i = 0; i < this.colors.length / 8; i++) {
-      this.ports
-        .getPortsByChannelIndex(i * 8)
-        .output.sendSysex(context, [0x72, ...this.colors.slice(i * 8, (i + 1) * 8), 0xf7]);
-    }
+    this.ports.forEachPortPair(({ output }, firstChannelIndex) => {
+      output.sendSysex(context, [
+        0x72,
+        ...this.colors.slice(firstChannelIndex, firstChannelIndex + 8),
+        0xf7,
+      ]);
+    });
   }
 }

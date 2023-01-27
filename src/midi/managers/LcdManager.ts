@@ -63,13 +63,8 @@ export class LcdManager {
   }
 
   clearDisplays(context: MR_ActiveDevice) {
-    for (let i = 0; i < this.ports.getChannelCount() / 8; i++) {
-      this.sendText(
-        this.ports.getPortsByChannelIndex(i * 8).output,
-        context,
-        0,
-        LcdManager.makeSpaces(112)
-      );
-    }
+    this.ports.forEachPortPair(({ output }) => {
+      this.sendText(output, context, 0, LcdManager.makeSpaces(112));
+    });
   }
 }

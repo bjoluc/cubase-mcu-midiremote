@@ -36,9 +36,3 @@ export function makeCallbackCollection<
   object[callbackName] = callbackCollection;
   return callbackCollection;
 }
-
-export type ActivationCallbacks = ReturnType<typeof makeActivationCallbackCollection>;
-
-export function makeActivationCallbackCollection(driver: MR_DeviceDriver) {
-  return makeCallbackCollection(driver, "mOnActivate");
-}
