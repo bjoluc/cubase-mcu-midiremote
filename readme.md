@@ -10,7 +10,7 @@ However, the X-Touch has some unique features which set it apart from other MCU-
 
 - The scribble strips are layed out as individual displays with a generous padding between them. MCU protocol implementations are designed to work with one continuous display and hence use empty characters for padding. Wouldn't it be nice to use all of the display space available, and at the same time avoid breaking words over channel boundaries?
 
-- The scribble strip displays of the X-Touch have an RGB LED backlight, supporting 8 distinct colors plus black. When configured as a Mackie Control device in Cubase, all LCD displays are permanently lit in a bluish white, making users miss out on one of the X-Touch's nicest features. How cool would it be to have channel strips mirror track colors?
+- The scribble strip displays of the X-Touch have an RGB LED backlight, supporting 8 distinct colors plus black. When configured as a Mackie Control device in Cubase, all LCD displays are permanently lit in a bluish white, making users miss out on one of the X-Touch's nicest features. How cool would it be to have scribble strips mirror track colors?
 
 - All buttons (except of two) on the X-Touch have integrated LEDs (instead of separate LEDs above some buttons only). Given the shiny product images, shouldn't there be some more light, at least while pressing buttons?
 
