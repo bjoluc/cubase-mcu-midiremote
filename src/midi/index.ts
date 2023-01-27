@@ -311,35 +311,26 @@ export function bindSurfaceElementsToMidi(
       lastTimeFormat = timeFormat;
     }
 
-    const isTimeFormatSupported =
-      timeFormat === "Bars+Beats" ||
-      timeFormat === "Timecode" ||
-      timeFormat === "60 fps (User)" ||
-      timeFormat === "Seconds";
+    time = time.replaceAll(" ", "");
+    const isTimeFormatSupported = /^(?:[\d]+[\.\:]){3}[\d]+$/.test(time);
 
     if (isTimeFormatSupported) {
       managers.segmentDisplay.setTimeString(context, time);
     }
 
-    if (hasTimeFormatChanged)
+    if (hasTimeFormatChanged) {
       if (!isTimeFormatSupported) {
         managers.segmentDisplay.clearAllSegments(context);
       }
-
-    // Adapt time mode LEDs to time format
-    if (!isInitialized) {
-      // Using `setProcessValue` on initialization somehow crashes the host, so we don't do it on
-      // initialization.
-      isInitialized = true;
-    } else {
-      elements.display.leds.smpte.mSurfaceValue.setProcessValue(
-        context,
-        +(timeFormat === "Timecode" || timeFormat === "60 fps (User)")
-      );
-      elements.display.leds.beats.mSurfaceValue.setProcessValue(
-        context,
-        +(timeFormat === "Bars+Beats")
-      );
+      // Adapt time mode LEDs to time format
+      if (!isInitialized) {
+        // Using `setProcessValue` on initialization somehow crashes the host, so we don't do it on
+        // initialization.
+        isInitialized = true;
+      } else {
+        elements.display.leds.smpte.mSurfaceValue.setProcessValue(context, +time.includes(":"));
+        elements.display.leds.beats.mSurfaceValue.setProcessValue(context, +time.includes("."));
+      }
     }
   };
 

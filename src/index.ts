@@ -3,6 +3,7 @@ const IS_EXTENDER_LEFT = true;
 
 // Polyfills
 import "core-js/es/array/flat-map";
+import "core-js/es/string/replace-all";
 
 import midiremoteApi from "midiremote_api_v1";
 import { createHostMapping } from "./mapping";
