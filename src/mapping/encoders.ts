@@ -43,7 +43,7 @@ export function bindEncoders(
           for (let i = 0; i < assignments.length / encoderPageSize; i++) {
             chunks.push(assignments.slice(i * encoderPageSize, (i + 1) * encoderPageSize));
           }
-          return chunks.map((chunk) => ({ ...page, assignments: chunk }));
+          return chunks.map((chunk) => ({ name: page.name, assignments: chunk }));
         }
 
         return page;
@@ -282,7 +282,7 @@ export function bindEncoders(
   const sendSlotsCount = hostDefaults.getNumberOfSendSlots();
   bindEncorderAssignments(3, [
     {
-      name: "Sends Level/On",
+      name: "Sends",
       assignments: [
         ...createElements(sendSlotsCount, (slotIndex) => {
           const sendSlot = mSends.getByIndex(slotIndex);
