@@ -9,5 +9,7 @@ export function setupDeviceConnectionHandling(
   driver.mOnDeactivate = (context) => {
     managers.color.resetColors(context);
     managers.lcd.clearDisplays(context);
+    managers.segmentDisplay.clearAssignment(context);
+    managers.segmentDisplay.clearTime(context);
   };
 }

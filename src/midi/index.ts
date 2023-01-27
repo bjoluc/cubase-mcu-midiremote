@@ -158,8 +158,8 @@ export function bindSurfaceElementsToMidi(
         forceUpdate = true;
         fader.mSurfaceValue.setProcessValue(context, 0);
         // `mOnProcessValueChange` somehow isn't run here on `setProcessValue()`, hence:
+        lastFaderValue = 0;
         if (areMotorsActive) {
-          lastFaderValue = 0;
           forceUpdate = false;
           sendValue(context, 0);
         }
@@ -320,7 +320,7 @@ export function bindSurfaceElementsToMidi(
 
     if (hasTimeFormatChanged) {
       if (!isTimeFormatSupported) {
-        managers.segmentDisplay.clearAllSegments(context);
+        managers.segmentDisplay.clearTime(context);
       }
       // Adapt time mode LEDs to time format
       if (!isInitialized) {
