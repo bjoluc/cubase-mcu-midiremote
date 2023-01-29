@@ -2,6 +2,10 @@
 
 Cubase 12 MIDI Remote Script for the Behringer X-Touch / X-Touch Extender
 
+<div align="center">
+  <img alt="Surface Screenshot" width="800" src="./surface.png">
+</div>
+
 ## Motivation
 
 Since version 12, Cubase supports the customized integration of MIDI controllers via a new MIDI Remote JavaScript API.
@@ -18,7 +22,7 @@ In addition to the points above, there are a couple of things that always bother
 
 - The meters do not match the scale of the MixConsole meters and require rather high levels to show up.
 - Although there are exactly 8 push encoders, there is no encoder assignment for VST Quick controls.
-- Bringing up the parameters of the currently focused plugin requires navigating through the list of insert slots with a push encoder
+- Bringing up the parameters of the currently focused plugin requires navigating through the list of insert slots with a push encoder.
 - There is no single knob that can control any parameter under the mouse cursor, like in some of Steinberg's own controllers.
 
 ## About this Script
@@ -35,7 +39,7 @@ Its mapping is widely similar to [Cubase's default Mackie MCU Pro mapping](https
 
 **Buttons**
 
-- Like in the MCU default mapping, the 8 channel type buttons apply MixConsole channel visibility presets 1-8. In the likely case that you you don't want to waste 8 prominent buttons for loading visibility presets, feel free to re-assign some buttons in the MIDI Remote Mapping Assistant.
+- Like in the MCU default mapping, the 8 channel type buttons apply MixConsole channel visibility presets 1-8. In the likely case that you don't want to waste 8 prominent buttons for loading visibility presets, feel free to re-assign some buttons in the MIDI Remote Mapping Assistant.
 - The Channel Left/Right buttons below the Fader Bank buttons do not navigate between encoder parameter pages, but move the fader bank left/right by one channel. Navigating parameter banks can be achieved by pressing the respective Encoder Assign button multiple times to cycle through the available parameter pages in a round-robin fashion.
 - Pressing "Shift + Edit" closes all plugin windows instead of only the currently active window (I couldn't find a command to "close the currently active window").
 - The "Instrument" and "Master" buttons are assigned to the handy MixConsole History Undo and Redo commands, respectively. In the default MCU mapping, they would activate instrument and main effects encoder assignments. I find using these on the X-Touch more complicated than using the mouse for the same tasks and hence didn't implement them.
