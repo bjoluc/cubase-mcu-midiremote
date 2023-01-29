@@ -49,6 +49,12 @@ export function createHostMapping(
     return channel;
   });
 
+  // Main fader
+  page.makeValueBinding(
+    elements.control.mainFader.mSurfaceValue,
+    page.mHostAccess.mControlRoom.mMainChannel.mLevelValue
+  );
+
   bindEncoders(page, elements, mixerBankChannels, hostDefaults);
 
   // 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation
