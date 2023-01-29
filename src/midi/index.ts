@@ -327,8 +327,14 @@ export function bindSurfaceElementsToMidi(
         // initialization.
         isInitialized = true;
       } else {
-        elements.display.leds.smpte.mSurfaceValue.setProcessValue(context, +time.includes(":"));
-        elements.display.leds.beats.mSurfaceValue.setProcessValue(context, +time.includes("."));
+        elements.display.leds.smpte.mSurfaceValue.setProcessValue(
+          context,
+          +/^(?:[\d]+[\:]){3}[\d]+$/.test(time)
+        );
+        elements.display.leds.beats.mSurfaceValue.setProcessValue(
+          context,
+          +/^(?:[\d]+[\.]){3}[\d]+$/.test(time)
+        );
       }
     }
   };
