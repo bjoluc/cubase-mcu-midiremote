@@ -1,3 +1,6 @@
+import { DecoratedFactoryMappingPage } from "../decorators/page";
+import { LedButton, LedPushEncoder } from "../decorators/surface";
+import { EncoderDisplayMode } from "src/midi";
 import { SurfaceElements } from "src/surface";
 
 function setShiftableButtonsLedValues(
@@ -12,8 +15,42 @@ function setShiftableButtonsLedValues(
   }
 }
 
+function bindCursorValueControlButton(
+  page: DecoratedFactoryMappingPage,
+  button: LedButton,
+  encoder: LedPushEncoder
+) {
+  const subPageArea = page.makeSubPageArea("Cursor Value Control");
+  const inactiveSubpage = subPageArea.makeSubPage("Cursor Value Control Inactive");
+  const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
+
+  const encoderDisplayMode = page.mCustom.makeSettableHostValueVariable(
+    `cursorValueControlEncoderDisplayMode`
+  );
+
+  activeSubpage.mOnActivate = (context) => {
+    encoderDisplayMode.setProcessValue(context, EncoderDisplayMode.SingleDot);
+    button.mLedValue.setProcessValue(context, 1);
+  };
+  inactiveSubpage.mOnActivate = (context) => {
+    button.mLedValue.setProcessValue(context, 0);
+  };
+
+  page
+    .makeActionBinding(button.mSurfaceValue, activeSubpage.mAction.mActivate)
+    .setSubPage(inactiveSubpage);
+  page
+    .makeActionBinding(button.mSurfaceValue, inactiveSubpage.mAction.mActivate)
+    .setSubPage(activeSubpage);
+
+  page
+    .makeValueBinding(encoder.mEncoderValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
+    .setSubPage(activeSubpage);
+  page.makeValueBinding(encoder.mDisplayModeValue, encoderDisplayMode).setSubPage(activeSubpage);
+}
+
 export function bindControlButtons(
-  page: MR_FactoryMappingPage,
+  page: DecoratedFactoryMappingPage,
   elements: SurfaceElements,
   mixerBankZone: MR_MixerBankZone
 ) {
@@ -88,8 +125,12 @@ export function bindControlButtons(
     )
     .setTypeToggle();
 
-  // Sends
-  // page.makeCommandBinding(buttons.automation[2].mSurfaceValue, );
+  // Sends (Control value under cursor)
+  bindCursorValueControlButton(
+    page,
+    buttons.automation[2],
+    elements.channels[elements.channels.length - 1].encoder
+  );
 
   // Project
   page.makeCommandBinding(buttons.automation[3].mSurfaceValue, "Project", "Bring To Front");

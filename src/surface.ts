@@ -1,53 +1,16 @@
-import { createElements, CallbackCollection, makeCallbackCollection } from "./util";
+import { DecoratedDeviceSurface } from "./decorators/surface";
+import { createElements } from "./util";
 
 const channelWidth = 5;
 
-export interface LedButton extends MR_Button {
-  mLedValue: MR_SurfaceCustomValueVariable;
-  mProxyValue: MR_SurfaceCustomValueVariable;
-  onSurfaceValueChange: CallbackCollection<
-    Parameters<LedButton["mSurfaceValue"]["mOnProcessValueChange"]>
-  >;
-}
-
-export interface TouchSensitiveFader extends MR_Fader {
-  mTouchedValue: MR_SurfaceCustomValueVariable;
-  mTouchedValueInternal: MR_SurfaceCustomValueVariable;
-}
-
-export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: number) {
+export function createSurfaceElements(surface: DecoratedDeviceSurface, channelCount: number) {
   const channelsWidth = channelCount * channelWidth;
   const getChannelXPosition = (channelIndex: number) => channelIndex * channelWidth;
 
   surface.makeBlindPanel(0, 0, channelsWidth + 26, 40); // Frame
   surface.makeBlindPanel(channelsWidth + 1, 6, 23.25, 4); // Time display
 
-  let ledButtonCounter = 0;
-  const makeLedButton = (x: number, y: number, w: number, h: number) => {
-    const button = surface.makeButton(x, y, w, h) as LedButton;
-
-    button.onSurfaceValueChange = makeCallbackCollection(
-      button.mSurfaceValue,
-      "mOnProcessValueChange"
-    );
-    button.mLedValue = surface.makeCustomValueVariable(`LedButton${++ledButtonCounter}Led`);
-    button.mProxyValue = surface.makeCustomValueVariable(`LedButton${ledButtonCounter}Proxy`);
-
-    return button;
-  };
-
-  const makeSquareButton = (x: number, y: number) => makeLedButton(x + 0.25, y, 1.5, 1.5);
-
-  const makeTouchSensitiveFader = (x: number) => {
-    const fader = surface.makeFader(x, 20, 2, 16) as TouchSensitiveFader;
-
-    fader.mTouchedValue = surface.makeCustomValueVariable("faderTouched");
-    // Workaround because `filterByValue` in the encoder bindings hides zero values from
-    // `mOnProcessValueChange`
-    fader.mTouchedValueInternal = surface.makeCustomValueVariable("faderTouchedInternal");
-
-    return fader;
-  };
+  const makeSquareButton = (x: number, y: number) => surface.makeLedButton(x + 0.25, y, 1.5, 1.5);
 
   const miscControlButtons = createElements(21, (index) =>
     makeSquareButton(
@@ -60,13 +23,12 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
 
   return {
     channels: createElements(channelCount, (index) => {
-      const encoder = surface.makePushEncoder(getChannelXPosition(index) + 1, 3, 4, 4);
-      surface.makeLabelField(getChannelXPosition(index) + 1, 7, 4, 2).relateTo(encoder);
+      const fader = surface.makeTouchSensitiveFader(2 + getChannelXPosition(index), 20, 2, 16);
+      surface.makeLabelField(getChannelXPosition(index) + 1, 7, 4, 2).relateTo(fader);
 
       return {
         index,
-        encoder,
-        encoderDisplayMode: surface.makeCustomValueVariable("encoderDisplayMode"),
+        encoder: surface.makeLedPushEncoder(getChannelXPosition(index) + 1, 3, 4, 4),
         scribbleStrip: {
           encoderParameterName: surface.makeCustomValueVariable(
             "scribbleStripEncoderParameterName"
@@ -78,15 +40,15 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
           record: makeSquareButton(2 + getChannelXPosition(index), 10),
           solo: makeSquareButton(2 + getChannelXPosition(index), 12),
           mute: makeSquareButton(2 + getChannelXPosition(index), 14),
-          select: makeLedButton(2 + getChannelXPosition(index), 16, 2, 1.5),
+          select: surface.makeLedButton(2 + getChannelXPosition(index), 16, 2, 1.5),
         },
 
-        fader: makeTouchSensitiveFader(2 + getChannelXPosition(index)),
+        fader,
       };
     }),
 
     control: {
-      mainFader: makeTouchSensitiveFader(channelsWidth + 2),
+      mainFader: surface.makeTouchSensitiveFader(channelsWidth + 2, 20, 2, 16),
 
       jogWheel: surface.makeKnob(channelsWidth + 13, 29.25, 8.5, 8.5),
       jogRight: surface.makeCustomValueVariable("jogRight"),
@@ -95,8 +57,8 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
       buttons: {
         display: makeSquareButton(channelsWidth + 2, 7.25),
         timeMode: makeSquareButton(channelsWidth + 21.75, 7.25),
-        edit: makeLedButton(channelsWidth + 2, 10.5, 2, 1.5),
-        flip: makeLedButton(channelsWidth + 2, 16, 2, 1.5),
+        edit: surface.makeLedButton(channelsWidth + 2, 10.5, 2, 1.5),
+        flip: surface.makeLedButton(channelsWidth + 2, 16, 2, 1.5),
         scrub: makeSquareButton(channelsWidth + 21.75, 28),
 
         encoderAssign: createElements(6, (index) =>
@@ -114,7 +76,7 @@ export function createSurfaceElements(surface: MR_DeviceSurface, channelCount: n
         transport: [
           ...miscControlButtons.slice(14),
           ...createElements(5, (index) =>
-            makeLedButton(channelsWidth + 6.25 + index * 3.56, 25, 3, 2)
+            surface.makeLedButton(channelsWidth + 6.25 + index * 3.56, 25, 3, 2)
           ),
         ],
 

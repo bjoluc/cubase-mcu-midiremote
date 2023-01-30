@@ -1,4 +1,5 @@
-import { LedButton, SurfaceElements, TouchSensitiveFader } from "../surface";
+import { SurfaceElements } from "../surface";
+import { LedButton, TouchSensitiveFader } from "../decorators/surface";
 import { makeCallbackCollection } from "../util";
 import { ActivationCallbacks } from "./connection";
 import { MidiManagers } from "./managers";
@@ -189,7 +190,7 @@ export function bindSurfaceElementsToMidi(
       .setInputPort(channelPorts.input)
       .bindToNote(0, 32 + (index % 8));
     channel.encoder.mEncoderValue.mOnProcessValueChange = (context, newValue) => {
-      const displayMode = channel.encoderDisplayMode.getProcessValue(context);
+      const displayMode = channel.encoder.mDisplayModeValue.getProcessValue(context);
 
       const isCenterLedOn = newValue === (displayMode === EncoderDisplayMode.Spread ? 0 : 0.5);
       const position =

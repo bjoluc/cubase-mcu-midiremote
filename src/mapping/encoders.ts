@@ -1,3 +1,4 @@
+import { DecoratedFactoryMappingPage } from "src/decorators/page";
 import { EncoderDisplayMode, ParameterName } from "src/midi";
 import { SurfaceElements } from "src/surface";
 import { createElements, makeCallbackCollection } from "src/util";
@@ -19,7 +20,7 @@ export interface EncoderPage {
 }
 
 export function bindEncoders(
-  page: MR_FactoryMappingPage,
+  page: DecoratedFactoryMappingPage,
   elements: SurfaceElements,
   mixerBankChannels: MR_MixerBankChannel[],
   hostDefaults: MR_HostDefaults
@@ -28,9 +29,18 @@ export function bindEncoders(
   const assignmentButtons = buttons.encoderAssign;
   const flipButton = elements.control.buttons.flip;
 
+  // Bind encoder display modes to custom host values
+  const channelEncoderDisplayModeHostValues = elements.channels.map((channel, channelIndex) => {
+    const hostValue = page.mCustom.makeSettableHostValueVariable(
+      `encoderDisplayMode${channelIndex}`
+    );
+    page.makeValueBinding(channel.encoder.mDisplayModeValue, hostValue);
+    return hostValue;
+  });
+
   const subPageArea = page.makeSubPageArea("Encoders");
 
-  const bindEncorderAssignments = (assignmentButtonId: number, pages: EncoderPage[]) => {
+  const bindEncoderAssignments = (assignmentButtonId: number, pages: EncoderPage[]) => {
     const encoderPageSize = elements.channels.length;
 
     const createdSubPages = pages
@@ -125,7 +135,10 @@ export function bindEncoders(
               context,
               assignment.parameterName
             );
-            channelElements.encoderDisplayMode.setProcessValue(context, assignment.displayMode);
+            channelEncoderDisplayModeHostValues[channelIndex].setProcessValue(
+              context,
+              assignment.displayMode
+            );
           });
         });
 
@@ -149,7 +162,7 @@ export function bindEncoders(
     }
   };
 
-  bindEncorderAssignments(0, [
+  bindEncoderAssignments(0, [
     {
       name: "Monitor",
       assignments: (mixerBankChannel) => ({
@@ -176,7 +189,7 @@ export function bindEncoders(
     },
   ]);
 
-  bindEncorderAssignments(1, [
+  bindEncoderAssignments(1, [
     {
       name: "Pan",
       assignments: (mixerBankChannel) => ({
@@ -190,7 +203,7 @@ export function bindEncoders(
 
   const mChannelEQ = page.mHostAccess.mTrackSelection.mMixerChannel.mChannelEQ;
 
-  bindEncorderAssignments(2, [
+  bindEncoderAssignments(2, [
     {
       name: "EQ",
       assignments: [
@@ -280,7 +293,7 @@ export function bindEncoders(
 
   const mSends = page.mHostAccess.mTrackSelection.mMixerChannel.mSends;
   const sendSlotsCount = hostDefaults.getNumberOfSendSlots();
-  bindEncorderAssignments(3, [
+  bindEncoderAssignments(3, [
     {
       name: "Sends",
       assignments: [
@@ -310,7 +323,7 @@ export function bindEncoders(
     .makeInsertEffectViewer("Inserts")
     .followPluginWindowInFocus();
   const parameterBankZone = effectsViewer.mParameterBankZone;
-  bindEncorderAssignments(4, [
+  bindEncoderAssignments(4, [
     {
       name: "Plugin",
       assignments: () => {
@@ -325,7 +338,7 @@ export function bindEncoders(
   ]);
 
   const mQuickControls = page.mHostAccess.mTrackSelection.mMixerChannel.mQuickControls;
-  bindEncorderAssignments(5, [
+  bindEncoderAssignments(5, [
     {
       name: "Quick Controls",
       assignments: (mixerBankChannel, channelIndex) => {

@@ -6,7 +6,9 @@ import "core-js/es/array/flat-map";
 import "core-js/es/string/replace-all";
 
 import midiremoteApi from "midiremote_api_v1";
-import { createHostMapping } from "./mapping";
+import { decoratePage } from "./decorators/page";
+import { decorateSurface } from "./decorators/surface";
+import { makeHostMapping } from "./mapping";
 import { bindSurfaceElementsToMidi } from "./midi";
 import { setupDeviceConnection } from "./midi/connection";
 import { MidiPorts } from "./midi/MidiPorts";
@@ -22,7 +24,8 @@ const { activationCallbacks, midiManagers } = setupDeviceConnection(driver, port
 // 2. SURFACE LAYOUT - create control elements and midi bindings
 //-----------------------------------------------------------------------------
 
-const elements = createSurfaceElements(driver.mSurface, ports.getChannelCount());
+const surface = decorateSurface(driver.mSurface);
+const elements = createSurfaceElements(surface, ports.getChannelCount());
 
 bindSurfaceElementsToMidi(elements, ports, midiManagers, activationCallbacks);
 
@@ -30,4 +33,5 @@ bindSurfaceElementsToMidi(elements, ports, midiManagers, activationCallbacks);
 // 3. HOST MAPPING - create mapping pages and host bindings
 //-----------------------------------------------------------------------------
 
-createHostMapping(driver.mMapping, elements, midiremoteApi.mDefaults, activationCallbacks);
+const page = decoratePage(driver.mMapping.makePage("Mixer"), surface);
+makeHostMapping(page, elements, midiremoteApi.mDefaults, activationCallbacks);

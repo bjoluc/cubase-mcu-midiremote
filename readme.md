@@ -6,11 +6,22 @@ Cubase 12 MIDI Remote Script for the Behringer X-Touch / X-Touch Extender
   <img alt="Surface Screenshot" width="800" src="./surface.png">
 </div>
 
+## TL;DR
+
+This Cubase MIDI Remote Script replaces the default Mackie Control device setup and is tailored specifically to the Behringer X-Touch. It can be [set up](#Setup) with a standalone X-Touch, as well as an X-Touch + X-Touch Extender. Key features include:
+
+- Track-colored scribble strips
+- Full utilization of all scribble strip display segments – no padding characters, no words across multiple scribble strips
+- A modus to control any value under your mouse cursor with a single encoder knob
+- Encoder assignment for editing the currently focused plugin's parameters ("Plug-In" button)
+- VST Quick Control encoder assignment ("Inst" button)
+- Meter LEDs that better resemble the MixConsole meter scale
+
 ## Motivation
 
 Since version 12, Cubase supports the customized integration of MIDI controllers via a new MIDI Remote JavaScript API.
-Since the Behringer X-Touch is mostly a Mackie Control Universal (MCU) clone, it is traditionally set up as a Mackie Control device in Cubase.
-However, the X-Touch has some unique features which set it apart from other MCU-compliant devices:
+The Behringer X-Touch, which is mostly a Mackie Control Universal (MCU) clone, is traditionally set up as a Mackie Control device in Cubase.
+However, it has some unique features which set it apart from other MCU-compliant devices:
 
 - The scribble strips are layed out as individual displays with a generous padding between them. MCU protocol implementations are designed to work with one continuous display and hence use empty characters for padding. Wouldn't it be nice to use all of the display space available, and at the same time avoid breaking words over channel boundaries?
 
@@ -43,6 +54,7 @@ Its mapping is widely similar to [Cubase's default Mackie MCU Pro mapping](https
 - The Channel Left/Right buttons below the Fader Bank buttons do not navigate between encoder parameter pages, but move the fader bank left/right by one channel. Navigating parameter banks can be achieved by pressing the respective Encoder Assign button multiple times to cycle through the available parameter pages in a round-robin fashion.
 - Pressing "Shift + Edit" closes all plugin windows instead of only the currently active window (I couldn't find a command to "close the currently active window").
 - The "Instrument" and "Master" buttons are assigned to the handy MixConsole History Undo and Redo commands, respectively. In the default MCU mapping, they would activate instrument and main effects encoder assignments. I find using these on the X-Touch more complicated than using the mouse for the same tasks and hence didn't implement them.
+- For the same reason, the "Sends" button doesn't activate a send effects encoder assignment. Instead, it turns the rightmost push encoder into a controller for the value that's currently under the mouse cursor.
 
 ## Setup
 

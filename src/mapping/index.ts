@@ -1,3 +1,4 @@
+import { DecoratedFactoryMappingPage } from "src/decorators/page";
 import { ActivationCallbacks } from "../midi/connection";
 import { SurfaceElements } from "../surface";
 import {
@@ -8,14 +9,12 @@ import {
 } from "./control";
 import { bindEncoders } from "./encoders";
 
-export function createHostMapping(
-  mapping: MR_FactoryMapping,
+export function makeHostMapping(
+  page: DecoratedFactoryMappingPage,
   elements: SurfaceElements,
   hostDefaults: MR_HostDefaults,
   activationCallbacks: ActivationCallbacks
 ) {
-  const page = mapping.makePage("Mixer");
-
   // 7-segment display
   bindSegmentDisplaySection(page, elements);
 
