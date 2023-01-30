@@ -135,10 +135,15 @@ export function bindEncoders(
               context,
               assignment.parameterName
             );
-            channelEncoderDisplayModeHostValues[channelIndex].setProcessValue(
+            channelElements.encoder.mDisplayModeValue.setProcessValue(
               context,
               assignment.displayMode
             );
+            // TODO https://forums.steinberg.net/t/831123
+            // channelEncoderDisplayModeHostValues[channelIndex].setProcessValue(
+            //   context,
+            //   assignment.displayMode
+            // );
           });
         });
 
