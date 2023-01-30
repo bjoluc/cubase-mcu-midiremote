@@ -11,11 +11,11 @@ Cubase 12 MIDI Remote Script for the Behringer X-Touch / X-Touch Extender
 This Cubase MIDI Remote Script replaces the default Mackie Control device setup and is tailored specifically to the Behringer X-Touch. It can be [set up](#Setup) with a standalone X-Touch, as well as an X-Touch + X-Touch Extender. Key features include:
 
 - Track-colored scribble strips
-- Full utilization of all scribble strip display segments – no padding characters, no words across multiple scribble strips
-- A modus to control any value under your mouse cursor with a single encoder knob
+- Full utilization of all scribble strip display segments – no padding characters, no words across scribble strip boundaries
+- A modus to control any value under your mouse cursor with the rightmost push encoder
 - Encoder assignment for editing the currently focused plugin's parameters ("Plug-In" button)
 - VST Quick Control encoder assignment ("Inst" button)
-- Meter LEDs that better resemble the MixConsole meter scale
+- Meter LEDs that closely resemble the MixConsole meter's scale
 
 ## Motivation
 
@@ -39,7 +39,11 @@ In addition to the points above, there are a couple of things that always bother
 ## About this Script
 
 The MIDI Remote Script developed in this repository serves as a full replacement for the default Mackie Control setup.
-Its mapping is widely similar to [Cubase's default Mackie MCU Pro mapping](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf), with a few exceptions:
+Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf), with the following exceptions:
+
+> **Note**
+> In the rest of this document, all buttons below the 7-segment timecode display and above the five playback control buttons are referred to by their default Cubase MCU mapping labels instead of the ones printed on the X-Touch.
+> I recommend an overlay for reference (be it an image – like in the [remote control devices docs](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf) – or a [printed version](https://www.ebay.com/itm/255630543433)).
 
 **Encoder Assignments**
 
@@ -52,7 +56,7 @@ Its mapping is widely similar to [Cubase's default Mackie MCU Pro mapping](https
 
 - Like in the MCU default mapping, the 8 channel type buttons apply MixConsole channel visibility presets 1-8. In the likely case that you don't want to waste 8 prominent buttons for loading visibility presets, feel free to re-assign some buttons in the MIDI Remote Mapping Assistant.
 - The Channel Left/Right buttons below the Fader Bank buttons do not navigate between encoder parameter pages, but move the fader bank left/right by one channel. Navigating parameter banks can be achieved by pressing the respective Encoder Assign button multiple times to cycle through the available parameter pages in a round-robin fashion.
-- Pressing "Shift + Edit" closes all plugin windows instead of only the currently active window (I couldn't find a command to "close the currently active window").
+- Pressing "Shift + Edit" closes all **plugin** windows instead of only the currently active window (I couldn't find a command to "close the currently active window").
 - The "Instrument" and "Master" buttons are assigned to the handy MixConsole History Undo and Redo commands, respectively. In the default MCU mapping, they would activate instrument and main effects encoder assignments. I find using these on the X-Touch more complicated than using the mouse for the same tasks and hence didn't implement them.
 - For the same reason, the "Sends" button doesn't activate a send effects encoder assignment. Instead, it turns the rightmost push encoder into a controller for the value that's currently under the mouse cursor.
 
@@ -62,10 +66,18 @@ Its mapping is widely similar to [Cubase's default Mackie MCU Pro mapping](https
 
 ## Drawbacks
 
+**Quirks to be fixed:**
+
+- The time display is not updated upon initialization to avoid https://forums.steinberg.net/t/829417
+- The "Motor" button LED doesn't light up initially although the motors are activated
+- When controlling under-the-cursor values, the encoder's LED ring is not updated to single-dot mode but remains in whatever mode the currently active encoder assignment demands (https://forums.steinberg.net/t/831123).
+
+**Current limitations of the MIDI Remote API:**
+
 - The "Track" encoder assignment is missing the "Input Bus" and "Output Bus" pages which are not exposed by the MIDI Remote API. I prefer to use the mouse for routing anyway, as apposed to a push encoder and a tiny single-row string on a scribble strip display.
 - The "Pan/Surround" encoder assignment is missing a second page for vertical panning which is not exposed by the MIDI Remote API.
 - The "Send" encoder assignment doesn't include a "Bus" page because send busses are not exposed by the MIDI Remote API.
 - The punch button doesn't light up when "Auto Punch In" is activated – no host value available
 - The global "Solo" LED doesn't light up when a channel is in solo mode – no host value available
-- The "Motor" button LED doesn't light up initially although the motors are activated
 - Channel visibility presets do not affect channel assignments since the `MixerBankZone` of the MIDI Remote API doesn't respect channel visibility presets.
+- The function buttons F1-F8 can only have one assignment per button, no matter whether "Shift" is held or not ("Shift" activates a sub page and the Mapping Assistant doesn't consider sub pages)
