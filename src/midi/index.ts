@@ -60,6 +60,16 @@ export function bindSurfaceElementsToMidi(
   activationCallbacks.addCallback((context) => {
     // TODO `mOnProcessValueChange` is not executed here – why?
     motorButton.mLedValue.setProcessValue(context, 1);
+    // Workaround:
+    const output = ports.getMainPorts().output;
+    output.sendNoteOn(context, 0x4f, 1);
+
+    // Workaround for encoder assign buttons not being enabled on activation
+    // (https://forums.steinberg.net/t/831123):
+    output.sendNoteOn(context, 0x2a, 1);
+    for (const note of [0x28, 0x29, 0x2b, 0x2c, 0x2d]) {
+      output.sendNoteOn(context, note, 0);
+    }
   });
 
   function bindFader(ports: PortPair, fader: TouchSensitiveFader, faderIndex: number) {

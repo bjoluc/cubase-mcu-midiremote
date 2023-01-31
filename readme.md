@@ -71,8 +71,6 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 **Quirks to be fixed:**
 
 - The time display is not updated upon initialization to avoid https://forums.steinberg.net/t/829417
-- Initially, no encoder page is activated (blocked by https://forums.steinberg.net/t/831123).
-- The "Motor" button LED doesn't light up initially although the motors are activated (blocked by https://forums.steinberg.net/t/831123).
 - When controlling under-the-cursor values, the encoder's LED ring is not updated to single-dot mode but remains in whatever mode the currently active encoder assignment demands (blocked by https://forums.steinberg.net/t/831123).
 
 **Current limitations of the MIDI Remote API:**

@@ -176,6 +176,18 @@ export function bindEncoders(
     return createdSubPages;
   };
 
+  // Defining Pan first so it is activated by default
+  bindEncoderAssignments(1, [
+    {
+      name: "Pan",
+      assignments: (mixerBankChannel) => ({
+        displayMode: EncoderDisplayMode.BoostOrCut,
+        encoderValue: mixerBankChannel.mValue.mPan,
+        pushToggleValue: mixerBankChannel.mValue.mMonitorEnable,
+      }),
+    },
+  ]);
+
   bindEncoderAssignments(0, [
     {
       name: "Monitor",
@@ -199,22 +211,6 @@ export function bindEncoders(
       }),
     },
   ]);
-
-  bindEncoderAssignments(1, [
-    {
-      name: "Pan",
-      assignments: (mixerBankChannel) => ({
-        displayMode: EncoderDisplayMode.BoostOrCut,
-        encoderValue: mixerBankChannel.mValue.mPan,
-        pushToggleValue: mixerBankChannel.mValue.mMonitorEnable,
-      }),
-    },
-  ]);
-
-  // Activate Pan assignment on driver activation
-  activationCallbacks.addCallback((context) => {
-    assignmentButtons[1].mSurfaceValue.setProcessValue(context, 1);
-  });
 
   const mChannelEQ = page.mHostAccess.mTrackSelection.mMixerChannel.mChannelEQ;
   bindEncoderAssignments(2, [
