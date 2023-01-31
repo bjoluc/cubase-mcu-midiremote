@@ -2,16 +2,21 @@
   "private": true,
   "scripts": {
     "build": "tsup",
-    "start": "tsup --watch",
+    "start": "tsup --watch --onSuccess  'npm run transpile && npm run copy'",
     "transpile": "babel dist/behringer/xtouch/behringer_xtouch.js --out-file dist/behringer/xtouch/behringer_xtouch.js",
     "copy": "sshpass -p User scp -P 2222 -r ./dist/behringer User@localhost:'\"Documents\\Steinberg\\Cubase\\MIDI Remote\\Driver Scripts\\Local\"'",
     "tsc": "tsc"
   },
   "author": "bjoluc",
   "license": "MIT",
+  "dependencies": {
+    "abbreviate": "^0.0.3",
+    "core-js": "^3.27.2"
+  },
   "devDependencies": {
     "@babel/cli": "^7.20.7",
     "@babel/preset-env": "^7.20.2",
+    "@bjoluc/semantic-release-config-npm": "^3.0.0",
     "tsup": "^6.5.0",
     "typescript": "^4.9.4"
   },
@@ -29,7 +34,7 @@
       "core-js"
     ],
     "target": "ES2015",
-    "onSuccess": "npm run transpile && npm run copy"
+    "onSuccess": "npm run transpile"
   },
   "babel": {
     "presets": [
@@ -38,9 +43,5 @@
   },
   "prettier": {
     "printWidth": 100
-  },
-  "dependencies": {
-    "abbreviate": "^0.0.3",
-    "core-js": "^3.27.2"
   }
 }
