@@ -1,7 +1,8 @@
-import { DecoratedFactoryMappingPage } from "src/decorators/page";
-import { EncoderDisplayMode, ParameterName } from "src/midi";
-import { SurfaceElements } from "src/surface";
-import { createElements, makeCallbackCollection } from "src/util";
+import { DecoratedFactoryMappingPage } from "../decorators/page";
+import { EncoderDisplayMode, ParameterName } from "../midi";
+import { ActivationCallbacks } from "../midi/connection";
+import { SurfaceElements } from "../surface";
+import { createElements, makeCallbackCollection } from "../util";
 
 export interface EncoderAssignment {
   parameterName: ParameterName;
@@ -24,7 +25,8 @@ export function bindEncoders(
   page: DecoratedFactoryMappingPage,
   elements: SurfaceElements,
   mixerBankChannels: MR_MixerBankChannel[],
-  hostDefaults: MR_HostDefaults
+  hostDefaults: MR_HostDefaults,
+  activationCallbacks: ActivationCallbacks
 ) {
   const buttons = elements.control.buttons;
   const assignmentButtons = buttons.encoderAssign;
@@ -220,8 +222,12 @@ export function bindEncoders(
     },
   ]);
 
-  const mChannelEQ = page.mHostAccess.mTrackSelection.mMixerChannel.mChannelEQ;
+  // Activate Pan assignment on driver activation
+  activationCallbacks.addCallback((context) => {
+    assignmentButtons[1].mSurfaceValue.setProcessValue(context, 1);
+  });
 
+  const mChannelEQ = page.mHostAccess.mTrackSelection.mMixerChannel.mChannelEQ;
   bindEncoderAssignments(2, [
     {
       name: "EQ",

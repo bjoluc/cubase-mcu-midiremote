@@ -54,7 +54,7 @@ export function makeHostMapping(
     page.mHostAccess.mControlRoom.mMainChannel.mLevelValue
   );
 
-  bindEncoders(page, elements, mixerBankChannels, hostDefaults);
+  bindEncoders(page, elements, mixerBankChannels, hostDefaults, activationCallbacks);
 
   // 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation
   bindControlButtons(page, elements, mixerBankZone);
