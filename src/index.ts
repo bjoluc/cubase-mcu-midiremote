@@ -1,4 +1,5 @@
-const USE_EXTENDER = true;
+// @ts-expect-error This is replaced by esbuild
+const USE_EXTENDER = CONFIG_USE_EXTENDER;
 const IS_EXTENDER_LEFT = true;
 
 // Polyfills

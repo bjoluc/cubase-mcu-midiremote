@@ -2,9 +2,7 @@
   "private": true,
   "scripts": {
     "build": "tsup",
-    "start": "tsup --watch --onSuccess  'npm run transpile && npm run copy'",
-    "transpile": "babel dist/behringer/xtouch/behringer_xtouch.js --out-file dist/behringer/xtouch/behringer_xtouch.js",
-    "copy": "sshpass -p User scp -P 2222 -r ./dist/behringer User@localhost:'\"Documents\\Steinberg\\Cubase\\MIDI Remote\\Driver Scripts\\Local\"'",
+    "start": "tsup --watch",
     "tsc": "tsc"
   },
   "author": "bjoluc",
@@ -17,24 +15,9 @@
     "@babel/cli": "^7.20.7",
     "@babel/preset-env": "^7.20.2",
     "@bjoluc/semantic-release-config-npm": "^3.0.0",
+    "dotenv": "^16.0.3",
     "tsup": "^6.5.0",
     "typescript": "^4.9.4"
-  },
-  "tsup": {
-    "entry": {
-      "behringer_xtouch": "src/index.ts"
-    },
-    "outDir": "dist/behringer/xtouch",
-    "clean": true,
-    "external": [
-      "midiremote_api_v1"
-    ],
-    "noExternal": [
-      "abbreviate",
-      "core-js"
-    ],
-    "target": "ES2015",
-    "onSuccess": "npm run transpile"
   },
   "babel": {
     "presets": [

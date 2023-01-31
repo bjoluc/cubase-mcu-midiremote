@@ -56,9 +56,7 @@ export function bindEncoders(
             chunks.push(assignments.slice(i * encoderPageSize, (i + 1) * encoderPageSize));
           }
           return chunks.map((chunk) => ({
-            // Spreading `...page` would be nice but the transpiled code errors in Cubase, hence:
-            name: page.name,
-            hidePageIndex: page.hidePageIndex,
+            ...page,
             assignments: chunk,
           }));
         }

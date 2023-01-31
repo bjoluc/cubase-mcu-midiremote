@@ -7,12 +7,12 @@
     "esModuleInterop": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "ES2021",
     "checkJs": true,
     "lib": ["ES2021"],
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true
   },
-  "exclude": ["dist/", "release.config.js"]
+  "include": ["src/"]
 }
