@@ -23,16 +23,15 @@ export function createSurfaceElements(surface: DecoratedDeviceSurface, channelCo
 
   return {
     channels: createElements(channelCount, (index) => {
-      const fader = surface.makeTouchSensitiveFader(2 + getChannelXPosition(index), 20, 2, 16);
-      surface.makeLabelField(getChannelXPosition(index) + 1, 7, 4, 2).relateTo(fader);
+      const encoder = surface.makeLedPushEncoder(getChannelXPosition(index) + 1, 3, 4, 4);
 
       return {
         index,
-        encoder: surface.makeLedPushEncoder(getChannelXPosition(index) + 1, 3, 4, 4),
+        encoder,
         scribbleStrip: {
-          encoderParameterName: surface.makeCustomValueVariable(
-            "scribbleStripEncoderParameterName"
-          ),
+          encoderLabel: surface
+            .makeLabelField(getChannelXPosition(index) + 1, 7, 4, 2)
+            .relateTo(encoder),
           trackTitle: surface.makeCustomValueVariable("scribbleStriptrackTitle"),
         },
         vuMeter: surface.makeCustomValueVariable("vuMeter"),
@@ -43,7 +42,7 @@ export function createSurfaceElements(surface: DecoratedDeviceSurface, channelCo
           select: surface.makeLedButton(2 + getChannelXPosition(index), 16, 2, 1.5),
         },
 
-        fader,
+        fader: surface.makeTouchSensitiveFader(2 + getChannelXPosition(index), 20, 2, 16),
       };
     }),
 

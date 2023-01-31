@@ -13,64 +13,6 @@ export enum EncoderDisplayMode {
   Spread = 3,
 }
 
-export enum ParameterName {
-  /** Display the title of the parameter that the encoder controls */
-  Auto,
-
-  /** Display no name at all */
-  Empty,
-
-  Monitor,
-  Gain,
-  Phase,
-  Pan,
-  Eq1Freq,
-  Eq1Gain,
-  Eq1Q,
-  Eq1Type,
-  Eq2Freq,
-  Eq2Gain,
-  Eq2Q,
-  Eq2Type,
-  Eq3Freq,
-  Eq3Gain,
-  Eq3Q,
-  Eq3Type,
-  Eq4Freq,
-  Eq4Gain,
-  Eq4Q,
-  Eq4Type,
-  SendLevel,
-  Pre,
-}
-
-const parameterNameStrings: Record<number, string | undefined> = {
-  [ParameterName.Auto]: undefined,
-  [ParameterName.Empty]: "",
-  [ParameterName.Monitor]: "Monitor",
-  [ParameterName.Gain]: "Gain",
-  [ParameterName.Phase]: "Phase",
-  [ParameterName.Pan]: "Pan",
-  [ParameterName.Eq1Freq]: "EQ1Freq",
-  [ParameterName.Eq1Gain]: "EQ1Gain",
-  [ParameterName.Eq1Q]: "EQ1 Q",
-  [ParameterName.Eq1Type]: "EQ1Type",
-  [ParameterName.Eq2Freq]: "EQ2Freq",
-  [ParameterName.Eq2Gain]: "EQ2Gain",
-  [ParameterName.Eq2Q]: "EQ2 Q",
-  [ParameterName.Eq2Type]: "EQ2Type",
-  [ParameterName.Eq3Freq]: "EQ3Freq",
-  [ParameterName.Eq3Gain]: "EQ3Gain",
-  [ParameterName.Eq3Q]: "EQ3 Q",
-  [ParameterName.Eq3Type]: "EQ3Type",
-  [ParameterName.Eq4Freq]: "EQ4Freq",
-  [ParameterName.Eq4Gain]: "EQ4Gain",
-  [ParameterName.Eq4Q]: "EQ4 Q",
-  [ParameterName.Eq4Type]: "EQ4Type",
-  [ParameterName.SendLevel]: "SendLvl",
-  [ParameterName.Pre]: "Pre",
-};
-
 function bindLedButton(ports: PortPair, button: LedButton, note: number) {
   let currentSurfaceValue = 0;
   button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
@@ -208,8 +150,7 @@ export function bindSurfaceElementsToMidi(
     };
 
     // Scribble Strip
-    let parameterName: string | undefined = "";
-    let parameterTitle = "";
+    let parameterName = "";
     let displayValue = "";
 
     const updateDisplay = (context: MR_ActiveDevice, isValueModeActive: number) => {
@@ -217,19 +158,18 @@ export function bindSurfaceElementsToMidi(
         context,
         0,
         index,
-        isValueModeActive ? displayValue : parameterName ?? parameterTitle
+        isValueModeActive ? displayValue : parameterName
       );
-    };
-    channel.scribbleStrip.encoderParameterName.mOnProcessValueChange = (context, value) => {
-      parameterName = parameterNameStrings[value];
-      updateDisplay(context, elements.display.isValueModeActive.getProcessValue(context));
     };
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
       displayValue = LcdManager.centerString(LcdManager.abbreviateString(value));
       updateDisplay(context, elements.display.isValueModeActive.getProcessValue(context));
     };
-    channel.encoder.mEncoderValue.mOnTitleChange = (context, value) => {
-      parameterTitle = LcdManager.abbreviateString(value);
+    channel.encoder.mEncoderValue.mOnTitleChange = (context, _title1, title) => {
+      if (title === "Pan Left-Right") {
+        title = "Pan";
+      }
+      parameterName = LcdManager.centerString(LcdManager.abbreviateString(title));
       updateDisplay(context, elements.display.isValueModeActive.getProcessValue(context));
     };
 

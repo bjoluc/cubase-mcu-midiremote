@@ -1,11 +1,10 @@
 import { DecoratedFactoryMappingPage } from "../decorators/page";
-import { EncoderDisplayMode, ParameterName } from "../midi";
+import { EncoderDisplayMode } from "../midi";
 import { ActivationCallbacks } from "../midi/connection";
 import { SurfaceElements } from "../surface";
 import { createElements, makeCallbackCollection } from "../util";
 
 export interface EncoderAssignment {
-  parameterName: ParameterName;
   encoderValue: MR_HostValue;
   displayMode: EncoderDisplayMode;
   pushToggleValue?: MR_HostValue;
@@ -144,10 +143,6 @@ export function bindEncoders(
               .setSubPage(flipSubPage);
 
             onSubPageActivate.addCallback((context) => {
-              channelElements.scribbleStrip.encoderParameterName.setProcessValue(
-                context,
-                assignment.parameterName
-              );
               channelElements.encoder.mDisplayModeValue.setProcessValue(
                 context,
                 assignment.displayMode
@@ -189,7 +184,6 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.Wrap,
         encoderValue: mixerBankChannel.mValue.mMonitorEnable,
-        parameterName: ParameterName.Monitor,
       }),
     },
     {
@@ -197,7 +191,6 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.BoostOrCut,
         encoderValue: mixerBankChannel.mPreFilter.mGain,
-        parameterName: ParameterName.Gain,
       }),
     },
     {
@@ -205,7 +198,6 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.Wrap,
         encoderValue: mixerBankChannel.mPreFilter.mPhaseSwitch,
-        parameterName: ParameterName.Phase,
       }),
     },
   ]);
@@ -216,7 +208,6 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.BoostOrCut,
         encoderValue: mixerBankChannel.mValue.mPan,
-        parameterName: ParameterName.Pan,
         pushToggleValue: mixerBankChannel.mValue.mMonitorEnable,
       }),
     },
@@ -232,87 +223,28 @@ export function bindEncoders(
     {
       name: "EQ",
       assignments: [
+        mChannelEQ.mBand1,
+        mChannelEQ.mBand2,
+        mChannelEQ.mBand3,
+        mChannelEQ.mBand4,
+      ].flatMap((band) => [
         {
-          parameterName: ParameterName.Eq1Freq,
           displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand1.mFreq,
+          encoderValue: band.mFreq,
         },
         {
-          parameterName: ParameterName.Eq1Gain,
           displayMode: EncoderDisplayMode.BoostOrCut,
-          encoderValue: mChannelEQ.mBand1.mGain,
+          encoderValue: band.mGain,
         },
         {
-          parameterName: ParameterName.Eq1Q,
           displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand1.mQ,
+          encoderValue: band.mQ,
         },
         {
-          parameterName: ParameterName.Eq1Type,
           displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand1.mFilterType,
+          encoderValue: band.mFilterType,
         },
-        {
-          parameterName: ParameterName.Eq2Freq,
-          displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand2.mFreq,
-        },
-        {
-          parameterName: ParameterName.Eq2Gain,
-          displayMode: EncoderDisplayMode.BoostOrCut,
-          encoderValue: mChannelEQ.mBand2.mGain,
-        },
-        {
-          parameterName: ParameterName.Eq2Q,
-          displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand2.mQ,
-        },
-        {
-          parameterName: ParameterName.Eq2Type,
-          displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand2.mFilterType,
-        },
-        {
-          parameterName: ParameterName.Eq3Freq,
-          displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand3.mFreq,
-        },
-        {
-          parameterName: ParameterName.Eq3Gain,
-          displayMode: EncoderDisplayMode.BoostOrCut,
-          encoderValue: mChannelEQ.mBand3.mGain,
-        },
-        {
-          parameterName: ParameterName.Eq3Q,
-          displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand3.mQ,
-        },
-        {
-          parameterName: ParameterName.Eq3Type,
-          displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand3.mFilterType,
-        },
-        {
-          parameterName: ParameterName.Eq4Freq,
-          displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand4.mFreq,
-        },
-        {
-          parameterName: ParameterName.Eq4Gain,
-          displayMode: EncoderDisplayMode.BoostOrCut,
-          encoderValue: mChannelEQ.mBand4.mGain,
-        },
-        {
-          parameterName: ParameterName.Eq4Q,
-          displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand4.mQ,
-        },
-        {
-          parameterName: ParameterName.Eq4Type,
-          displayMode: EncoderDisplayMode.SingleDot,
-          encoderValue: mChannelEQ.mBand4.mFilterType,
-        },
-      ],
+      ]),
     },
   ]);
 
@@ -325,7 +257,6 @@ export function bindEncoders(
         ...createElements(sendSlotsCount, (slotIndex) => {
           const sendSlot = mSends.getByIndex(slotIndex);
           return {
-            parameterName: ParameterName.SendLevel,
             encoderValue: sendSlot.mLevel,
             displayMode: EncoderDisplayMode.SingleDot,
             pushToggleValue: sendSlot.mOn,
@@ -334,7 +265,6 @@ export function bindEncoders(
         ...createElements(sendSlotsCount, (slotIndex) => {
           const sendSlot = mSends.getByIndex(slotIndex);
           return {
-            parameterName: ParameterName.Pre,
             encoderValue: sendSlot.mPrePost,
             displayMode: EncoderDisplayMode.Wrap,
             pushToggleValue: sendSlot.mPrePost,
@@ -354,7 +284,6 @@ export function bindEncoders(
       assignments: () => {
         const parameterValue = parameterBankZone.makeParameterValue();
         return {
-          parameterName: ParameterName.Auto,
           encoderValue: parameterValue,
           displayMode: EncoderDisplayMode.SingleDot,
         };
@@ -375,7 +304,6 @@ export function bindEncoders(
       name: "Quick Controls",
       assignments: (mixerBankChannel, channelIndex) => {
         return {
-          parameterName: ParameterName.Auto,
           encoderValue: mQuickControls.getByIndex(channelIndex),
           displayMode: EncoderDisplayMode.SingleDot,
         };
