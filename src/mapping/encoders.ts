@@ -17,6 +17,7 @@ export type EncoderAssignments =
 export interface EncoderPage {
   name?: string;
   assignments: EncoderAssignments;
+  hidePageIndex?: Boolean;
 }
 
 export function bindEncoders(
@@ -53,102 +54,113 @@ export function bindEncoders(
           for (let i = 0; i < assignments.length / encoderPageSize; i++) {
             chunks.push(assignments.slice(i * encoderPageSize, (i + 1) * encoderPageSize));
           }
-          return chunks.map((chunk) => ({ name: page.name, assignments: chunk }));
+          return chunks.map((chunk) => ({
+            // Spreading `...page` would be nice but the transpiled code errors in Cubase, hence:
+            name: page.name,
+            hidePageIndex: page.hidePageIndex,
+            assignments: chunk,
+          }));
         }
 
         return page;
       })
 
       // Create the corresponding sub pages and bindings for each encoder page
-      .map(({ name: pageName, assignments: assignmentsConfig }, encoderPageIndex) => {
-        const subPageName = `${pageName} ${encoderPageIndex + 1}`;
-        const subPage = subPageArea.makeSubPage(subPageName);
-        const flipSubPage = subPageArea.makeSubPage(`${subPageName} Flip`);
+      .map(
+        ({ name: pageName, assignments: assignmentsConfig, hidePageIndex }, encoderPageIndex) => {
+          const subPageName = `${pageName} ${encoderPageIndex + 1}`;
+          const subPage = subPageArea.makeSubPage(subPageName);
+          const flipSubPage = subPageArea.makeSubPage(`${subPageName} Flip`);
 
-        page
-          .makeActionBinding(flipButton.mSurfaceValue, flipSubPage.mAction.mActivate)
-          .setSubPage(subPage);
-        page
-          .makeActionBinding(flipButton.mSurfaceValue, subPage.mAction.mActivate)
-          .setSubPage(flipSubPage);
-
-        const onSubPageActivate = makeCallbackCollection(subPage, "mOnActivate");
-        onSubPageActivate.addCallback((context) => {
-          elements.display.setAssignment(context, (encoderPageIndex + 1).toString());
-          assignmentButtons.forEach((button, buttonNumber) => {
-            button.mLedValue.setProcessValue(context, +(assignmentButtonId === buttonNumber));
-          });
-          flipButton.mLedValue.setProcessValue(context, 0);
-
-          elements.display.isValueModeActive.setProcessValue(context, 0);
-        });
-
-        flipSubPage.mOnActivate = (context) => {
-          flipButton.mLedValue.setProcessValue(context, 1);
-        };
-
-        const isPerChannelAssignment = typeof assignmentsConfig === "function";
-        let assignments = isPerChannelAssignment
-          ? mixerBankChannels.map((channel, channelIndex) =>
-              assignmentsConfig(channel, channelIndex)
-            )
-          : assignmentsConfig;
-
-        assignments.forEach((assignment, channelIndex) => {
-          const channelElements = elements.channels[channelIndex];
-
-          // Non-flipped encoder page sub page bindings
           page
-            .makeValueBinding(channelElements.encoder.mEncoderValue, assignment.encoderValue)
+            .makeActionBinding(flipButton.mSurfaceValue, flipSubPage.mAction.mActivate)
             .setSubPage(subPage);
           page
-            .makeValueBinding(
-              channelElements.fader.mTouchedValue,
-              mixerBankChannels[channelIndex].mValue.mSelected
-            )
-            .filterByValue(1)
-            .setSubPage(subPage);
-
-          if (assignment.pushToggleValue) {
-            page
-              .makeValueBinding(channelElements.encoder.mPushValue, assignment.pushToggleValue)
-              .setTypeToggle()
-              .setSubPage(subPage);
-          }
-
-          // Flipped encoder page sub page bindings
-          page
-            .makeValueBinding(channelElements.fader.mSurfaceValue, assignment.encoderValue)
-            .setSubPage(flipSubPage);
-          page
-            .makeValueBinding(
-              channelElements.fader.mTouchedValue,
-              mixerBankChannels[channelIndex].mValue.mSelected
-            )
-            // Don't select mixer channels on touch when a fader's value does not belong to its
-            // mixer channel
-            .filterByValue(+isPerChannelAssignment)
+            .makeActionBinding(flipButton.mSurfaceValue, subPage.mAction.mActivate)
             .setSubPage(flipSubPage);
 
+          const onSubPageActivate = makeCallbackCollection(subPage, "mOnActivate");
           onSubPageActivate.addCallback((context) => {
-            channelElements.scribbleStrip.encoderParameterName.setProcessValue(
+            elements.display.setAssignment(
               context,
-              assignment.parameterName
+              hidePageIndex ? "  " : (encoderPageIndex + 1).toString()
             );
-            channelElements.encoder.mDisplayModeValue.setProcessValue(
-              context,
-              assignment.displayMode
-            );
-            // TODO https://forums.steinberg.net/t/831123
-            // channelEncoderDisplayModeHostValues[channelIndex].setProcessValue(
-            //   context,
-            //   assignment.displayMode
-            // );
-          });
-        });
 
-        return { subPage, flipSubPage };
-      });
+            assignmentButtons.forEach((button, buttonNumber) => {
+              button.mLedValue.setProcessValue(context, +(assignmentButtonId === buttonNumber));
+            });
+            flipButton.mLedValue.setProcessValue(context, 0);
+
+            elements.display.isValueModeActive.setProcessValue(context, 0);
+          });
+
+          flipSubPage.mOnActivate = (context) => {
+            flipButton.mLedValue.setProcessValue(context, 1);
+          };
+
+          const isPerChannelAssignment = typeof assignmentsConfig === "function";
+          let assignments = isPerChannelAssignment
+            ? mixerBankChannels.map((channel, channelIndex) =>
+                assignmentsConfig(channel, channelIndex)
+              )
+            : assignmentsConfig;
+
+          assignments.forEach((assignment, channelIndex) => {
+            const channelElements = elements.channels[channelIndex];
+
+            // Non-flipped encoder page sub page bindings
+            page
+              .makeValueBinding(channelElements.encoder.mEncoderValue, assignment.encoderValue)
+              .setSubPage(subPage);
+            page
+              .makeValueBinding(
+                channelElements.fader.mTouchedValue,
+                mixerBankChannels[channelIndex].mValue.mSelected
+              )
+              .filterByValue(1)
+              .setSubPage(subPage);
+
+            if (assignment.pushToggleValue) {
+              page
+                .makeValueBinding(channelElements.encoder.mPushValue, assignment.pushToggleValue)
+                .setTypeToggle()
+                .setSubPage(subPage);
+            }
+
+            // Flipped encoder page sub page bindings
+            page
+              .makeValueBinding(channelElements.fader.mSurfaceValue, assignment.encoderValue)
+              .setSubPage(flipSubPage);
+            page
+              .makeValueBinding(
+                channelElements.fader.mTouchedValue,
+                mixerBankChannels[channelIndex].mValue.mSelected
+              )
+              // Don't select mixer channels on touch when a fader's value does not belong to its
+              // mixer channel
+              .filterByValue(+isPerChannelAssignment)
+              .setSubPage(flipSubPage);
+
+            onSubPageActivate.addCallback((context) => {
+              channelElements.scribbleStrip.encoderParameterName.setProcessValue(
+                context,
+                assignment.parameterName
+              );
+              channelElements.encoder.mDisplayModeValue.setProcessValue(
+                context,
+                assignment.displayMode
+              );
+              // TODO https://forums.steinberg.net/t/831123
+              // channelEncoderDisplayModeHostValues[channelIndex].setProcessValue(
+              //   context,
+              //   assignment.displayMode
+              // );
+            });
+          });
+
+          return { subPage, flipSubPage };
+        }
+      );
 
     // Bind encoder assign button to cycle through sub pages in a round-robin fashion
     const encoderAssignButtonValue = assignmentButtons[assignmentButtonId].mSurfaceValue;
@@ -165,6 +177,8 @@ export function bindEncoders(
 
       previousSubPages = currentSubPages;
     }
+
+    return createdSubPages;
   };
 
   bindEncoderAssignments(0, [
@@ -328,7 +342,7 @@ export function bindEncoders(
     .makeInsertEffectViewer("Inserts")
     .followPluginWindowInFocus();
   const parameterBankZone = effectsViewer.mParameterBankZone;
-  bindEncoderAssignments(4, [
+  const [pluginSubPages] = bindEncoderAssignments(4, [
     {
       name: "Plugin",
       assignments: () => {
@@ -339,8 +353,15 @@ export function bindEncoders(
           displayMode: EncoderDisplayMode.SingleDot,
         };
       },
+      hidePageIndex: true,
     },
   ]);
+
+  for (const subPage of [pluginSubPages.subPage, pluginSubPages.flipSubPage]) {
+    page
+      .makeActionBinding(assignmentButtons[4].mSurfaceValue, parameterBankZone.mAction.mNextBank)
+      .setSubPage(subPage);
+  }
 
   const mQuickControls = page.mHostAccess.mTrackSelection.mMixerChannel.mQuickControls;
   bindEncoderAssignments(5, [
