@@ -10,14 +10,13 @@ Cubase 12 MIDI Remote Script for the Behringer X-Touch / X-Touch Extender
 
 This Cubase MIDI Remote Script replaces the default Mackie Control device setup and is tailored specifically to the Behringer X-Touch.
 It can be [set up](#Setup) with a standalone X-Touch or with an X-Touch and an additional X-Touch Extender unit.
-Key features include:
+Notable features include:
 
 - Track-colored scribble strips
 - Full utilization of all scribble strip display segments – no padding characters, no words across scribble strip boundaries
 - A modus to control any value under your mouse cursor with the rightmost push encoder
 - Encoder assignment for editing the currently focused plugin's parameters ("Plug-In" button)
 - VST Quick Control encoder assignment ("Inst" button)
-- Meter LEDs that closely resemble the MixConsole meters' scale
 
 ## Motivation
 
@@ -64,7 +63,23 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 
 ## Setup
 
+- Make sure the firmware of your X-Touch (/X-Touch Extender) [is up to date](https://www.youtube.com/watch?v=Q4ZKXVXQP8g) (>= v1.22)
+- Set your X-Touch unit(s) to [Mackie Control (MC) mode](https://www.youtube.com/watch?v=LrVWRgJbSyw&t=68s)
+- Open up Cubase and make sure you are running version v12.0.52 or later
+- In the studio setup window, remove any Mackie Control remote devices that you set up for your X-Touch / X-Touch Extender (don't forget to take screenshots of your command assignments)
+- On windows, open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` and create the nested directories `behringer\xtouch` within it.
+- On MacOS, open `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts` and create the nested directories `behringer/xtouch` within it.
+- Download the MIDI Remote script file from the latest GitHub release and move it into the newly created directory (`.../Local/behringer/xtouch`).
+- Restart Cubase
+
+Cubase should automatically detect the X-Touch and enable it as a MIDI Remote. If it doesn't, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
+
 ## Setup with an X-Touch Extender unit
+
+To use the X-Touch with an X-Touch Extender unit, follow the same steps as above, but edit the script file before restarting Cubase:
+At the very bottom of the script file, replace `var USE_EXTENDER = false;` with `var USE_EXTENDER = true;`. If you have your extender on the right side of the main device, you may also replace `var IS_EXTENDER_LEFT = true;` with `var IS_EXTENDER_LEFT = false;`.
+
+Then restart Cubase and in the lower zone's MIDI Remote pane, configure the MIDI Remote by clicking the "+" button.
 
 ## Drawbacks
 
