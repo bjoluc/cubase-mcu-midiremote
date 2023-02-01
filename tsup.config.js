@@ -18,6 +18,7 @@ export default defineConfig((options) => {
       esbuildOptions.define = {
         ...esbuildOptions.define,
         CONFIG_USE_EXTENDER: Boolean(options.watch).toString(),
+        SCRIPT_VERSION: `"${process.env.npm_package_version}"`,
       };
     },
   };

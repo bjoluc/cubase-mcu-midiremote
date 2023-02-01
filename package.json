@@ -1,10 +1,12 @@
 {
   "name": "cubase-xtouch-midiremote",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "build": "tsup",
     "start": "tsup --watch",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "postversion": "npm run build"
   },
   "author": "bjoluc",
   "license": "MIT",

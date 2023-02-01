@@ -20,6 +20,13 @@ const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "github.co
 const ports = new MidiPorts(driver, USE_EXTENDER, IS_EXTENDER_LEFT);
 
 const { activationCallbacks, midiManagers } = setupDeviceConnection(driver, ports);
+activationCallbacks.addCallback(() => {
+  // @ts-expect-error The script version is filled in by esbuild
+  console.log("Activating cubase-xtouch-midiremote v" + SCRIPT_VERSION);
+  console.log(
+    "Updates may be available at https://github.com/bjoluc/cubase-xtouch-midiremote/releases"
+  );
+});
 
 //-----------------------------------------------------------------------------
 // 2. SURFACE LAYOUT - create control elements and midi bindings
