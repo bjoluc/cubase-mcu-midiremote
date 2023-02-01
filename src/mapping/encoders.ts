@@ -225,18 +225,22 @@ export function bindEncoders(
         {
           displayMode: EncoderDisplayMode.SingleDot,
           encoderValue: band.mFreq,
+          pushToggleValue: band.mOn,
         },
         {
           displayMode: EncoderDisplayMode.BoostOrCut,
           encoderValue: band.mGain,
+          pushToggleValue: band.mOn,
         },
         {
           displayMode: EncoderDisplayMode.SingleDot,
           encoderValue: band.mQ,
+          pushToggleValue: band.mOn,
         },
         {
           displayMode: EncoderDisplayMode.SingleDot,
           encoderValue: band.mFilterType,
+          pushToggleValue: band.mOn,
         },
       ]),
     },
