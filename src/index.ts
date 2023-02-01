@@ -15,7 +15,7 @@ import { setupDeviceConnection } from "./midi/connection";
 import { MidiPorts } from "./midi/MidiPorts";
 import { createSurfaceElements } from "./surface";
 
-const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "bjoluc.de");
+const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "github.com/bjoluc");
 
 const ports = new MidiPorts(driver, USE_EXTENDER, IS_EXTENDER_LEFT);
 
