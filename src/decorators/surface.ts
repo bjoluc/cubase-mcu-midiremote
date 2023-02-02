@@ -17,12 +17,20 @@ export interface TouchSensitiveFader extends MR_Fader {
   mTouchedValueInternal: MR_SurfaceCustomValueVariable;
 }
 
+export interface JogWheel extends MR_Fader {
+  mProxyValue: MR_SurfaceCustomValueVariable;
+  mKnobModeEnabledValue: MR_SurfaceCustomValueVariable;
+  mJogRightValue: MR_SurfaceCustomValueVariable;
+  mJogLeftValue: MR_SurfaceCustomValueVariable;
+}
+
 export interface DecoratedDeviceSurface extends MR_DeviceSurface {
   makeLedButton: (...args: Parameters<MR_DeviceSurface["makeButton"]>) => LedButton;
   makeLedPushEncoder: (...args: Parameters<MR_DeviceSurface["makePushEncoder"]>) => LedPushEncoder;
   makeTouchSensitiveFader: (
     ...args: Parameters<MR_DeviceSurface["makeFader"]>
   ) => TouchSensitiveFader;
+  makeJogWheel: (...args: Parameters<MR_DeviceSurface["makeKnob"]>) => JogWheel;
 }
 
 export function decorateSurface(surface: MR_DeviceSurface) {
@@ -56,6 +64,17 @@ export function decorateSurface(surface: MR_DeviceSurface) {
     fader.mTouchedValueInternal = surface.makeCustomValueVariable("faderTouchedInternal");
 
     return fader;
+  };
+
+  decoratedSurface.makeJogWheel = (...args) => {
+    const jogWheel = surface.makeKnob(...args) as JogWheel;
+
+    jogWheel.mProxyValue = surface.makeCustomValueVariable("jogWheelProxy");
+    jogWheel.mKnobModeEnabledValue = surface.makeCustomValueVariable("jogWheelKnobModeEnabled");
+    jogWheel.mJogRightValue = surface.makeCustomValueVariable("jogWheelJogRight");
+    jogWheel.mJogLeftValue = surface.makeCustomValueVariable("jogWheelJogLeft");
+
+    return jogWheel;
   };
 
   return decoratedSurface;

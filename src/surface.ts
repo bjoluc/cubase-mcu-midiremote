@@ -49,9 +49,7 @@ export function createSurfaceElements(surface: DecoratedDeviceSurface, channelCo
     control: {
       mainFader: surface.makeTouchSensitiveFader(channelsWidth + 2, 20, 2, 16),
 
-      jogWheel: surface.makeKnob(channelsWidth + 13, 29.25, 8.5, 8.5),
-      jogRight: surface.makeCustomValueVariable("jogRight"),
-      jogLeft: surface.makeCustomValueVariable("jogLeft"),
+      jogWheel: surface.makeJogWheel(channelsWidth + 13, 29.25, 8.5, 8.5),
 
       buttons: {
         display: makeSquareButton(channelsWidth + 2, 7.25),

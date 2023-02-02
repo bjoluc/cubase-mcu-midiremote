@@ -14,7 +14,7 @@ Notable features include:
 
 - Track-colored scribble strips
 - Full utilization of all scribble strip display segments – no padding characters, no words across scribble strip boundaries
-- A modus to control any value under your mouse cursor with the rightmost push encoder
+- A modus to control any value under your mouse cursor with the rightmost push encoder or the jog wheel
 - Encoder assignment for editing the currently focused plugin's parameters ("Plug-In" button)
 - VST Quick Control encoder assignment ("Inst" button)
 
@@ -59,7 +59,7 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 - The Channel Left/Right buttons below the Fader Bank buttons do not navigate between encoder parameter pages, but move the fader bank left/right by one channel. Navigating parameter banks can be achieved by pressing the respective Encoder Assign button multiple times to cycle through the available parameter pages in a round-robin fashion.
 - Pressing "Shift + Edit" closes all **plugin** windows instead of only the currently active window (I couldn't find a command to "close the currently active window").
 - The "Instrument" and "Master" buttons are assigned to the handy MixConsole History Undo and Redo commands, respectively. In the default MCU mapping, they would activate instrument and main effects encoder assignments. I find using these on the X-Touch more complicated than using the mouse for the same tasks and hence didn't implement them.
-- For the same reason, the "Sends" button doesn't activate a send effects encoder assignment. Instead, it turns the rightmost push encoder into a controller for the value that's currently under the mouse cursor.
+- For the same reason, the "Sends" button doesn't activate a send effects encoder assignment. Instead, it turns the rightmost push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor.
 
 ## Setup
 

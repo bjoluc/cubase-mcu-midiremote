@@ -18,8 +18,11 @@ function setShiftableButtonsLedValues(
 function bindCursorValueControlButton(
   page: DecoratedFactoryMappingPage,
   button: LedButton,
-  encoder: LedPushEncoder
+  elements: SurfaceElements
 ) {
+  const encoder = elements.channels[elements.channels.length - 1].encoder;
+  const jogWheel = elements.control.jogWheel;
+
   const subPageArea = page.makeSubPageArea("Cursor Value Control");
   const inactiveSubpage = subPageArea.makeSubPage("Cursor Value Control Inactive");
   const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
@@ -31,9 +34,11 @@ function bindCursorValueControlButton(
   activeSubpage.mOnActivate = (context) => {
     encoderDisplayMode.setProcessValue(context, EncoderDisplayMode.SingleDot);
     button.mLedValue.setProcessValue(context, 1);
+    jogWheel.mKnobModeEnabledValue.setProcessValue(context, 1);
   };
   inactiveSubpage.mOnActivate = (context) => {
     button.mLedValue.setProcessValue(context, 0);
+    jogWheel.mKnobModeEnabledValue.setProcessValue(context, 0);
   };
 
   page
@@ -47,6 +52,12 @@ function bindCursorValueControlButton(
     .makeValueBinding(encoder.mEncoderValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
     .setSubPage(activeSubpage);
   page.makeValueBinding(encoder.mDisplayModeValue, encoderDisplayMode).setSubPage(activeSubpage);
+
+  const dummyHostVariable = page.mCustom.makeHostValueVariable("dummy");
+  page.makeValueBinding(jogWheel.mSurfaceValue, dummyHostVariable).setSubPage(inactiveSubpage);
+  page
+    .makeValueBinding(jogWheel.mSurfaceValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
+    .setSubPage(activeSubpage);
 }
 
 export function bindControlButtons(
@@ -126,11 +137,7 @@ export function bindControlButtons(
     .setTypeToggle();
 
   // Sends (Control value under cursor)
-  bindCursorValueControlButton(
-    page,
-    buttons.automation[2],
-    elements.channels[elements.channels.length - 1].encoder
-  );
+  bindCursorValueControlButton(page, buttons.automation[2], elements);
 
   // Project
   page.makeCommandBinding(buttons.automation[3].mSurfaceValue, "Project", "Bring To Front");
@@ -228,7 +235,7 @@ export function bindJogWheelSection(page: MR_FactoryMappingPage, elements: Surfa
     scrubButton.mLedValue.setProcessValue(context, 0);
   };
 
-  const { jogLeft, jogRight } = elements.control;
+  const { mJogLeftValue: jogLeft, mJogRightValue: jogRight } = elements.control.jogWheel;
   page.makeCommandBinding(jogLeft, "Transport", "Jog Left").setSubPage(jogSubPage);
   page.makeCommandBinding(jogRight, "Transport", "Jog Right").setSubPage(jogSubPage);
   page.makeCommandBinding(jogLeft, "Transport", "Nudge Cursor Left").setSubPage(scrubSubPage);

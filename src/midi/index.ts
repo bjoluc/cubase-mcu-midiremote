@@ -295,19 +295,21 @@ export function bindSurfaceElementsToMidi(
   };
 
   // Jog wheel
+  const jogWheel = elements.control.jogWheel;
   const jogWheelValue = elements.control.jogWheel.mSurfaceValue;
-  jogWheelValue.mMidiBinding
+
+  jogWheel.mProxyValue.mMidiBinding
     .setInputPort(mainPorts.input)
     .bindToControlChange(0, 0x3c)
     .setTypeRelativeSignedBit();
-  jogWheelValue.mOnProcessValueChange = (context, value, difference) => {
+  jogWheel.mProxyValue.mOnProcessValueChange = (context, value, difference) => {
     const jumpOffset = 0.4;
 
     // Prevent value from reaching its limits
     if (value < 0.5 - jumpOffset) {
-      jogWheelValue.setProcessValue(context, value + jumpOffset);
+      jogWheel.mProxyValue.setProcessValue(context, value + jumpOffset);
     } else if (value > 0.5 + jumpOffset) {
-      jogWheelValue.setProcessValue(context, value - jumpOffset);
+      jogWheel.mProxyValue.setProcessValue(context, value - jumpOffset);
     }
 
     // Compensate for the difference value offsets introduced above
@@ -319,13 +321,19 @@ export function bindSurfaceElementsToMidi(
       }
     }
 
-    // Handle jog events
-    if (difference !== 0) {
-      const isLeftJog = difference < 0;
-      if (isLeftJog) {
-        elements.control.jogLeft.setProcessValue(context, 1);
-      } else {
-        elements.control.jogRight.setProcessValue(context, 1);
+    if (elements.control.jogWheel.mKnobModeEnabledValue.getProcessValue(context)) {
+      jogWheelValue.setProcessValue(
+        context,
+        Math.max(0, Math.min(1, jogWheelValue.getProcessValue(context) + difference))
+      );
+    } else {
+      // Handle jog events
+      if (difference !== 0) {
+        if (difference < 0) {
+          jogWheel.mJogLeftValue.setProcessValue(context, 1);
+        } else {
+          jogWheel.mJogRightValue.setProcessValue(context, 1);
+        }
       }
     }
   };
