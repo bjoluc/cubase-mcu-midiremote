@@ -26,7 +26,7 @@ activationCallbacks.addCallback(() => {
   // @ts-expect-error The script version is filled in by esbuild
   console.log("Activating cubase-xtouch-midiremote v" + SCRIPT_VERSION);
   console.log(
-    "Updates may be available at https://github.com/bjoluc/cubase-xtouch-midiremote/releases"
+    "A newer version may be available at https://github.com/bjoluc/cubase-xtouch-midiremote/releases"
   );
 });
 
