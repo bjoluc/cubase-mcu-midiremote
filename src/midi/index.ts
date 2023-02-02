@@ -175,7 +175,7 @@ export function bindSurfaceElementsToMidi(
           : parameterName
       );
     };
-    channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
+    channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value = "") => {
       displayValue = LcdManager.centerString(LcdManager.abbreviateString(value));
       isLocalValueModeActive = true;
       updateDisplay(context);
@@ -189,8 +189,8 @@ export function bindSurfaceElementsToMidi(
         1
       );
     };
-    channel.encoder.mEncoderValue.mOnTitleChange = (context, _title1, title) => {
-      // Luckily `mOnTitleChange` runs after `mOnDisplayValueChange`, so setting
+    channel.encoder.mEncoderValue.mOnTitleChange = (context, _title1, title = "") => {
+      // Luckily, `mOnTitleChange` runs after `mOnDisplayValueChange`, so setting
       // `isLocalValueModeActive` to `false` here overwrites the `true` set by
       // `mOnDisplayValueChange`
       isLocalValueModeActive = false;
@@ -204,7 +204,7 @@ export function bindSurfaceElementsToMidi(
 
     onNameValueDisplayModeChange.addCallback(updateDisplay);
 
-    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
+    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title = "") => {
       managers.lcd.setChannelText(context, 1, index, LcdManager.abbreviateString(title));
     };
 
