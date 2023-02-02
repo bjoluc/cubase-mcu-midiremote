@@ -96,18 +96,22 @@ export function bindSurfaceElementsToMidi(
     let forceUpdate = true;
     let lastFaderValue = 0;
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      lastFaderValue = newValue;
-
       // Prevent identical messages to reduce fader noise
-      if (areMotorsActive && !isFaderTouched && (difference !== 0 || forceUpdate)) {
+      if (
+        areMotorsActive &&
+        !isFaderTouched &&
+        (difference !== 0 || lastFaderValue === 0 || forceUpdate)
+      ) {
         forceUpdate = false;
         sendValue(context, newValue);
       }
+
+      lastFaderValue = newValue;
     };
 
     // Set fader to `0` when unassigned
-    fader.mSurfaceValue.mOnTitleChange = (context, title, unit) => {
-      if (unit === "") {
+    fader.mSurfaceValue.mOnTitleChange = (context, title) => {
+      if (title === "") {
         forceUpdate = true;
         fader.mSurfaceValue.setProcessValue(context, 0);
         // `mOnProcessValueChange` somehow isn't run here on `setProcessValue()`, hence:
