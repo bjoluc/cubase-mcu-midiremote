@@ -1,6 +1,6 @@
 import { SurfaceElements } from "../surface";
 import { LedButton, TouchSensitiveFader } from "../decorators/surface";
-import { makeCallbackCollection } from "../util";
+import { makeCallbackCollection, TimerUtils } from "../util";
 import { ActivationCallbacks } from "./connection";
 import { MidiManagers } from "./managers";
 import { LcdManager } from "./managers/LcdManager";
@@ -44,7 +44,8 @@ export function bindSurfaceElementsToMidi(
   elements: SurfaceElements,
   ports: MidiPorts,
   managers: MidiManagers,
-  activationCallbacks: ActivationCallbacks
+  activationCallbacks: ActivationCallbacks,
+  { setTimeout }: TimerUtils
 ) {
   const buttons = elements.control.buttons;
 
@@ -162,25 +163,43 @@ export function bindSurfaceElementsToMidi(
     // Scribble Strip
     let parameterName = "";
     let displayValue = "";
+    let isLocalValueModeActive = false;
 
-    const updateDisplay = (context: MR_ActiveDevice, isValueModeActive: number) => {
+    const updateDisplay = (context: MR_ActiveDevice) => {
       managers.lcd.setChannelText(
         context,
         0,
         index,
-        isValueModeActive ? displayValue : parameterName
+        isLocalValueModeActive || elements.display.isValueModeActive.getProcessValue(context)
+          ? displayValue
+          : parameterName
       );
     };
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
       displayValue = LcdManager.centerString(LcdManager.abbreviateString(value));
-      updateDisplay(context, elements.display.isValueModeActive.getProcessValue(context));
+      isLocalValueModeActive = true;
+      updateDisplay(context);
+      setTimeout(
+        context,
+        `updateDisplay${index}`,
+        (context) => {
+          isLocalValueModeActive = false;
+          updateDisplay(context);
+        },
+        1
+      );
     };
     channel.encoder.mEncoderValue.mOnTitleChange = (context, _title1, title) => {
+      // Luckily `mOnTitleChange` runs after `mOnDisplayValueChange`, so setting
+      // `isLocalValueModeActive` to `false` here overwrites the `true` set by
+      // `mOnDisplayValueChange`
+      isLocalValueModeActive = false;
+
       if (title === "Pan Left-Right") {
         title = "Pan";
       }
       parameterName = LcdManager.centerString(LcdManager.abbreviateString(title));
-      updateDisplay(context, elements.display.isValueModeActive.getProcessValue(context));
+      updateDisplay(context);
     };
 
     onNameValueDisplayModeChange.addCallback(updateDisplay);
@@ -192,7 +211,6 @@ export function bindSurfaceElementsToMidi(
     // VU Meter
     let lastMeterUpdateTime = 0;
     channel.vuMeter.mOnProcessValueChange = (context, newValue) => {
-      // @ts-ignore `performance` exists in the runtime environment
       const now: number = performance.now(); // ms
 
       if (now - lastMeterUpdateTime > 125) {
