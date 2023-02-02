@@ -89,3 +89,16 @@ export function makeTimerUtils(page: MR_FactoryMappingPage, surface: MR_DeviceSu
 
   return { setTimeout };
 }
+
+export class ContextStateVariable<ValueType> {
+  constructor(private name: string, private initialValue: ValueType) {}
+
+  set(context: MR_ActiveDevice, value: ValueType) {
+    context.setState(this.name, JSON.stringify(value));
+  }
+
+  get(context: MR_ActiveDevice): ValueType {
+    const state = context.getState(this.name);
+    return state === "" ? this.initialValue : JSON.parse(state);
+  }
+}

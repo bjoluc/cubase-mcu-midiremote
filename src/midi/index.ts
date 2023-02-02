@@ -1,6 +1,6 @@
 import { SurfaceElements } from "../surface";
 import { LedButton, TouchSensitiveFader } from "../decorators/surface";
-import { makeCallbackCollection, TimerUtils } from "../util";
+import { ContextStateVariable, makeCallbackCollection, TimerUtils } from "../util";
 import { ActivationCallbacks } from "./connection";
 import { MidiManagers } from "./managers";
 import { LcdManager } from "./managers/LcdManager";
@@ -73,7 +73,12 @@ export function bindSurfaceElementsToMidi(
     }
   });
 
-  function bindFader(ports: PortPair, fader: TouchSensitiveFader, faderIndex: number) {
+  function bindFader(
+    ports: PortPair,
+    fader: TouchSensitiveFader,
+    faderIndex: number,
+    globalFaderId: number
+  ) {
     fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
     fader.mTouchedValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 104 + faderIndex);
     fader.mTouchedValueInternal.mMidiBinding
@@ -89,24 +94,26 @@ export function bindSurfaceElementsToMidi(
     fader.mTouchedValueInternal.mOnProcessValueChange = (context, value) => {
       isFaderTouched = Boolean(value);
       if (!isFaderTouched) {
-        sendValue(context, lastFaderValue);
+        sendValue(context, lastFaderValue.get(context));
       }
     };
 
     let forceUpdate = true;
-    let lastFaderValue = 0;
+    const lastFaderValue = new ContextStateVariable(`fader${globalFaderId}LastValue`, 0);
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
+      console.log(lastFaderValue.get(context).toString());
+
       // Prevent identical messages to reduce fader noise
       if (
         areMotorsActive &&
         !isFaderTouched &&
-        (difference !== 0 || lastFaderValue === 0 || forceUpdate)
+        (difference !== 0 || lastFaderValue.get(context) === 0 || forceUpdate)
       ) {
         forceUpdate = false;
         sendValue(context, newValue);
       }
 
-      lastFaderValue = newValue;
+      lastFaderValue.set(context, newValue);
     };
 
     // Set fader to `0` when unassigned
@@ -115,7 +122,7 @@ export function bindSurfaceElementsToMidi(
         forceUpdate = true;
         fader.mSurfaceValue.setProcessValue(context, 0);
         // `mOnProcessValueChange` somehow isn't run here on `setProcessValue()`, hence:
-        lastFaderValue = 0;
+        lastFaderValue.set(context, 0);
         if (areMotorsActive) {
           forceUpdate = false;
           sendValue(context, 0);
@@ -125,7 +132,7 @@ export function bindSurfaceElementsToMidi(
 
     motorButton.onSurfaceValueChange.addCallback((context) => {
       if (areMotorsActive) {
-        sendValue(context, lastFaderValue);
+        sendValue(context, lastFaderValue.get(context));
       }
     });
   }
@@ -236,12 +243,12 @@ export function bindSurfaceElementsToMidi(
     });
 
     // Fader
-    bindFader(channelPorts, channel.fader, index % 8);
+    bindFader(channelPorts, channel.fader, index % 8, index);
   });
 
   const mainPorts = ports.getMainPorts();
 
-  bindFader(mainPorts, elements.control.mainFader, 8);
+  bindFader(mainPorts, elements.control.mainFader, 8, ports.getChannelCount());
 
   [
     ...[0, 3, 1, 4, 2, 5].map((index) => buttons.encoderAssign[index]),
