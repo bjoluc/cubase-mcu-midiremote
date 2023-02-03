@@ -98,7 +98,7 @@ export function bindEncoders(
           };
 
           const isPerChannelAssignment = typeof assignmentsConfig === "function";
-          let assignments = isPerChannelAssignment
+          const assignments = isPerChannelAssignment
             ? mixerBankChannels.map((channel, channelIndex) =>
                 assignmentsConfig(channel, channelIndex)
               )

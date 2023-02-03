@@ -1,4 +1,4 @@
-import { createElements } from "../../util";
+import { ContextStateVariable, createElements } from "../../util";
 import { MidiPorts } from "../MidiPorts";
 
 export enum ScribbleStripColor {
@@ -13,7 +13,7 @@ export enum ScribbleStripColor {
 }
 
 export class ColorManager {
-  static rgbToScribbleStripColor(r: number, g: number, b: number): ScribbleStripColor {
+  private static rgbToScribbleStripColor(r: number, g: number, b: number): ScribbleStripColor {
     const colors = [
       { code: ScribbleStripColor.black, r: 0, g: 0, b: 0 },
       { code: ScribbleStripColor.red, r: 1, g: 0, b: 0 },
@@ -38,14 +38,29 @@ export class ColorManager {
     );
   }
 
-  private colors: number[];
+  private colors: Array<ContextStateVariable<number>>;
 
   constructor(private ports: MidiPorts) {
-    this.colors = createElements(ports.getChannelCount(), () => ScribbleStripColor.white);
+    this.colors = createElements(
+      ports.getChannelCount(),
+      () => new ContextStateVariable(ScribbleStripColor.black)
+    );
+  }
+
+  private sendColors(context: MR_ActiveDevice) {
+    this.ports.forEachPortPair(({ output }, firstChannelIndex) => {
+      output.sendSysex(context, [
+        0x72,
+        ...this.colors
+          .slice(firstChannelIndex, firstChannelIndex + 8)
+          .map((color) => color.get(context)),
+        0xf7,
+      ]);
+    });
   }
 
   setChannelColor(context: MR_ActiveDevice, channelIndex: number, color: ScribbleStripColor) {
-    this.colors[channelIndex] = color;
+    this.colors[channelIndex].set(context, color);
     this.sendColors(context);
   }
 
@@ -60,17 +75,9 @@ export class ColorManager {
   }
 
   resetColors(context: MR_ActiveDevice) {
-    this.colors = createElements(this.ports.getChannelCount(), () => ScribbleStripColor.white);
+    for (const color of this.colors) {
+      color.set(context, ScribbleStripColor.white);
+    }
     this.sendColors(context);
-  }
-
-  private sendColors(context: MR_ActiveDevice) {
-    this.ports.forEachPortPair(({ output }, firstChannelIndex) => {
-      output.sendSysex(context, [
-        0x72,
-        ...this.colors.slice(firstChannelIndex, firstChannelIndex + 8),
-        0xf7,
-      ]);
-    });
   }
 }

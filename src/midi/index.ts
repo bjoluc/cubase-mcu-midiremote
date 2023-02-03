@@ -14,23 +14,27 @@ export enum EncoderDisplayMode {
 }
 
 function bindLedButton(ports: PortPair, button: LedButton, note: number) {
-  let currentSurfaceValue = 0;
+  const currentSurfaceValue = new ContextStateVariable(0);
   button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
 
   button.onSurfaceValueChange.addCallback((context, newValue) => {
-    currentSurfaceValue = newValue;
-    ports.output.sendNoteOn(context, note, newValue || currentLedValue);
+    currentSurfaceValue.set(context, newValue);
+    ports.output.sendNoteOn(context, note, newValue || currentLedValue.get(context));
   });
 
-  let currentLedValue = 0;
+  const currentLedValue = new ContextStateVariable(0);
   button.mLedValue.mOnProcessValueChange = (context, newValue) => {
-    currentLedValue = newValue;
+    currentLedValue.set(context, newValue);
     ports.output.sendNoteOn(context, note, newValue);
   };
 
   button.mProxyValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
   button.mProxyValue.mOnProcessValueChange = (context, newValue) => {
-    ports.output.sendNoteOn(context, note, newValue || currentSurfaceValue || currentLedValue);
+    ports.output.sendNoteOn(
+      context,
+      note,
+      newValue || currentSurfaceValue.get(context) || currentLedValue.get(context)
+    );
   };
 }
 
@@ -51,11 +55,12 @@ export function bindSurfaceElementsToMidi(
 
   const motorButton = buttons.automation[5];
 
-  let areMotorsActive = true;
+  const areMotorsActive = new ContextStateVariable(true);
   motorButton.onSurfaceValueChange.addCallback((context, value) => {
     if (value === 1) {
-      areMotorsActive = !areMotorsActive;
-      motorButton.mLedValue.setProcessValue(context, +areMotorsActive);
+      const areMotorsActiveValue = !areMotorsActive.get(context);
+      areMotorsActive.set(context, areMotorsActiveValue);
+      motorButton.mLedValue.setProcessValue(context, +areMotorsActiveValue);
     }
   });
   activationCallbacks.addCallback((context) => {
@@ -73,12 +78,7 @@ export function bindSurfaceElementsToMidi(
     }
   });
 
-  function bindFader(
-    ports: PortPair,
-    fader: TouchSensitiveFader,
-    faderIndex: number,
-    globalFaderId: number
-  ) {
+  function bindFader(ports: PortPair, fader: TouchSensitiveFader, faderIndex: number) {
     fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
     fader.mTouchedValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 104 + faderIndex);
     fader.mTouchedValueInternal.mMidiBinding
@@ -90,26 +90,27 @@ export function bindSurfaceElementsToMidi(
       ports.output.sendMidi(context, [0xe0 + faderIndex, value & 0x7f, value >> 7]);
     };
 
-    let isFaderTouched = false;
+    const isFaderTouched = new ContextStateVariable(false);
     fader.mTouchedValueInternal.mOnProcessValueChange = (context, value) => {
-      isFaderTouched = Boolean(value);
-      if (!isFaderTouched) {
+      const isFaderTouchedValue = Boolean(value);
+      isFaderTouched.set(context, isFaderTouchedValue);
+      if (!isFaderTouchedValue) {
         sendValue(context, lastFaderValue.get(context));
       }
     };
 
-    let forceUpdate = true;
-    const lastFaderValue = new ContextStateVariable(`fader${globalFaderId}LastValue`, 0);
+    const forceUpdate = new ContextStateVariable(true);
+    const lastFaderValue = new ContextStateVariable(0);
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
       console.log(lastFaderValue.get(context).toString());
 
       // Prevent identical messages to reduce fader noise
       if (
-        areMotorsActive &&
-        !isFaderTouched &&
-        (difference !== 0 || lastFaderValue.get(context) === 0 || forceUpdate)
+        areMotorsActive.get(context) &&
+        !isFaderTouched.get(context) &&
+        (difference !== 0 || lastFaderValue.get(context) === 0 || forceUpdate.get(context))
       ) {
-        forceUpdate = false;
+        forceUpdate.set(context, false);
         sendValue(context, newValue);
       }
 
@@ -119,19 +120,19 @@ export function bindSurfaceElementsToMidi(
     // Set fader to `0` when unassigned
     fader.mSurfaceValue.mOnTitleChange = (context, title) => {
       if (title === "") {
-        forceUpdate = true;
+        forceUpdate.set(context, true);
         fader.mSurfaceValue.setProcessValue(context, 0);
         // `mOnProcessValueChange` somehow isn't run here on `setProcessValue()`, hence:
         lastFaderValue.set(context, 0);
-        if (areMotorsActive) {
-          forceUpdate = false;
+        if (areMotorsActive.get(context)) {
+          forceUpdate.set(context, false);
           sendValue(context, 0);
         }
       }
     };
 
     motorButton.onSurfaceValueChange.addCallback((context) => {
-      if (areMotorsActive) {
+      if (areMotorsActive.get(context)) {
         sendValue(context, lastFaderValue.get(context));
       }
     });
@@ -172,29 +173,30 @@ export function bindSurfaceElementsToMidi(
     };
 
     // Scribble Strip
-    let parameterName = "";
-    let displayValue = "";
-    let isLocalValueModeActive = false;
+    const currentParameterName = new ContextStateVariable("");
+    const currentDisplayValue = new ContextStateVariable("");
+    const isLocalValueModeActive = new ContextStateVariable(false);
 
     const updateDisplay = (context: MR_ActiveDevice) => {
       managers.lcd.setChannelText(
         context,
         0,
         index,
-        isLocalValueModeActive || elements.display.isValueModeActive.getProcessValue(context)
-          ? displayValue
-          : parameterName
+        isLocalValueModeActive.get(context) ||
+          elements.display.isValueModeActive.getProcessValue(context)
+          ? currentDisplayValue.get(context)
+          : currentParameterName.get(context)
       );
     };
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value = "") => {
-      displayValue = LcdManager.centerString(LcdManager.abbreviateString(value));
-      isLocalValueModeActive = true;
+      currentDisplayValue.set(context, LcdManager.centerString(LcdManager.abbreviateString(value)));
+      isLocalValueModeActive.set(context, true);
       updateDisplay(context);
       setTimeout(
         context,
         `updateDisplay${index}`,
         (context) => {
-          isLocalValueModeActive = false;
+          isLocalValueModeActive.set(context, false);
           updateDisplay(context);
         },
         1
@@ -204,12 +206,16 @@ export function bindSurfaceElementsToMidi(
       // Luckily, `mOnTitleChange` runs after `mOnDisplayValueChange`, so setting
       // `isLocalValueModeActive` to `false` here overwrites the `true` set by
       // `mOnDisplayValueChange`
-      isLocalValueModeActive = false;
+      isLocalValueModeActive.set(context, false);
 
       if (title === "Pan Left-Right") {
         title = "Pan";
       }
-      parameterName = LcdManager.centerString(LcdManager.abbreviateString(title));
+
+      currentParameterName.set(
+        context,
+        LcdManager.centerString(LcdManager.abbreviateString(title))
+      );
       updateDisplay(context);
     };
 
@@ -243,12 +249,12 @@ export function bindSurfaceElementsToMidi(
     });
 
     // Fader
-    bindFader(channelPorts, channel.fader, index % 8, index);
+    bindFader(channelPorts, channel.fader, index % 8);
   });
 
   const mainPorts = ports.getMainPorts();
 
-  bindFader(mainPorts, elements.control.mainFader, 8, ports.getChannelCount());
+  bindFader(mainPorts, elements.control.mainFader, 8);
 
   [
     ...[0, 3, 1, 4, 2, 5].map((index) => buttons.encoderAssign[index]),
@@ -282,12 +288,12 @@ export function bindSurfaceElementsToMidi(
     bindLamp(mainPorts, lamp, 0x71 + index);
   });
 
-  let lastTimeFormat = "";
-  let isInitialized = false;
+  const lastTimeFormat = new ContextStateVariable("");
+  const isInitialized = new ContextStateVariable(false);
   elements.display.onTimeUpdated = (context, time, timeFormat) => {
-    const hasTimeFormatChanged = timeFormat !== lastTimeFormat;
+    const hasTimeFormatChanged = timeFormat !== lastTimeFormat.get(context);
     if (hasTimeFormatChanged) {
-      lastTimeFormat = timeFormat;
+      lastTimeFormat.set(context, timeFormat);
     }
 
     time = time.replaceAll(" ", "");
@@ -302,10 +308,10 @@ export function bindSurfaceElementsToMidi(
         managers.segmentDisplay.clearTime(context);
       }
       // Adapt time mode LEDs to time format
-      if (!isInitialized) {
+      if (!isInitialized.get(context)) {
         // Using `setProcessValue` on initialization somehow crashes the host, so we don't do it on
         // initialization.
-        isInitialized = true;
+        isInitialized.set(context, true);
       } else {
         elements.display.leds.smpte.mSurfaceValue.setProcessValue(
           context,

@@ -91,7 +91,12 @@ export function makeTimerUtils(page: MR_FactoryMappingPage, surface: MR_DeviceSu
 }
 
 export class ContextStateVariable<ValueType> {
-  constructor(private name: string, private initialValue: ValueType) {}
+  private static nextVariableId = 0;
+
+  constructor(
+    private initialValue: ValueType,
+    private name: string = `contextStateVariable${ContextStateVariable.nextVariableId++}`
+  ) {}
 
   set(context: MR_ActiveDevice, value: ValueType) {
     context.setState(this.name, JSON.stringify(value));
