@@ -13,7 +13,7 @@ export enum EncoderDisplayMode {
   Spread = 3,
 }
 
-function bindLedButton(ports: PortPair, button: LedButton, note: number) {
+function bindLedButton(ports: PortPair, button: LedButton, note: number, isChannelButton = false) {
   const currentSurfaceValue = new ContextStateVariable(0);
   button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
 
@@ -36,6 +36,15 @@ function bindLedButton(ports: PortPair, button: LedButton, note: number) {
       newValue || currentSurfaceValue.get(context) || currentLedValue.get(context)
     );
   };
+
+  if (isChannelButton) {
+    // Disable button when channel becomes unassigned
+    button.mSurfaceValue.mOnTitleChange = (context, title) => {
+      if (title === "") {
+        ports.output.sendNoteOn(context, note, 0);
+      }
+    };
+  }
 }
 
 function bindLamp(ports: PortPair, lamp: MR_Lamp, note: number) {
@@ -102,8 +111,6 @@ export function bindSurfaceElementsToMidi(
     const forceUpdate = new ContextStateVariable(true);
     const lastFaderValue = new ContextStateVariable(0);
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      console.log(lastFaderValue.get(context).toString());
-
       // Prevent identical messages to reduce fader noise
       if (
         areMotorsActive.get(context) &&
@@ -202,19 +209,24 @@ export function bindSurfaceElementsToMidi(
         1
       );
     };
-    channel.encoder.mEncoderValue.mOnTitleChange = (context, _title1, title = "") => {
+    channel.encoder.mEncoderValue.mOnTitleChange = (context, title1 = "", title2 = "") => {
+      // Reset encoder LED ring when channel becomes unassigned
+      if (title1 === "") {
+        channelPorts.output.sendMidi(context, [0xb0, 0x30 + (index % 8), 0]);
+      }
+
       // Luckily, `mOnTitleChange` runs after `mOnDisplayValueChange`, so setting
       // `isLocalValueModeActive` to `false` here overwrites the `true` set by
       // `mOnDisplayValueChange`
       isLocalValueModeActive.set(context, false);
 
-      if (title === "Pan Left-Right") {
-        title = "Pan";
+      if (title2 === "Pan Left-Right") {
+        title2 = "Pan";
       }
 
       currentParameterName.set(
         context,
-        LcdManager.centerString(LcdManager.abbreviateString(title))
+        LcdManager.centerString(LcdManager.abbreviateString(title2))
       );
       updateDisplay(context);
     };
@@ -245,7 +257,7 @@ export function bindSurfaceElementsToMidi(
     // Buttons
     const buttons = channel.buttons;
     [buttons.record, buttons.solo, buttons.mute, buttons.select].forEach((button, row) => {
-      bindLedButton(channelPorts, button, row * 8 + (index % 8));
+      bindLedButton(channelPorts, button, row * 8 + (index % 8), true);
     });
 
     // Fader
