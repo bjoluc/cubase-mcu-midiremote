@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.2.0...v1.2.1) (2023-02-04)
+
+
+### Bug Fixes
+
+* Patch an upstream issue which made some specific parameter names cause `TypeError`s (paulpflug/abbreviate[#1](https://github.com/bjoluc/cubase-xtouch-midiremote/issues/1)) ([eac9133](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/eac9133a0afdb78cb0a740e61287cbff4e771c7c))
+
 ## [1.2.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.1.2...v1.2.0) (2023-02-04)
 
 
