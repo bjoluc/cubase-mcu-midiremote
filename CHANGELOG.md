@@ -32,7 +32,6 @@ All notable changes to this project will be documented in this file. See
 
 * Fix faders not being sent up after paging to unassigned channels ([83734ba](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/83734babebbbc0e5412b807221b3fe65ce71e907))
 * Fix faders not being set after reconnecting devices ([7e210e2](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/7e210e24d7cbb069b7df636865c7ae80fec6af6a))
-* Prevent errors on undefined parameter titles and values ([421b9b2](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/421b9b267a360244efa6909daff0e151c317e0ec))
 
 ## [1.1.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.0.1...v1.1.0) (2023-02-02)
 
