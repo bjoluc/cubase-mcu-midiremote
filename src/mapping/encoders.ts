@@ -1,3 +1,4 @@
+import { config } from "src/config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { EncoderDisplayMode } from "../midi";
 import { ActivationCallbacks } from "../midi/connection";
@@ -111,13 +112,15 @@ export function bindEncoders(
             page
               .makeValueBinding(channelElements.encoder.mEncoderValue, assignment.encoderValue)
               .setSubPage(subPage);
-            page
-              .makeValueBinding(
-                channelElements.fader.mTouchedValue,
-                mixerBankChannels[channelIndex].mValue.mSelected
-              )
-              .filterByValue(1)
-              .setSubPage(subPage);
+            if (config.enableAutoSelect) {
+              page
+                .makeValueBinding(
+                  channelElements.fader.mTouchedValue,
+                  mixerBankChannels[channelIndex].mValue.mSelected
+                )
+                .filterByValue(1)
+                .setSubPage(subPage);
+            }
 
             if (assignment.pushToggleValue) {
               page
@@ -130,15 +133,17 @@ export function bindEncoders(
             page
               .makeValueBinding(channelElements.fader.mSurfaceValue, assignment.encoderValue)
               .setSubPage(flipSubPage);
-            page
-              .makeValueBinding(
-                channelElements.fader.mTouchedValue,
-                mixerBankChannels[channelIndex].mValue.mSelected
-              )
-              // Don't select mixer channels on touch when a fader's value does not belong to its
-              // mixer channel
-              .filterByValue(+isPerChannelAssignment)
-              .setSubPage(flipSubPage);
+            if (config.enableAutoSelect) {
+              page
+                .makeValueBinding(
+                  channelElements.fader.mTouchedValue,
+                  mixerBankChannels[channelIndex].mValue.mSelected
+                )
+                // Don't select mixer channels on touch when a fader's value does not belong to its
+                // mixer channel
+                .filterByValue(+isPerChannelAssignment)
+                .setSubPage(flipSubPage);
+            }
 
             onSubPageActivate.addCallback((context) => {
               channelElements.encoder.mDisplayModeValue.setProcessValue(

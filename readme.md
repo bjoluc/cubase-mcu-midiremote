@@ -81,6 +81,12 @@ In the configuration options at the top of the file, replace `devices: ["main"]`
 
 Then restart Cubase and configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
 
+## Configuration Options
+
+The very top of the MIDI Remote script file declares a number of configuration options.
+You can edit these options to match your preferences.
+Each option is documented in a comment above it, so feel free to consult the [script file](https://github.com/bjoluc/cubase-xtouch-midiremote/releases/latest/download/behringer_xtouch.js) for all available configuration options.
+
 ## Drawbacks
 
 **Quirks to be fixed:**

@@ -27,4 +27,10 @@ var CONFIGURATION = {
    * Do you have more than one extender? Let me know and I'll add support for multiple extenders!
    */
   devices: ["main"],
+
+  /**
+   * Whether touching a channel's fader will select the channel ("Auto Select"). Replace `true` with
+   * `false` below to disable auto selection.
+   */
+  enableAutoSelect: true,
 };
