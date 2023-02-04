@@ -195,7 +195,7 @@ export function bindSurfaceElementsToMidi(
           : currentParameterName.get(context)
       );
     };
-    channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value = "") => {
+    channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
       currentDisplayValue.set(context, LcdManager.centerString(LcdManager.abbreviateString(value)));
       isLocalValueModeActive.set(context, true);
       updateDisplay(context);
@@ -209,7 +209,7 @@ export function bindSurfaceElementsToMidi(
         1
       );
     };
-    channel.encoder.mEncoderValue.mOnTitleChange = (context, title1 = "", title2 = "") => {
+    channel.encoder.mEncoderValue.mOnTitleChange = (context, title1, title2) => {
       // Reset encoder LED ring when channel becomes unassigned
       if (title1 === "") {
         channelPorts.output.sendMidi(context, [0xb0, 0x30 + (index % 8), 0]);
@@ -233,7 +233,7 @@ export function bindSurfaceElementsToMidi(
 
     onNameValueDisplayModeChange.addCallback(updateDisplay);
 
-    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title = "") => {
+    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
       managers.lcd.setChannelText(context, 1, index, LcdManager.abbreviateString(title));
     };
 

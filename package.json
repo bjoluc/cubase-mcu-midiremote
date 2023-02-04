@@ -6,7 +6,8 @@
     "build": "node build.mjs",
     "start": "node build.mjs --watch",
     "tsc": "tsc",
-    "postversion": "npm run build"
+    "postversion": "npm run build",
+    "postinstall": "patch-package"
   },
   "author": "bjoluc",
   "license": "MIT",
@@ -18,6 +19,7 @@
     "@bjoluc/semantic-release-config-npm": "^3.0.0",
     "dotenv": "^16.0.3",
     "execa": "^6.1.0",
+    "patch-package": "^6.5.1",
     "prepend-file": "^2.0.1",
     "tsup": "^6.5.0",
     "type-fest": "^3.5.5",
