@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.1.2...v1.2.0) (2023-02-04)
+
+
+### Features
+
+* Add `enableAutoSelect` config option ([296cf20](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/296cf202bdd19bd822e68ac166887bbb0ad61485))
+* Move config to the top of the script, replacing `USE_EXTENDER` and `IS_EXTENDER_LEFT` with a new `devices` option ([d09b0c9](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/d09b0c902d6ae42567441a3c936dcdc4ac4705f9))
+
 ## [1.1.2](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.1.1...v1.1.2) (2023-02-03)
 
 
