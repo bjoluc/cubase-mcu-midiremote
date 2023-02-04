@@ -1,3 +1,5 @@
+import { config } from "../config";
+
 export interface PortPair {
   input: MR_DeviceMidiInput;
   output: EnhancedMidiOutput;
@@ -7,6 +9,9 @@ export interface EnhancedMidiOutput extends MR_DeviceMidiOutput {
   sendSysex: (context: MR_ActiveDevice, messageBody: number[]) => void;
   sendNoteOn: (context: MR_ActiveDevice, pitch: number, velocity: number | boolean) => void;
 }
+
+const useExtender = config.devices.length === 2;
+const isExtenderLeft = config.devices[0] === "extender";
 
 export class MidiPorts {
   private static makePortPair(driver: MR_DeviceDriver, name: string, isExtender: boolean) {
@@ -28,15 +33,11 @@ export class MidiPorts {
 
   private extenderPorts?: PortPair;
 
-  constructor(
-    driver: MR_DeviceDriver,
-    private useExtender: boolean,
-    private isExtenderLeft: boolean
-  ) {
+  constructor(driver: MR_DeviceDriver) {
     const ports = driver.mPorts;
     this.mainPorts = MidiPorts.makePortPair(driver, "Main", false);
 
-    if (this.useExtender) {
+    if (useExtender) {
       this.extenderPorts = MidiPorts.makePortPair(driver, "Extender", true);
     } else {
       driver
@@ -48,7 +49,7 @@ export class MidiPorts {
   }
 
   getChannelCount() {
-    return this.useExtender ? 16 : 8;
+    return useExtender ? 16 : 8;
   }
 
   getMainPorts() {
@@ -56,11 +57,7 @@ export class MidiPorts {
   }
 
   getPortsByChannelIndex(channel: number) {
-    if (
-      !this.useExtender ||
-      (this.isExtenderLeft && channel > 7) ||
-      (!this.isExtenderLeft && channel <= 7)
-    ) {
+    if (!useExtender || (isExtenderLeft && channel > 7) || (!isExtenderLeft && channel <= 7)) {
       return this.mainPorts;
     }
     return this.extenderPorts!;

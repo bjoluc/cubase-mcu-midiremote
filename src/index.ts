@@ -1,8 +1,5 @@
-// @ts-expect-error This is replaced by esbuild
-const USE_EXTENDER = CONFIG_USE_EXTENDER;
-const IS_EXTENDER_LEFT = true;
-
 // Polyfills
+import "core-js/es/array/iterator";
 import "core-js/es/array/flat-map";
 import "core-js/es/string/replace-all";
 import "core-js/es/object/entries";
@@ -19,7 +16,7 @@ import { makeTimerUtils } from "./util";
 
 const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "github.com/bjoluc");
 
-const ports = new MidiPorts(driver, USE_EXTENDER, IS_EXTENDER_LEFT);
+const ports = new MidiPorts(driver);
 
 const { activationCallbacks, midiManagers } = setupDeviceConnection(driver, ports);
 activationCallbacks.addCallback(() => {

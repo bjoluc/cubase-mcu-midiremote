@@ -3,8 +3,8 @@
   "version": "1.1.2",
   "private": true,
   "scripts": {
-    "build": "tsup",
-    "start": "tsup --watch",
+    "build": "node build.mjs",
+    "start": "node build.mjs --watch",
     "tsc": "tsc",
     "postversion": "npm run build"
   },
@@ -15,11 +15,12 @@
     "core-js": "^3.27.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.20.7",
-    "@babel/preset-env": "^7.20.2",
     "@bjoluc/semantic-release-config-npm": "^3.0.0",
     "dotenv": "^16.0.3",
+    "execa": "^6.1.0",
+    "prepend-file": "^2.0.1",
     "tsup": "^6.5.0",
+    "type-fest": "^3.5.5",
     "typescript": "^4.9.4"
   },
   "babel": {

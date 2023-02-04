@@ -77,9 +77,9 @@ Cubase should automatically detect the X-Touch and enable it as a MIDI Remote. I
 ## Setup with an X-Touch Extender unit
 
 To use the X-Touch with an X-Touch Extender unit, follow the same steps as above, but edit the script file before restarting Cubase:
-At the very bottom of the script file, replace `var USE_EXTENDER = false;` with `var USE_EXTENDER = true;`. If you have your extender on the right side of the main device, you may also replace `var IS_EXTENDER_LEFT = true;` with `var IS_EXTENDER_LEFT = false;`.
+In the configuration options at the top of the file, replace `devices: ["main"]` with `devices: ["extender", "main"]` (or `devices: ["main", "extender"]` if you have your extender on the right side of the main device).
 
-Then restart Cubase and in the lower zone's MIDI Remote pane, configure the MIDI Remote by clicking the "+" button.
+Then restart Cubase and configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
 
 ## Drawbacks
 
