@@ -1,5 +1,11 @@
 # cubase-xtouch-midiremote
 
+[![Latest version](https://img.shields.io/github/package-json/v/bjoluc/cubase-xtouch-midiremote)](https://github.com/bjoluc/cubase-xtouch-midiremote/releases)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bjoluc/cubase-xtouch-midiremote/build.yml)
+![Required Cubase version](https://img.shields.io/badge/Cubase->=_v12.0.52-blue)
+[![Required X-Touch firmware version](https://img.shields.io/badge/Firmware->=_v1.22-blue)](https://www.youtube.com/watch?v=Q4ZKXVXQP8g)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+
 Cubase 12 MIDI Remote Script for the Behringer X-Touch / X-Touch Extender
 
 <div align="center">
