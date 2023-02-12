@@ -220,9 +220,11 @@ export function bindSurfaceElementsToMidi(
       // `mOnDisplayValueChange`
       isLocalValueModeActive.set(context, false);
 
-      if (title2 === "Pan Left-Right") {
-        title2 = "Pan";
-      }
+      title2 =
+        {
+          "Pan Left-Right": "Pan",
+          "Pan links/rechts": "Pan",
+        }[title2] ?? title2;
 
       currentParameterName.set(
         context,
