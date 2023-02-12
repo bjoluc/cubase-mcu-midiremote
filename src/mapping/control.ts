@@ -161,10 +161,10 @@ export function bindControlButtons(
 
   // Solo Defeat
   page
-    .makeCommandBinding(buttons.utility[2].mSurfaceValue, "Edit", "Solo Defeat")
+    .makeCommandBinding(buttons.utility[2].mSurfaceValue, "Edit", "Deactivate All Solo")
     .setSubPage(regularSubPage);
   page
-    .makeCommandBinding(buttons.utility[2].mSurfaceValue, "Edit", "Deactivate All Solo")
+    .makeCommandBinding(buttons.utility[2].mSurfaceValue, "Edit", "Unmute All")
     .setSubPage(shiftSubPage);
 
   // Shift button

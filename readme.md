@@ -108,6 +108,6 @@ Each option is documented in a comment above it, so feel free to consult the [sc
 - The "Send" encoder assignment doesn't include a "Bus" page because send busses are not exposed by the MIDI Remote API.
 - The "Plug-In" encoder assignment doesn't display the number of the active parameter page because it is not exposed by the MIDI Remote API.
 - The punch button doesn't light up when "Auto Punch In" is activated – no host value available
-- The global "Solo" LED doesn't light up when a channel is in solo mode – no host value available
-- Channel visibility presets do not affect channel assignments since the `MixerBankZone` of the MIDI Remote API doesn't respect channel visibility presets.
+- The global "Solo" LED and the "Solo Defeat" button don't light up when a channel is in solo mode – no host value available
+- Channel visibility presets do not yet affect channel assignments since the `MixerBankZone` of the MIDI Remote API doesn't respect channel visibility presets (["`.setFollowVisibility()` is a teaser for future updates"](https://forums.steinberg.net/t/820531/2)).
 - The function buttons F1-F8 can only have one assignment per button, no matter whether "Shift" is held or not ("Shift" activates a sub page and the Mapping Assistant doesn't consider sub pages)
