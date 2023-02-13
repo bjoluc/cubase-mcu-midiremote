@@ -4,6 +4,7 @@ import { SurfaceElements } from "../surface";
 import {
   bindControlButtons,
   bindDirectionButtons,
+  bindFootControl,
   bindJogWheelSection,
   bindSegmentDisplaySection,
 } from "./control";
@@ -64,4 +65,7 @@ export function makeHostMapping(
 
   // Jog wheel
   bindJogWheelSection(page, elements);
+
+  // Foot Control
+  bindFootControl(page, elements);
 }

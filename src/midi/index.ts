@@ -323,4 +323,14 @@ export function bindSurfaceElementsToMidi(
 
   // Jog wheel
   elements.control.jogWheel.bindToControlChange(mainPorts.input, 0x3c);
+
+  // Foot control
+  const { footSwitches, expressionPedal } = elements.footControl;
+  for (const [index, footSwitch] of footSwitches.entries()) {
+    footSwitch.mSurfaceValue.mMidiBinding.setInputPort(mainPorts.input).bindToNote(0, 0x66 + index);
+  }
+  expressionPedal.mSurfaceValue.mMidiBinding
+    .setInputPort(mainPorts.input)
+    .bindToControlChange(0, 0x2e)
+    .setTypeAbsolute();
 }

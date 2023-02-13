@@ -316,3 +316,16 @@ export function bindDirectionButtons(page: MR_FactoryMappingPage, elements: Surf
 
   page.makeActionBinding(directions.center.mSurfaceValue, subPageArea.mAction.mNext);
 }
+
+export function bindFootControl(page: DecoratedFactoryMappingPage, elements: SurfaceElements) {
+  const host = page.mHostAccess;
+
+  // Free buttons
+  for (const footSwitch of elements.footControl.footSwitches) {
+    page.makeCommandBinding(
+      footSwitch.mSurfaceValue,
+      "MIDI Remote",
+      "Open MIDI Remote Mapping Assistant"
+    );
+  }
+}

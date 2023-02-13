@@ -107,6 +107,13 @@ export function createSurfaceElements(surface: DecoratedDeviceSurface, channelCo
       },
       isValueModeActive: surface.makeCustomValueVariable("displayIsValueModeActive"),
     },
+
+    footControl: {
+      expressionPedal: surface.makeKnob(channelsWidth + 18, 3.5, 1.5, 1.9),
+      footSwitches: createElements(2, (index) =>
+        surface.makeButton(channelsWidth + 20 + index * 2, 3.5, 1.5, 1.5).setShapeCircle()
+      ),
+    },
   };
 }
 
