@@ -1,5 +1,5 @@
 import { SurfaceElements } from "../surface";
-import { LedButton, TouchSensitiveFader } from "../decorators/surface";
+import { TouchSensitiveFader } from "../decorators/surface";
 import { ContextStateVariable, makeCallbackCollection, TimerUtils } from "../util";
 import { ActivationCallbacks } from "./connection";
 import { MidiManagers } from "./managers";
@@ -11,46 +11,6 @@ export enum EncoderDisplayMode {
   BoostOrCut = 1,
   Wrap = 2,
   Spread = 3,
-}
-
-function bindLedButton(ports: PortPair, button: LedButton, note: number, isChannelButton = false) {
-  const currentSurfaceValue = new ContextStateVariable(0);
-  button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
-
-  button.onSurfaceValueChange.addCallback((context, newValue) => {
-    currentSurfaceValue.set(context, newValue);
-    ports.output.sendNoteOn(context, note, newValue || currentLedValue.get(context));
-  });
-
-  const currentLedValue = new ContextStateVariable(0);
-  button.mLedValue.mOnProcessValueChange = (context, newValue) => {
-    currentLedValue.set(context, newValue);
-    ports.output.sendNoteOn(context, note, newValue);
-  };
-
-  button.mProxyValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
-  button.mProxyValue.mOnProcessValueChange = (context, newValue) => {
-    ports.output.sendNoteOn(
-      context,
-      note,
-      newValue || currentSurfaceValue.get(context) || currentLedValue.get(context)
-    );
-  };
-
-  if (isChannelButton) {
-    // Disable button when channel becomes unassigned
-    button.mSurfaceValue.mOnTitleChange = (context, title) => {
-      if (title === "") {
-        ports.output.sendNoteOn(context, note, 0);
-      }
-    };
-  }
-}
-
-function bindLamp(ports: PortPair, lamp: MR_Lamp, note: number) {
-  lamp.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-    ports.output.sendNoteOn(context, note, newValue);
-  };
 }
 
 export function bindSurfaceElementsToMidi(
@@ -277,7 +237,7 @@ export function bindSurfaceElementsToMidi(
     // Buttons
     const buttons = channel.buttons;
     [buttons.record, buttons.solo, buttons.mute, buttons.select].forEach((button, row) => {
-      bindLedButton(channelPorts, button, row * 8 + (index % 8), true);
+      button.bindToNote(channelPorts, row * 8 + (index % 8), true);
     });
 
     // Fader
@@ -311,13 +271,13 @@ export function bindSurfaceElementsToMidi(
     buttons.navigation.directions.center,
     buttons.scrub,
   ].forEach((button, index) => {
-    bindLedButton(mainPorts, button, 40 + index);
+    button.bindToNote(mainPorts, 40 + index);
   });
 
   // Display
   const displayLeds = elements.display.leds;
   [displayLeds.smpte, displayLeds.beats, displayLeds.solo].forEach((lamp, index) => {
-    bindLamp(mainPorts, lamp, 0x71 + index);
+    lamp.bindToNote(mainPorts.output, 0x71 + index);
   });
 
   const lastTimeFormat = new ContextStateVariable("");
@@ -362,46 +322,5 @@ export function bindSurfaceElementsToMidi(
   };
 
   // Jog wheel
-  const jogWheel = elements.control.jogWheel;
-  const jogWheelValue = elements.control.jogWheel.mSurfaceValue;
-
-  jogWheel.mProxyValue.mMidiBinding
-    .setInputPort(mainPorts.input)
-    .bindToControlChange(0, 0x3c)
-    .setTypeRelativeSignedBit();
-  jogWheel.mProxyValue.mOnProcessValueChange = (context, value, difference) => {
-    const jumpOffset = 0.4;
-
-    // Prevent value from reaching its limits
-    if (value < 0.5 - jumpOffset) {
-      jogWheel.mProxyValue.setProcessValue(context, value + jumpOffset);
-    } else if (value > 0.5 + jumpOffset) {
-      jogWheel.mProxyValue.setProcessValue(context, value - jumpOffset);
-    }
-
-    // Compensate for the difference value offsets introduced above
-    if (Math.abs(difference) >= jumpOffset - 0.1) {
-      if (difference > 0) {
-        difference -= jumpOffset;
-      } else {
-        difference += jumpOffset;
-      }
-    }
-
-    if (elements.control.jogWheel.mKnobModeEnabledValue.getProcessValue(context)) {
-      jogWheelValue.setProcessValue(
-        context,
-        Math.max(0, Math.min(1, jogWheelValue.getProcessValue(context) + difference))
-      );
-    } else {
-      // Handle jog events
-      if (difference !== 0) {
-        if (difference < 0) {
-          jogWheel.mJogLeftValue.setProcessValue(context, 1);
-        } else {
-          jogWheel.mJogRightValue.setProcessValue(context, 1);
-        }
-      }
-    }
-  };
+  elements.control.jogWheel.bindToControlChange(mainPorts.input, 0x3c);
 }

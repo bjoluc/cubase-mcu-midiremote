@@ -101,9 +101,9 @@ export function createSurfaceElements(surface: DecoratedDeviceSurface, channelCo
       setAssignment(context: MR_ActiveDevice, assignment: string) {},
       onTimeUpdated: (context: MR_ActiveDevice, time: string, timeFormat: string) => {},
       leds: {
-        smpte: surface.makeLamp(channelsWidth + 21.25, 6.5, 0.75, 0.5),
-        beats: surface.makeLamp(channelsWidth + 21.25, 9, 0.75, 0.5),
-        solo: surface.makeLamp(channelsWidth + 7.75, 7.75, 0.75, 0.5),
+        smpte: surface.makeDecoratedLamp(channelsWidth + 21.25, 6.5, 0.75, 0.5),
+        beats: surface.makeDecoratedLamp(channelsWidth + 21.25, 9, 0.75, 0.5),
+        solo: surface.makeDecoratedLamp(channelsWidth + 7.75, 7.75, 0.75, 0.5),
       },
       isValueModeActive: surface.makeCustomValueVariable("displayIsValueModeActive"),
     },
