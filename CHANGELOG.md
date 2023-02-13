@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.2](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.2.1...v1.2.2) (2023-02-13)
+
+
+### Bug Fixes
+
+* Disable channel auto select for flipped Plug-In and Instrument assignments ([d35745a](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/d35745a138576260bb00c7ef381039d04d9ad360))
+* Fix Solo Defeat button mapping ([3ec0193](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/3ec0193a30970413b56eb94e25312ea0c4587f49))
+* Make scribble strips fall back to their channel color when their encoder is unassigned ([9fe9618](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/9fe9618426428a956ea685339d9fdbf78184db6c))
+* Shorten German pan encoder names ([0b664fc](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/0b664fc7b2eb4c3b825badaa8c1d99584d349ff4))
+
 ## [1.2.1](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.2.0...v1.2.1) (2023-02-04)
 
 
