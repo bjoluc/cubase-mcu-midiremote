@@ -12,9 +12,11 @@ export enum ScribbleStripColor {
   white = 0x07,
 }
 
+export type RgbColor = { r: number; g: number; b: number };
+
 export class ColorManager {
-  private static rgbToScribbleStripColor(r: number, g: number, b: number): ScribbleStripColor {
-    const colors = [
+  private static rgbToScribbleStripColor({ r, g, b }: RgbColor): ScribbleStripColor {
+    const colors: Array<RgbColor & { code: number }> = [
       { code: ScribbleStripColor.black, r: 0, g: 0, b: 0 },
       { code: ScribbleStripColor.red, r: 1, g: 0, b: 0 },
       { code: ScribbleStripColor.green, r: 0, g: 1, b: 0 },
@@ -60,18 +62,15 @@ export class ColorManager {
   }
 
   setChannelColor(context: MR_ActiveDevice, channelIndex: number, color: ScribbleStripColor) {
-    this.colors[channelIndex].set(context, color);
-    this.sendColors(context);
+    const colorVariable = this.colors[channelIndex];
+    if (colorVariable.get(context) !== color) {
+      colorVariable.set(context, color);
+      this.sendColors(context);
+    }
   }
 
-  setChannelColorRgb(
-    context: MR_ActiveDevice,
-    channelIndex: number,
-    r: number,
-    g: number,
-    b: number
-  ) {
-    this.setChannelColor(context, channelIndex, ColorManager.rgbToScribbleStripColor(r, g, b));
+  setChannelColorRgb(context: MR_ActiveDevice, channelIndex: number, color: RgbColor) {
+    this.setChannelColor(context, channelIndex, ColorManager.rgbToScribbleStripColor(color));
   }
 
   resetColors(context: MR_ActiveDevice) {
