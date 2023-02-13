@@ -1,4 +1,5 @@
-import { DecoratedFactoryMappingPage } from "src/decorators/page";
+import { config } from "../config";
+import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { ActivationCallbacks } from "../midi/connection";
 import { SurfaceElements } from "../surface";
 import {
@@ -52,7 +53,12 @@ export function makeHostMapping(
   // Main fader
   page.makeValueBinding(
     elements.control.mainFader.mSurfaceValue,
-    page.mHostAccess.mControlRoom.mMainChannel.mLevelValue
+    config.mapMainFaderToControlRoom
+      ? page.mHostAccess.mControlRoom.mMainChannel.mLevelValue
+      : page.mHostAccess.mMixConsole
+          .makeMixerBankZone()
+          .includeOutputChannels()
+          .makeMixerBankChannel().mValue.mVolume
   );
 
   bindEncoders(page, elements, mixerBankChannels, hostDefaults, activationCallbacks);

@@ -16,7 +16,7 @@ Cubase 12 MIDI Remote Script for the Behringer X-Touch / X-Touch Extender
 ## TL;DR
 
 This Cubase MIDI Remote Script replaces the default Mackie Control device setup and is tailored specifically to the Behringer X-Touch.
-It can be [set up](#Setup) with a standalone X-Touch or with an X-Touch and an additional X-Touch Extender unit.
+It can be [set up](#setup) with a standalone X-Touch or with an X-Touch and an additional X-Touch Extender unit.
 Notable features include:
 
 - Track-colored scribble strips
@@ -39,6 +39,7 @@ However, it has some unique features which set it apart from other MCU-compliant
 
 In addition to the points above, there are a couple of things that always bothered me about the default MCU mapping and that can be solved by a custom driver script:
 
+- The main fader controls the first output channel's volume, not the Control Room volume.
 - The meters do not match the scale of the MixConsole meters and require rather high levels to show up.
 - Although there are exactly 8 push encoders, there is no encoder assignment for VST Quick controls.
 - Bringing up the parameters of the currently focused plugin requires navigating through the list of insert slots with a push encoder.
@@ -67,6 +68,10 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 - Pressing "Shift + Edit" closes all **plugin** windows instead of only the currently active window (I couldn't find a command to "close the currently active window").
 - The "Instrument" and "Master" buttons are assigned to the handy MixConsole History Undo and Redo commands, respectively. In the default MCU mapping, they would activate instrument and main effects encoder assignments. I find using these on the X-Touch more complicated than using the mouse for the same tasks and hence didn't implement them.
 - For the same reason, the "Sends" button doesn't activate a send effects encoder assignment. Instead, it turns the rightmost push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor.
+
+**Miscellaneous**
+
+- The main fader controls the Control Room volume unless the `mapMainFaderToControlRoom` [config option](#configuration-options) is set to `false`.
 
 ## Setup
 

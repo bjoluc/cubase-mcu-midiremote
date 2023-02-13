@@ -33,4 +33,11 @@ var CONFIGURATION = {
    * `false` below to disable auto selection.
    */
   enableAutoSelect: true,
+
+  /**
+   * If you don't use the Control Room or your version of Cubase doesn't have it, you'll likely want
+   * the main fader to control the first output channel like in the default Mackie Control mapping.
+   * You can achieve this by replacing `true` with `false` below.
+   */
+  mapMainFaderToControlRoom: true,
 };
