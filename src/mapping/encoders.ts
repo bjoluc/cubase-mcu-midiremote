@@ -18,6 +18,7 @@ export type EncoderAssignments =
 export interface EncoderPage {
   name?: string;
   assignments: EncoderAssignments;
+  areAssignmentsChannelRelated: boolean;
   hidePageIndex?: Boolean;
 }
 
@@ -67,7 +68,15 @@ export function bindEncoders(
 
       // Create the corresponding sub pages and bindings for each encoder page
       .map(
-        ({ name: pageName, assignments: assignmentsConfig, hidePageIndex }, encoderPageIndex) => {
+        (
+          {
+            name: pageName,
+            assignments: assignmentsConfig,
+            areAssignmentsChannelRelated,
+            hidePageIndex,
+          },
+          encoderPageIndex
+        ) => {
           const subPageName = `${pageName} ${encoderPageIndex + 1}`;
           const subPage = subPageArea.makeSubPage(subPageName);
           const flipSubPage = subPageArea.makeSubPage(`${subPageName} Flip`);
@@ -98,12 +107,12 @@ export function bindEncoders(
             flipButton.mLedValue.setProcessValue(context, 1);
           };
 
-          const isPerChannelAssignment = typeof assignmentsConfig === "function";
-          const assignments = isPerChannelAssignment
-            ? mixerBankChannels.map((channel, channelIndex) =>
-                assignmentsConfig(channel, channelIndex)
-              )
-            : assignmentsConfig;
+          const assignments =
+            typeof assignmentsConfig === "function"
+              ? mixerBankChannels.map((channel, channelIndex) =>
+                  assignmentsConfig(channel, channelIndex)
+                )
+              : assignmentsConfig;
 
           assignments.forEach((assignment, channelIndex) => {
             const channelElements = elements.channels[channelIndex];
@@ -141,7 +150,7 @@ export function bindEncoders(
                 )
                 // Don't select mixer channels on touch when a fader's value does not belong to its
                 // mixer channel
-                .filterByValue(+isPerChannelAssignment)
+                .filterByValue(+areAssignmentsChannelRelated)
                 .setSubPage(flipSubPage);
             }
 
@@ -190,6 +199,7 @@ export function bindEncoders(
         encoderValue: mixerBankChannel.mValue.mPan,
         pushToggleValue: mixerBankChannel.mValue.mMonitorEnable,
       }),
+      areAssignmentsChannelRelated: true,
     },
   ]);
 
@@ -200,6 +210,7 @@ export function bindEncoders(
         displayMode: EncoderDisplayMode.Wrap,
         encoderValue: mixerBankChannel.mValue.mMonitorEnable,
       }),
+      areAssignmentsChannelRelated: true,
     },
     {
       name: "Input Gain",
@@ -207,6 +218,7 @@ export function bindEncoders(
         displayMode: EncoderDisplayMode.BoostOrCut,
         encoderValue: mixerBankChannel.mPreFilter.mGain,
       }),
+      areAssignmentsChannelRelated: true,
     },
     {
       name: "Input Phase",
@@ -214,6 +226,7 @@ export function bindEncoders(
         displayMode: EncoderDisplayMode.Wrap,
         encoderValue: mixerBankChannel.mPreFilter.mPhaseSwitch,
       }),
+      areAssignmentsChannelRelated: true,
     },
   ]);
 
@@ -248,6 +261,7 @@ export function bindEncoders(
           pushToggleValue: band.mOn,
         },
       ]),
+      areAssignmentsChannelRelated: false,
     },
   ]);
 
@@ -274,6 +288,7 @@ export function bindEncoders(
           };
         }),
       ],
+      areAssignmentsChannelRelated: false,
     },
   ]);
 
@@ -291,6 +306,7 @@ export function bindEncoders(
           displayMode: EncoderDisplayMode.SingleDot,
         };
       },
+      areAssignmentsChannelRelated: false,
       hidePageIndex: true,
     },
   ]);
@@ -311,6 +327,7 @@ export function bindEncoders(
           displayMode: EncoderDisplayMode.SingleDot,
         };
       },
+      areAssignmentsChannelRelated: false,
     },
   ]);
 }
