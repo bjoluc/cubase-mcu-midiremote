@@ -1,4 +1,4 @@
-import { config } from "src/config";
+import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { EncoderDisplayMode } from "../midi";
 import { ActivationCallbacks } from "../midi/connection";

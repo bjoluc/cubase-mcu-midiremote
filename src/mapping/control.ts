@@ -1,7 +1,7 @@
 import { DecoratedFactoryMappingPage } from "../decorators/page";
-import { LedButton, LedPushEncoder } from "../decorators/surface";
-import { EncoderDisplayMode } from "src/midi";
-import { SurfaceElements } from "src/surface";
+import { LedButton } from "../decorators/surface";
+import { EncoderDisplayMode } from "../midi";
+import { SurfaceElements } from "../surface";
 
 function setShiftableButtonsLedValues(
   elements: SurfaceElements,

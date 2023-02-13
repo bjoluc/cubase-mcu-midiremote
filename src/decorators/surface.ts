@@ -1,4 +1,4 @@
-import { EnhancedMidiOutput, PortPair } from "src/midi/MidiPorts";
+import { EnhancedMidiOutput, PortPair } from "../midi/MidiPorts";
 import { CallbackCollection, ContextStateVariable, makeCallbackCollection } from "../util";
 
 export interface LedButton extends MR_Button {
