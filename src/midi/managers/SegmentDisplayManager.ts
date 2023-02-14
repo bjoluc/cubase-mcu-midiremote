@@ -1,7 +1,7 @@
-import { createElements } from "../../util";
+import { ContextStateVariable, createElements } from "../../util";
 
 export class SegmentDisplayManager {
-  private segmentValues = createElements(12, () => 0x00);
+  private segmentValues = createElements(12, () => new ContextStateVariable(0x00));
 
   private updateSegment(
     context: MR_ActiveDevice,
@@ -14,42 +14,56 @@ export class SegmentDisplayManager {
       value += 0x40;
     }
 
-    if (value !== this.segmentValues[segmentId]) {
-      this.segmentValues[segmentId] = value;
+    if (value !== this.segmentValues[segmentId].get(context)) {
+      this.segmentValues[segmentId].set(context, value);
       this.midiOutput.sendMidi(context, [0xb0, 0x40 + segmentId, value]);
     }
   }
 
-  private updateSegmentsByNumberString(
-    context: MR_ActiveDevice,
-    lastSegmentId: number,
-    segmentCount: number,
-    numberString: string
-  ) {
-    for (let i = 0; i < segmentCount; i++) {
-      this.updateSegment(
-        context,
-        lastSegmentId + i,
-        numberString.length < i + 1
-          ? null
-          : parseInt(numberString[numberString.length - i - 1], 10),
-        i === 0 && lastSegmentId !== 0
-      );
+  private updateSegmentsByString(context: MR_ActiveDevice, lastSegmentId: number, string: string) {
+    let currentSegmentId = lastSegmentId;
+    let hasCurrentSegmentDot = false;
+    for (const char of Array.from(string).reverse()) {
+      if (char === "." || char === ":") {
+        hasCurrentSegmentDot = true;
+      } else {
+        this.updateSegment(
+          context,
+          currentSegmentId,
+          char === " " ? null : parseInt(char, 10),
+          hasCurrentSegmentDot
+        );
+        currentSegmentId++;
+        hasCurrentSegmentDot = false;
+      }
     }
   }
 
   constructor(private midiOutput: MR_DeviceMidiOutput) {}
 
   /**
-   * Update the 7-segment display to show the provided `time` string – a string consisting of four
-   * (single- or multi-digit) numbers, separated by `.` or `:`.
+   * Update the 7-segment display to show the provided `time` string – a string consisting of
+   * numbers, spaces, dots and colons.
    */
   setTimeString(context: MR_ActiveDevice, time: string) {
-    const groups = time.split(/[\.\:]/);
-    this.updateSegmentsByNumberString(context, 0, 3, groups[3]);
-    this.updateSegmentsByNumberString(context, 3, 2, groups[2]);
-    this.updateSegmentsByNumberString(context, 5, 2, groups[1]);
-    this.updateSegmentsByNumberString(context, 7, 3, groups[0]);
+    // If `time` is separated three times by `.` or `:`, fill it with spaces to match the way digits
+    // are grouped on the device
+    const match = /^([\d ]+[\.\:])([\d ]+)([\.\:])([\d ]+)([\.\:])([\d ]+)$/.exec(time);
+    if (match) {
+      time =
+        match[1] +
+        match[2].padStart(2, " ") +
+        match[3] +
+        match[4].padStart(2, " ") +
+        match[5] +
+        match[6].padStart(3, " ");
+    }
+
+    this.updateSegmentsByString(
+      context,
+      0,
+      time.padStart(10 + time.replaceAll(/[^\.\:]/g, "").length, " ")
+    );
   }
 
   setAssignment(context: MR_ActiveDevice, assignment: string) {

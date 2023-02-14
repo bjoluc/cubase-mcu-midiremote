@@ -283,23 +283,12 @@ export function bindSurfaceElementsToMidi(
   const lastTimeFormat = new ContextStateVariable("");
   const isInitialized = new ContextStateVariable(false);
   elements.display.onTimeUpdated = (context, time, timeFormat) => {
-    const hasTimeFormatChanged = timeFormat !== lastTimeFormat.get(context);
-    if (hasTimeFormatChanged) {
+    managers.segmentDisplay.setTimeString(context, time);
+
+    if (timeFormat !== lastTimeFormat.get(context)) {
       lastTimeFormat.set(context, timeFormat);
-    }
 
-    time = time.replaceAll(" ", "");
-    const isTimeFormatSupported = /^(?:[\d]+[\.\:]){3}[\d]+$/.test(time);
-
-    if (isTimeFormatSupported) {
-      managers.segmentDisplay.setTimeString(context, time);
-    }
-
-    if (hasTimeFormatChanged) {
-      if (!isTimeFormatSupported) {
-        managers.segmentDisplay.clearTime(context);
-      }
-      // Adapt time mode LEDs to time format
+      // Time format has changed since last invocation – adapt time mode LEDs to new time format
       if (!isInitialized.get(context)) {
         // Using `setProcessValue` on initialization somehow crashes the host, so we don't do it on
         // initialization.
@@ -307,11 +296,11 @@ export function bindSurfaceElementsToMidi(
       } else {
         elements.display.leds.smpte.mSurfaceValue.setProcessValue(
           context,
-          +/^(?:[\d]+[\:]){3}[\d]+$/.test(time)
+          +/^(?:[\d]+\:){3}[\d]+$/.test(time)
         );
         elements.display.leds.beats.mSurfaceValue.setProcessValue(
           context,
-          +/^(?:[\d]+[\.]){3}[\d]+$/.test(time)
+          +/^(?:[ \d]+\.){2} \d\.[\d ]+$/.test(time)
         );
       }
     }

@@ -1,6 +1,9 @@
 // Polyfills
 import "core-js/es/array/iterator";
+import "core-js/es/array/from";
+import "core-js/es/array/reverse";
 import "core-js/es/array/flat-map";
+import "core-js/es/string/pad-start";
 import "core-js/es/string/replace-all";
 import "core-js/es/object/entries";
 
