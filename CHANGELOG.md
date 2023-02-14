@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.2.2...v1.3.0) (2023-02-14)
+
+
+### Features
+
+* Add `mapMainFaderToControlRoom` config flag that can be disabled to map the main fader to the first output channel's volume ([e782438](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/e782438958886526daba52b9c90e90a73911dbeb))
+* Add support for foot switches and expression pedal ([ece432f](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/ece432fbf5ba082ac21cce740efe4fffe9f2b721))
+* Enable time display to display arbitrary time formats, including "Samples" ([67b11dd](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/67b11dd6e9cb0fcc9ce0971f92a9830af7a28d98))
+* Respect extender positioning in surface layout ([bb75d5a](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/bb75d5af58fc03fb26a55f7bd7fb44f72dab6078))
+* Show encoder page count in the assignment display for encoder assignments with more than one parameter page ([0daff82](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/0daff82487d99a794a8b33bb1b7dffae7a3f096b))
+
+
+### Bug Fixes
+
+* Always use the rightmost push encoder of the *main* device for value-under-cursor control ([c526c24](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/c526c2466029475c24d38c6581b9b29236c31b92))
+
 ## [1.2.2](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.2.1...v1.2.2) (2023-02-13)
 
 
