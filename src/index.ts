@@ -20,6 +20,7 @@ import { makeTimerUtils } from "./util";
 const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "github.com/bjoluc");
 
 const ports = new MidiPorts(driver);
+const firstMainDeviceChannelIndex = ports.getMainPorts().firstChannelIndex;
 
 const { activationCallbacks, midiManagers } = setupDeviceConnection(driver, ports);
 activationCallbacks.addCallback(() => {
@@ -35,7 +36,11 @@ activationCallbacks.addCallback(() => {
 //-----------------------------------------------------------------------------
 
 const surface = decorateSurface(driver.mSurface);
-const elements = createSurfaceElements(surface, ports.getChannelCount());
+const elements = createSurfaceElements(
+  surface,
+  ports.getChannelCount(),
+  firstMainDeviceChannelIndex
+);
 
 const page = decoratePage(driver.mMapping.makePage("Mixer"), surface);
 const timerUtils = makeTimerUtils(page, surface);
@@ -46,4 +51,4 @@ bindSurfaceElementsToMidi(elements, ports, midiManagers, activationCallbacks, ti
 // 3. HOST MAPPING - create mapping pages and host bindings
 //-----------------------------------------------------------------------------
 
-makeHostMapping(page, elements, ports.getMainPorts().firstChannelIndex);
+makeHostMapping(page, elements, firstMainDeviceChannelIndex);
