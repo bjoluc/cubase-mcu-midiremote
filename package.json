@@ -13,17 +13,17 @@
   "license": "MIT",
   "dependencies": {
     "abbreviate": "^0.0.3",
-    "core-js": "^3.27.2"
+    "core-js": "^3.28.0"
   },
   "devDependencies": {
     "@bjoluc/semantic-release-config-npm": "^3.0.0",
     "dotenv": "^16.0.3",
-    "execa": "^6.1.0",
+    "execa": "^7.0.0",
     "patch-package": "^6.5.1",
     "prepend-file": "^2.0.1",
-    "tsup": "^6.5.0",
-    "type-fest": "^3.5.5",
-    "typescript": "^4.9.4"
+    "tsup": "^6.6.3",
+    "type-fest": "^3.5.7",
+    "typescript": "^4.9.5"
   },
   "babel": {
     "presets": [
