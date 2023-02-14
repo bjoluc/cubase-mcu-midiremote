@@ -21,9 +21,9 @@ Notable features include:
 
 - Track-colored scribble strips
 - Full utilization of all scribble strip display segments – no padding characters, no words across scribble strip boundaries
-- A modus to control any value under your mouse cursor with the rightmost push encoder or the jog wheel
-- Encoder assignment for editing the currently focused plugin's parameters ("Plug-In" button)
-- VST Quick Control encoder assignment ("Inst" button)
+- A modus to control any value under your mouse cursor with the rightmost push encoder or the jog wheel ("Sends"/"Trim" button in the "Automation" section)
+- Encoder assignment for editing the currently focused plugin's parameters ("Plug-In" Encoder Assign button)
+- VST Quick Control encoder assignment ("Inst" Encoder Assign button)
 
 ## Motivation
 
@@ -56,8 +56,8 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 
 **Encoder Assignments**
 
-- Parameter page numbers are not displayed on the lower row of the scribble strip displays, but on the otherwise unused two-digit Assignment display below the Encoder Assign buttons. If an encoder assignment only has one parameter page, the Assignment display remains blank.
-- Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages now. The "Level" and "On" pages are combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses.
+- The lower scribble strip row always shows track names. Parameter page numbers are displayed on the otherwise unused two-digit Assignment display below the Encoder Assign buttons. If an encoder assignment only has one parameter page, the Assignment display remains blank.
+- Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages now. The "Level" and "On" pages have been combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses.
 - The "Plug-In" encoder assignment always follows the currently focused plugin window to avoid tedious plugin selection via push encoders.
 - The "Inst" encoder assignment maps to the VST Quick Controls of the currently selected instrument track instead of channel strip parameters.
 
@@ -77,7 +77,7 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 
 - Make sure the firmware of your X-Touch (/X-Touch Extender) [is up to date](https://www.youtube.com/watch?v=Q4ZKXVXQP8g) (>= v1.22)
 - Set your X-Touch unit(s) to [Mackie Control (MC) mode](https://www.youtube.com/watch?v=LrVWRgJbSyw&t=68s)
-- Open up Cubase and make sure you are running version v12.0.52 or later
+- Open up Cubase and ensure you are running version v12.0.52 or later
 - In the studio setup window, remove any Mackie Control remote devices that you set up for your X-Touch / X-Touch Extender (don't forget to take screenshots of your command assignments)
 - On windows, open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` and create the nested directories `behringer\xtouch` within it.
 - On MacOS, open `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/Local` and create the nested directories `behringer/xtouch` within it.
