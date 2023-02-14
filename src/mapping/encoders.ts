@@ -1,3 +1,4 @@
+import { mDefaults } from "midiremote_api_v1";
 import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { EncoderDisplayMode } from "../midi";
@@ -23,8 +24,7 @@ export interface EncoderPage {
 export function bindEncoders(
   page: DecoratedFactoryMappingPage,
   elements: SurfaceElements,
-  mixerBankChannels: MR_MixerBankChannel[],
-  hostDefaults: MR_HostDefaults
+  mixerBankChannels: MR_MixerBankChannel[]
 ) {
   const buttons = elements.control.buttons;
   const assignmentButtons = buttons.encoderAssign;
@@ -257,7 +257,7 @@ export function bindEncoders(
   ]);
 
   const mSends = page.mHostAccess.mTrackSelection.mMixerChannel.mSends;
-  const sendSlotsCount = hostDefaults.getNumberOfSendSlots();
+  const sendSlotsCount = mDefaults.getNumberOfSendSlots();
   bindEncoderAssignments(3, [
     {
       name: "Sends",

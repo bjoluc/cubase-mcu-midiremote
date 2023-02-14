@@ -1,5 +1,5 @@
 import { DecoratedFactoryMappingPage } from "../decorators/page";
-import { LedButton } from "../decorators/surface";
+import { JogWheel, LedButton, LedPushEncoder } from "../decorators/surface";
 import { EncoderDisplayMode } from "../midi";
 import { SurfaceElements } from "../surface";
 
@@ -18,11 +18,9 @@ function setShiftableButtonsLedValues(
 function bindCursorValueControlButton(
   page: DecoratedFactoryMappingPage,
   button: LedButton,
-  elements: SurfaceElements
+  encoder: LedPushEncoder,
+  jogWheel: JogWheel
 ) {
-  const encoder = elements.channels[elements.channels.length - 1].encoder;
-  const jogWheel = elements.control.jogWheel;
-
   const subPageArea = page.makeSubPageArea("Cursor Value Control");
   const inactiveSubpage = subPageArea.makeSubPage("Cursor Value Control Inactive");
   const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
@@ -63,7 +61,8 @@ function bindCursorValueControlButton(
 export function bindControlButtons(
   page: DecoratedFactoryMappingPage,
   elements: SurfaceElements,
-  mixerBankZone: MR_MixerBankZone
+  mixerBankZone: MR_MixerBankZone,
+  firstMainDeviceChannelIndex: number
 ) {
   const host = page.mHostAccess;
   const buttons = elements.control.buttons;
@@ -137,7 +136,12 @@ export function bindControlButtons(
     .setTypeToggle();
 
   // Sends (Control value under cursor)
-  bindCursorValueControlButton(page, buttons.automation[2], elements);
+  bindCursorValueControlButton(
+    page,
+    buttons.automation[2],
+    elements.channels[firstMainDeviceChannelIndex + 7].encoder,
+    elements.control.jogWheel
+  );
 
   // Project
   page.makeCommandBinding(buttons.automation[3].mSurfaceValue, "Project", "Bring To Front");

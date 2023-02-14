@@ -50,7 +50,7 @@ export class ColorManager {
   }
 
   private sendColors(context: MR_ActiveDevice) {
-    this.ports.forEachPortPair(({ output }, firstChannelIndex) => {
+    this.ports.forEachPortPair(({ output, firstChannelIndex }) => {
       output.sendSysex(context, [
         0x72,
         ...this.colors

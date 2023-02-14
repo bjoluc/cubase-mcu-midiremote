@@ -13,7 +13,7 @@ import { bindEncoders } from "./encoders";
 export function makeHostMapping(
   page: DecoratedFactoryMappingPage,
   elements: SurfaceElements,
-  hostDefaults: MR_HostDefaults
+  firstMainDeviceChannelIndex: number
 ) {
   // 7-segment display
   bindSegmentDisplaySection(page, elements);
@@ -59,10 +59,10 @@ export function makeHostMapping(
           .makeMixerBankChannel().mValue.mVolume
   );
 
-  bindEncoders(page, elements, mixerBankChannels, hostDefaults);
+  bindEncoders(page, elements, mixerBankChannels);
 
   // 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation
-  bindControlButtons(page, elements, mixerBankZone);
+  bindControlButtons(page, elements, mixerBankZone, firstMainDeviceChannelIndex);
 
   // Directions
   bindDirectionButtons(page, elements);

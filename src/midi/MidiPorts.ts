@@ -3,6 +3,7 @@ import { config } from "../config";
 export interface PortPair {
   input: MR_DeviceMidiInput;
   output: EnhancedMidiOutput;
+  firstChannelIndex: number;
 }
 
 export interface EnhancedMidiOutput extends MR_DeviceMidiOutput {
@@ -10,11 +11,9 @@ export interface EnhancedMidiOutput extends MR_DeviceMidiOutput {
   sendNoteOn: (context: MR_ActiveDevice, pitch: number, velocity: number | boolean) => void;
 }
 
-const useExtender = config.devices.length === 2;
-const isExtenderLeft = config.devices[0] === "extender";
-
 export class MidiPorts {
-  private static makePortPair(driver: MR_DeviceDriver, name: string, isExtender: boolean) {
+  private static makePortPair(driver: MR_DeviceDriver, deviceIndex: number, isExtender: boolean) {
+    const name = isExtender ? "Extender" : "Main";
     const input = driver.mPorts.makeMidiInput(`${name} Input`);
     const output = driver.mPorts.makeMidiOutput(`${name} Output`) as EnhancedMidiOutput;
 
@@ -26,22 +25,30 @@ export class MidiPorts {
       output.sendMidi(context, [0x90, pitch, +Boolean(velocity) * 0xff]);
     };
 
-    return { input, output };
+    return { input, output, firstChannelIndex: deviceIndex * 8 };
   }
 
+  // @ts-expect-error We're assuming there is one "main" deviceType in the `devices` config
   private mainPorts: PortPair;
 
-  private extenderPorts?: PortPair;
+  private portPairs: PortPair[];
 
   constructor(driver: MR_DeviceDriver) {
-    const ports = driver.mPorts;
-    this.mainPorts = MidiPorts.makePortPair(driver, "Main", false);
+    this.portPairs = config.devices.map((deviceType, deviceIndex) => {
+      const isExtender = deviceType !== "main";
+      const portPair = MidiPorts.makePortPair(driver, deviceIndex, isExtender);
 
-    if (useExtender) {
-      this.extenderPorts = MidiPorts.makePortPair(driver, "Extender", true);
-    } else {
+      if (!isExtender) {
+        this.mainPorts = portPair;
+      }
+
+      return portPair;
+    });
+
+    if (config.devices.length === 1) {
       driver
         .makeDetectionUnit()
+        // @ts-expect-error We're assuming that a main device always exists
         .detectPortPair(this.mainPorts.input, this.mainPorts.output)
         .expectInputNameEquals("X-Touch")
         .expectOutputNameEquals("X-Touch");
@@ -49,24 +56,18 @@ export class MidiPorts {
   }
 
   getChannelCount() {
-    return useExtender ? 16 : 8;
+    return this.portPairs.length * 8;
   }
 
   getMainPorts() {
     return this.mainPorts;
   }
 
-  getPortsByChannelIndex(channel: number) {
-    if (!useExtender || (isExtenderLeft && channel > 7) || (!isExtenderLeft && channel <= 7)) {
-      return this.mainPorts;
-    }
-    return this.extenderPorts!;
+  getPortsByChannelIndex(channelIndex: number) {
+    return this.portPairs[Math.floor(channelIndex / 8)];
   }
 
-  forEachPortPair(callback: (portPair: PortPair, firstChannelIndex: number) => void) {
-    for (let i = 0; i < this.getChannelCount() / 8; i++) {
-      const firstChannelIndex = i * 8;
-      callback(this.getPortsByChannelIndex(firstChannelIndex), firstChannelIndex);
-    }
+  forEachPortPair(callback: (portPair: PortPair) => void) {
+    this.portPairs.forEach(callback);
   }
 }
