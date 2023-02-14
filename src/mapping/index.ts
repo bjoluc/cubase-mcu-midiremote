@@ -1,6 +1,5 @@
 import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
-import { ActivationCallbacks } from "../midi/connection";
 import { SurfaceElements } from "../surface";
 import {
   bindControlButtons,
@@ -14,8 +13,7 @@ import { bindEncoders } from "./encoders";
 export function makeHostMapping(
   page: DecoratedFactoryMappingPage,
   elements: SurfaceElements,
-  hostDefaults: MR_HostDefaults,
-  activationCallbacks: ActivationCallbacks
+  hostDefaults: MR_HostDefaults
 ) {
   // 7-segment display
   bindSegmentDisplaySection(page, elements);
@@ -61,7 +59,7 @@ export function makeHostMapping(
           .makeMixerBankChannel().mValue.mVolume
   );
 
-  bindEncoders(page, elements, mixerBankChannels, hostDefaults, activationCallbacks);
+  bindEncoders(page, elements, mixerBankChannels, hostDefaults);
 
   // 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation
   bindControlButtons(page, elements, mixerBankZone);

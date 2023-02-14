@@ -46,4 +46,4 @@ bindSurfaceElementsToMidi(elements, ports, midiManagers, activationCallbacks, ti
 // 3. HOST MAPPING - create mapping pages and host bindings
 //-----------------------------------------------------------------------------
 
-makeHostMapping(page, elements, midiremoteApi.mDefaults, activationCallbacks);
+makeHostMapping(page, elements, midiremoteApi.mDefaults);

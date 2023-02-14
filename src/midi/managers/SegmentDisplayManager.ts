@@ -67,8 +67,7 @@ export class SegmentDisplayManager {
   }
 
   setAssignment(context: MR_ActiveDevice, assignment: string) {
-    this.updateSegment(context, 10, parseInt(assignment[0]));
-    this.updateSegment(context, 11, assignment.length > 1 ? parseInt(assignment[1]) : null);
+    this.updateSegmentsByString(context, 10, assignment);
   }
 
   clearAssignment(context: MR_ActiveDevice) {

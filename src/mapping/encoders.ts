@@ -1,7 +1,6 @@
 import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { EncoderDisplayMode } from "../midi";
-import { ActivationCallbacks } from "../midi/connection";
 import { SurfaceElements } from "../surface";
 import { createElements, makeCallbackCollection } from "../util";
 
@@ -19,15 +18,13 @@ export interface EncoderPage {
   name?: string;
   assignments: EncoderAssignments;
   areAssignmentsChannelRelated: boolean;
-  hidePageIndex?: Boolean;
 }
 
 export function bindEncoders(
   page: DecoratedFactoryMappingPage,
   elements: SurfaceElements,
   mixerBankChannels: MR_MixerBankChannel[],
-  hostDefaults: MR_HostDefaults,
-  activationCallbacks: ActivationCallbacks
+  hostDefaults: MR_HostDefaults
 ) {
   const buttons = elements.control.buttons;
   const assignmentButtons = buttons.encoderAssign;
@@ -47,129 +44,123 @@ export function bindEncoders(
   const bindEncoderAssignments = (assignmentButtonId: number, pages: EncoderPage[]) => {
     const encoderPageSize = elements.channels.length;
 
-    const createdSubPages = pages
-      // Split each encoder page with more encoder assignments than physical encoders into multiple
-      // pages
-      .flatMap((page) => {
-        const assignments = page.assignments;
-        if (Array.isArray(assignments) && assignments.length > encoderPageSize) {
-          const chunks = [];
-          for (let i = 0; i < assignments.length / encoderPageSize; i++) {
-            chunks.push(assignments.slice(i * encoderPageSize, (i + 1) * encoderPageSize));
-          }
-          return chunks.map((chunk) => ({
-            ...page,
-            assignments: chunk,
-          }));
+    // Split each encoder page with more encoder assignments than physical encoders into multiple
+    // pages
+    pages = pages.flatMap((page) => {
+      const assignments = page.assignments;
+      if (Array.isArray(assignments) && assignments.length > encoderPageSize) {
+        const chunks = [];
+        for (let i = 0; i < assignments.length / encoderPageSize; i++) {
+          chunks.push(assignments.slice(i * encoderPageSize, (i + 1) * encoderPageSize));
         }
+        return chunks.map((chunk) => ({
+          ...page,
+          assignments: chunk,
+        }));
+      }
 
-        return page;
-      })
+      return page;
+    });
 
-      // Create the corresponding sub pages and bindings for each encoder page
-      .map(
-        (
-          {
-            name: pageName,
-            assignments: assignmentsConfig,
-            areAssignmentsChannelRelated,
-            hidePageIndex,
-          },
-          encoderPageIndex
-        ) => {
-          const subPageName = `${pageName} ${encoderPageIndex + 1}`;
-          const subPage = subPageArea.makeSubPage(subPageName);
-          const flipSubPage = subPageArea.makeSubPage(`${subPageName} Flip`);
+    // Create the corresponding sub pages and bindings for each encoder page
+    const createdSubPages = pages.map(
+      (
+        { name: pageName, assignments: assignmentsConfig, areAssignmentsChannelRelated },
+        encoderPageIndex
+      ) => {
+        const subPageName = `${pageName} ${encoderPageIndex + 1}`;
+        const subPage = subPageArea.makeSubPage(subPageName);
+        const flipSubPage = subPageArea.makeSubPage(`${subPageName} Flip`);
 
+        page
+          .makeActionBinding(flipButton.mSurfaceValue, flipSubPage.mAction.mActivate)
+          .setSubPage(subPage);
+        page
+          .makeActionBinding(flipButton.mSurfaceValue, subPage.mAction.mActivate)
+          .setSubPage(flipSubPage);
+
+        const onSubPageActivate = makeCallbackCollection(subPage, "mOnActivate");
+        onSubPageActivate.addCallback((context) => {
+          elements.display.setAssignment(
+            context,
+            pages.length === 1 ? "  " : `${encoderPageIndex + 1}.${pages.length}`
+          );
+
+          assignmentButtons.forEach((button, buttonNumber) => {
+            button.mLedValue.setProcessValue(context, +(assignmentButtonId === buttonNumber));
+          });
+          flipButton.mLedValue.setProcessValue(context, 0);
+
+          elements.display.isValueModeActive.setProcessValue(context, 0);
+        });
+
+        flipSubPage.mOnActivate = (context) => {
+          flipButton.mLedValue.setProcessValue(context, 1);
+        };
+
+        const assignments =
+          typeof assignmentsConfig === "function"
+            ? mixerBankChannels.map((channel, channelIndex) =>
+                assignmentsConfig(channel, channelIndex)
+              )
+            : assignmentsConfig;
+
+        assignments.forEach((assignment, channelIndex) => {
+          const channelElements = elements.channels[channelIndex];
+
+          // Non-flipped encoder page sub page bindings
           page
-            .makeActionBinding(flipButton.mSurfaceValue, flipSubPage.mAction.mActivate)
+            .makeValueBinding(channelElements.encoder.mEncoderValue, assignment.encoderValue)
             .setSubPage(subPage);
-          page
-            .makeActionBinding(flipButton.mSurfaceValue, subPage.mAction.mActivate)
-            .setSubPage(flipSubPage);
-
-          const onSubPageActivate = makeCallbackCollection(subPage, "mOnActivate");
-          onSubPageActivate.addCallback((context) => {
-            elements.display.setAssignment(
-              context,
-              hidePageIndex ? "  " : (encoderPageIndex + 1).toString()
-            );
-
-            assignmentButtons.forEach((button, buttonNumber) => {
-              button.mLedValue.setProcessValue(context, +(assignmentButtonId === buttonNumber));
-            });
-            flipButton.mLedValue.setProcessValue(context, 0);
-
-            elements.display.isValueModeActive.setProcessValue(context, 0);
-          });
-
-          flipSubPage.mOnActivate = (context) => {
-            flipButton.mLedValue.setProcessValue(context, 1);
-          };
-
-          const assignments =
-            typeof assignmentsConfig === "function"
-              ? mixerBankChannels.map((channel, channelIndex) =>
-                  assignmentsConfig(channel, channelIndex)
-                )
-              : assignmentsConfig;
-
-          assignments.forEach((assignment, channelIndex) => {
-            const channelElements = elements.channels[channelIndex];
-
-            // Non-flipped encoder page sub page bindings
+          if (config.enableAutoSelect) {
             page
-              .makeValueBinding(channelElements.encoder.mEncoderValue, assignment.encoderValue)
+              .makeValueBinding(
+                channelElements.fader.mTouchedValue,
+                mixerBankChannels[channelIndex].mValue.mSelected
+              )
+              .filterByValue(1)
               .setSubPage(subPage);
-            if (config.enableAutoSelect) {
-              page
-                .makeValueBinding(
-                  channelElements.fader.mTouchedValue,
-                  mixerBankChannels[channelIndex].mValue.mSelected
-                )
-                .filterByValue(1)
-                .setSubPage(subPage);
-            }
+          }
 
-            if (assignment.pushToggleValue) {
-              page
-                .makeValueBinding(channelElements.encoder.mPushValue, assignment.pushToggleValue)
-                .setTypeToggle()
-                .setSubPage(subPage);
-            }
-
-            // Flipped encoder page sub page bindings
+          if (assignment.pushToggleValue) {
             page
-              .makeValueBinding(channelElements.fader.mSurfaceValue, assignment.encoderValue)
+              .makeValueBinding(channelElements.encoder.mPushValue, assignment.pushToggleValue)
+              .setTypeToggle()
+              .setSubPage(subPage);
+          }
+
+          // Flipped encoder page sub page bindings
+          page
+            .makeValueBinding(channelElements.fader.mSurfaceValue, assignment.encoderValue)
+            .setSubPage(flipSubPage);
+          if (config.enableAutoSelect) {
+            page
+              .makeValueBinding(
+                channelElements.fader.mTouchedValue,
+                mixerBankChannels[channelIndex].mValue.mSelected
+              )
+              // Don't select mixer channels on touch when a fader's value does not belong to its
+              // mixer channel
+              .filterByValue(+areAssignmentsChannelRelated)
               .setSubPage(flipSubPage);
-            if (config.enableAutoSelect) {
-              page
-                .makeValueBinding(
-                  channelElements.fader.mTouchedValue,
-                  mixerBankChannels[channelIndex].mValue.mSelected
-                )
-                // Don't select mixer channels on touch when a fader's value does not belong to its
-                // mixer channel
-                .filterByValue(+areAssignmentsChannelRelated)
-                .setSubPage(flipSubPage);
-            }
+          }
 
-            onSubPageActivate.addCallback((context) => {
-              channelElements.encoder.mDisplayModeValue.setProcessValue(
-                context,
-                assignment.displayMode
-              );
-              // TODO https://forums.steinberg.net/t/831123
-              // channelEncoderDisplayModeHostValues[channelIndex].setProcessValue(
-              //   context,
-              //   assignment.displayMode
-              // );
-            });
+          onSubPageActivate.addCallback((context) => {
+            channelElements.encoder.mDisplayModeValue.setProcessValue(
+              context,
+              assignment.displayMode
+            );
+            // TODO https://forums.steinberg.net/t/831123
+            // channelEncoderDisplayModeHostValues[channelIndex].setProcessValue(
+            //   context,
+            //   assignment.displayMode
+            // );
           });
+        });
 
-          return { subPage, flipSubPage };
-        }
-      );
+        return { subPage, flipSubPage };
+      }
+    );
 
     // Bind encoder assign button to cycle through sub pages in a round-robin fashion
     const encoderAssignButtonValue = assignmentButtons[assignmentButtonId].mSurfaceValue;
@@ -307,7 +298,6 @@ export function bindEncoders(
         };
       },
       areAssignmentsChannelRelated: false,
-      hidePageIndex: true,
     },
   ]);
 
