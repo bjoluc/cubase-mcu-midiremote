@@ -32,4 +32,4 @@ build({
     SCRIPT_VERSION: `"${process.env.npm_package_version}"`,
   },
   target: "es5",
-});
+}).catch(() => process.exit(1));
