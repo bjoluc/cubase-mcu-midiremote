@@ -1,5 +1,6 @@
 import { ContextStateVariable, createElements } from "../../util";
 import { MidiPorts } from "../MidiPorts";
+import { closest as determineClosestColor } from "color-diff";
 
 export enum ScribbleStripColor {
   black = 0x00,
@@ -14,30 +15,27 @@ export enum ScribbleStripColor {
 
 export type RgbColor = { r: number; g: number; b: number };
 
+type DeviceColorDefinition = { R: number; G: number; B: number; code: number };
+
+const scribbleStripColorsRGB: DeviceColorDefinition[] = [
+  { code: ScribbleStripColor.black, R: 0, G: 0, B: 0 },
+  { code: ScribbleStripColor.red, R: 0xcc, G: 0, B: 0 },
+  { code: ScribbleStripColor.green, R: 0, G: 0xbb, B: 0x22 },
+  { code: ScribbleStripColor.yellow, R: 0xff, G: 0xcc, B: 0 },
+  { code: ScribbleStripColor.blue, R: 0x00, G: 0, B: 0xff },
+  { code: ScribbleStripColor.fuchsia, R: 0xff, G: 0x33, B: 0xcc },
+  { code: ScribbleStripColor.aqua, R: 0x33, G: 0xcc, B: 0xdd },
+  { code: ScribbleStripColor.white, R: 0xcc, G: 0xcc, B: 0xcc },
+];
+
 export class ColorManager {
   private static rgbToScribbleStripColor({ r, g, b }: RgbColor): ScribbleStripColor {
-    const colors: Array<RgbColor & { code: number }> = [
-      { code: ScribbleStripColor.black, r: 0, g: 0, b: 0 },
-      { code: ScribbleStripColor.red, r: 1, g: 0, b: 0 },
-      { code: ScribbleStripColor.green, r: 0, g: 1, b: 0 },
-      { code: ScribbleStripColor.yellow, r: 1, g: 1, b: 0 },
-      { code: ScribbleStripColor.blue, r: 0, g: 0, b: 1 },
-      { code: ScribbleStripColor.fuchsia, r: 1, g: 0, b: 1 },
-      { code: ScribbleStripColor.aqua, r: 0, g: 1, b: 1 },
-      { code: ScribbleStripColor.white, r: 1, g: 1, b: 1 },
-    ];
-
-    // Find nearest neighbor
     return (
-      colors
-        // Compute distance to target color
-        .map((color) => ({
-          code: color.code,
-          distance: Math.abs(color.r - r) + Math.abs(color.g - g) + Math.abs(color.b - b),
-        }))
-        // Sort ascending by computed distance
-        .sort((a, b) => (a.distance < b.distance ? -1 : a.distance > b.distance ? 1 : 0))[0].code
-    );
+      determineClosestColor(
+        { R: r * 0xff, G: g * 0xff, B: b * 0xff },
+        scribbleStripColorsRGB
+      ) as DeviceColorDefinition
+    ).code;
   }
 
   private colors: Array<ContextStateVariable<number>>;

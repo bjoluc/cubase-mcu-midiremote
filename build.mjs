@@ -14,7 +14,7 @@ build({
   outDir: "dist/behringer/xtouch",
   clean: true,
   external: ["midiremote_api_v1"],
-  noExternal: ["abbreviate", "core-js"],
+  noExternal: ["abbreviate", "core-js", "color-diff"],
   onSuccess: async () => {
     const configFileContents = (await readFile("src/config.ts")).toString("utf8");
 
