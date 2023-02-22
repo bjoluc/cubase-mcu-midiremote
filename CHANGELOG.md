@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.3.0...v1.3.1) (2023-02-22)
+
+
+### Bug Fixes
+
+* Fix visually incorrect scribble strip color mapping ([dc020b7](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/dc020b7de58eb7d1b5e146b896e575f6c6f1359d))
+
 ## [1.3.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.2.2...v1.3.0) (2023-02-14)
 
 
