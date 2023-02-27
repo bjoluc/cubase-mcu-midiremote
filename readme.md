@@ -16,7 +16,7 @@ Cubase 12 MIDI Remote Script for the Behringer X-Touch / X-Touch Extender
 ## TL;DR
 
 This Cubase MIDI Remote Script replaces the default Mackie Control device setup and is tailored specifically to the Behringer X-Touch.
-It can be [set up](#setup) with a standalone X-Touch or with an X-Touch and an additional X-Touch Extender unit.
+It can be [set up](#setup) with a standalone X-Touch or with an arbitrary combination of X-Touch and X-Touch Extender units.
 Notable features include:
 
 - Track-colored scribble strips

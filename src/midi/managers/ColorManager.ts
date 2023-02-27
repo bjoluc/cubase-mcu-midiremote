@@ -1,5 +1,5 @@
 import { ContextStateVariable, createElements } from "../../util";
-import { MidiPorts } from "../MidiPorts";
+import { Device } from "../../Devices";
 import { closest as determineClosestColor } from "color-diff";
 
 export enum ScribbleStripColor {
@@ -40,23 +40,16 @@ export class ColorManager {
 
   private colors: Array<ContextStateVariable<number>>;
 
-  constructor(private ports: MidiPorts) {
-    this.colors = createElements(
-      ports.getChannelCount(),
-      () => new ContextStateVariable(ScribbleStripColor.black)
-    );
+  constructor(private device: Device) {
+    this.colors = createElements(8, () => new ContextStateVariable(ScribbleStripColor.black));
   }
 
   private sendColors(context: MR_ActiveDevice) {
-    this.ports.forEachPortPair(({ output, firstChannelIndex }) => {
-      output.sendSysex(context, [
-        0x72,
-        ...this.colors
-          .slice(firstChannelIndex, firstChannelIndex + 8)
-          .map((color) => color.get(context)),
-        0xf7,
-      ]);
-    });
+    this.device.ports.output.sendSysex(context, [
+      0x72,
+      ...this.colors.map((color) => color.get(context)),
+      0xf7,
+    ]);
   }
 
   setChannelColor(context: MR_ActiveDevice, channelIndex: number, color: ScribbleStripColor) {

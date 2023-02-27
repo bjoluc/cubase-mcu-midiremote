@@ -1,14 +1,14 @@
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { JogWheel, LedButton, LedPushEncoder } from "../decorators/surface";
 import { EncoderDisplayMode } from "../midi";
-import { SurfaceElements } from "../surface";
+import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../surface";
 
 function setShiftableButtonsLedValues(
-  elements: SurfaceElements,
+  controlSectionElements: ControlSectionSurfaceElements,
   context: MR_ActiveDevice,
   value: number
 ) {
-  const buttons = elements.control.buttons;
+  const buttons = controlSectionElements.buttons;
 
   for (const button of [buttons.edit, buttons.modify[0], buttons.modify[2], buttons.utility[2]]) {
     button.mLedValue.setProcessValue(context, value);
@@ -60,12 +60,12 @@ function bindCursorValueControlButton(
 
 export function bindControlButtons(
   page: DecoratedFactoryMappingPage,
-  elements: SurfaceElements,
-  mixerBankZone: MR_MixerBankZone,
-  firstMainDeviceChannelIndex: number
+  controlSectionElements: ControlSectionSurfaceElements,
+  channelElements: ChannelSurfaceElements,
+  mixerBankZone: MR_MixerBankZone
 ) {
   const host = page.mHostAccess;
-  const buttons = elements.control.buttons;
+  const buttons = controlSectionElements.buttons;
 
   const buttonsSubPageArea = page.makeSubPageArea("Control Buttons");
   const regularSubPage = buttonsSubPageArea.makeSubPage("Regular");
@@ -139,8 +139,8 @@ export function bindControlButtons(
   bindCursorValueControlButton(
     page,
     buttons.automation[2],
-    elements.channels[firstMainDeviceChannelIndex + 7].encoder,
-    elements.control.jogWheel
+    channelElements[7].encoder,
+    controlSectionElements.jogWheel
   );
 
   // Project
@@ -178,10 +178,10 @@ export function bindControlButtons(
   ).mOnValueChange = (context, mapping, value) => {
     if (value) {
       shiftSubPage.mAction.mActivate.trigger(mapping);
-      setShiftableButtonsLedValues(elements, context, 1);
+      setShiftableButtonsLedValues(controlSectionElements, context, 1);
     } else {
       regularSubPage.mAction.mActivate.trigger(mapping);
-      setShiftableButtonsLedValues(elements, context, 0);
+      setShiftableButtonsLedValues(controlSectionElements, context, 0);
     }
   };
 
@@ -216,19 +216,22 @@ export function bindControlButtons(
     .setTypeToggle();
 
   // Navigation Buttons
-  const { bank, channel } = elements.control.buttons.navigation;
+  const { bank, channel } = buttons.navigation;
   page.makeActionBinding(bank.left.mSurfaceValue, mixerBankZone.mAction.mPrevBank);
   page.makeActionBinding(bank.right.mSurfaceValue, mixerBankZone.mAction.mNextBank);
   page.makeActionBinding(channel.left.mSurfaceValue, mixerBankZone.mAction.mShiftLeft);
   page.makeActionBinding(channel.right.mSurfaceValue, mixerBankZone.mAction.mShiftRight);
 }
 
-export function bindJogWheelSection(page: MR_FactoryMappingPage, elements: SurfaceElements) {
+export function bindJogWheelSection(
+  page: MR_FactoryMappingPage,
+  controlSectionElements: ControlSectionSurfaceElements
+) {
   const jogWheelSubPageArea = page.makeSubPageArea("jogWeel");
   const scrubSubPage = jogWheelSubPageArea.makeSubPage("scrub");
   const jogSubPage = jogWheelSubPageArea.makeSubPage("jog");
 
-  const scrubButton = elements.control.buttons.scrub;
+  const scrubButton = controlSectionElements.buttons.scrub;
 
   page.makeActionBinding(scrubButton.mSurfaceValue, jogWheelSubPageArea.mAction.mNext);
 
@@ -239,44 +242,29 @@ export function bindJogWheelSection(page: MR_FactoryMappingPage, elements: Surfa
     scrubButton.mLedValue.setProcessValue(context, 0);
   };
 
-  const { mJogLeftValue: jogLeft, mJogRightValue: jogRight } = elements.control.jogWheel;
+  const { mJogLeftValue: jogLeft, mJogRightValue: jogRight } = controlSectionElements.jogWheel;
   page.makeCommandBinding(jogLeft, "Transport", "Jog Left").setSubPage(jogSubPage);
   page.makeCommandBinding(jogRight, "Transport", "Jog Right").setSubPage(jogSubPage);
   page.makeCommandBinding(jogLeft, "Transport", "Nudge Cursor Left").setSubPage(scrubSubPage);
   page.makeCommandBinding(jogRight, "Transport", "Nudge Cursor Right").setSubPage(scrubSubPage);
 }
 
-export function bindSegmentDisplaySection(page: MR_FactoryMappingPage, elements: SurfaceElements) {
-  page.mHostAccess.mTransport.mTimeDisplay.mPrimary.mTransportLocator.mOnChange = (
-    context,
-    mapping,
-    time,
-    timeFormat
-  ) => {
-    elements.display.onTimeUpdated(context, time, timeFormat);
-  };
-
+export function bindSegmentDisplaySection(
+  page: MR_FactoryMappingPage,
+  controlSectionElements: ControlSectionSurfaceElements
+) {
   page.makeCommandBinding(
-    elements.control.buttons.timeMode.mSurfaceValue,
+    controlSectionElements.buttons.timeMode.mSurfaceValue,
     "Transport",
     "Exchange Time Formats"
   );
-
-  elements.control.buttons.display.onSurfaceValueChange.addCallback((context, value) => {
-    if (value === 1) {
-      elements.display.isValueModeActive.setProcessValue(
-        context,
-        +!elements.display.isValueModeActive.getProcessValue(context)
-      );
-    }
-  });
-
-  // There's no "is solo mode active on any chanel" host value, is it?
-  // page.makeValueBinding(elements.display.leds.solo, ? )
 }
 
-export function bindDirectionButtons(page: MR_FactoryMappingPage, elements: SurfaceElements) {
-  const buttons = elements.control.buttons;
+export function bindDirectionButtons(
+  page: MR_FactoryMappingPage,
+  controlSectionElements: ControlSectionSurfaceElements
+) {
+  const buttons = controlSectionElements.buttons;
 
   const subPageArea = page.makeSubPageArea("Direction Buttons");
   const navigateSubPage = subPageArea.makeSubPage("Navigate");
@@ -321,11 +309,11 @@ export function bindDirectionButtons(page: MR_FactoryMappingPage, elements: Surf
   page.makeActionBinding(directions.center.mSurfaceValue, subPageArea.mAction.mNext);
 }
 
-export function bindFootControl(page: DecoratedFactoryMappingPage, elements: SurfaceElements) {
-  const host = page.mHostAccess;
-
-  // Free buttons
-  for (const footSwitch of elements.footControl.footSwitches) {
+export function bindFootControl(
+  page: DecoratedFactoryMappingPage,
+  controlSectionElements: ControlSectionSurfaceElements
+) {
+  for (const footSwitch of controlSectionElements.footSwitches) {
     page.makeCommandBinding(
       footSwitch.mSurfaceValue,
       "MIDI Remote",

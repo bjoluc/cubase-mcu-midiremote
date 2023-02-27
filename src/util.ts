@@ -107,3 +107,46 @@ export class ContextStateVariable<ValueType> {
     return state === "" ? this.initialValue : JSON.parse(state);
   }
 }
+
+type GlobalBooleanVariableChangeCallback = (context: MR_ActiveDevice, newValue: boolean) => void;
+
+export class GlobalBooleanVariable {
+  private static nextVariableId = 0;
+
+  private surfaceVariable: MR_SurfaceCustomValueVariable;
+  private onChangeCallbacks: GlobalBooleanVariableChangeCallback[] = [];
+
+  private invokeCallbacks(context: MR_ActiveDevice, value: boolean) {
+    for (const callback of this.onChangeCallbacks) {
+      callback(context, value);
+    }
+  }
+
+  constructor(surface: MR_DeviceSurface) {
+    this.surfaceVariable = surface.makeCustomValueVariable(
+      `globalBooleanVariable${GlobalBooleanVariable.nextVariableId++}`
+    );
+    this.surfaceVariable.mOnProcessValueChange = (context, value) => {
+      this.invokeCallbacks(context, Boolean(value));
+    };
+  }
+
+  addOnChangeCallback(callback: GlobalBooleanVariableChangeCallback) {
+    this.onChangeCallbacks.push(callback);
+  }
+
+  set(context: MR_ActiveDevice, value: boolean, runCallbacksInstantly = false) {
+    this.surfaceVariable.setProcessValue(context, +value);
+    if (runCallbacksInstantly) {
+      this.invokeCallbacks(context, value);
+    }
+  }
+
+  get(context: MR_ActiveDevice) {
+    return Boolean(this.surfaceVariable.getProcessValue(context));
+  }
+
+  toggle(context: MR_ActiveDevice, runCallbacksInstantly = false) {
+    this.set(context, !this.get(context), runCallbacksInstantly);
+  }
+}

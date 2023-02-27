@@ -1,3 +1,4 @@
+import { Devices, MainDevice } from "../../Devices";
 import { ContextStateVariable, createElements } from "../../util";
 
 export class SegmentDisplayManager {
@@ -16,7 +17,11 @@ export class SegmentDisplayManager {
 
     if (value !== this.segmentValues[segmentId].get(context)) {
       this.segmentValues[segmentId].set(context, value);
-      this.midiOutput.sendMidi(context, [0xb0, 0x40 + segmentId, value]);
+      this.devices.forEach((device) => {
+        if (device instanceof MainDevice) {
+          device.ports.output.sendMidi(context, [0xb0, 0x40 + segmentId, value]);
+        }
+      });
     }
   }
 
@@ -39,13 +44,39 @@ export class SegmentDisplayManager {
     }
   }
 
-  constructor(private midiOutput: MR_DeviceMidiOutput) {}
+  constructor(private devices: Devices) {}
+
+  private lastTimeFormat = new ContextStateVariable("");
+  private isScriptInitialized = new ContextStateVariable(false);
 
   /**
-   * Update the 7-segment display to show the provided `time` string – a string consisting of
-   * numbers, spaces, dots and colons.
+   * Update the 7-segment displays to show the provided `time` string – a string consisting of
+   * numbers, spaces, dots, and colons.
    */
-  setTimeString(context: MR_ActiveDevice, time: string) {
+  updateTime(context: MR_ActiveDevice, time: string, timeFormat: string) {
+    if (timeFormat !== this.lastTimeFormat.get(context)) {
+      this.lastTimeFormat.set(context, timeFormat);
+
+      // Time format has changed since last invocation – adapt time mode LEDs to new time format
+      if (!this.isScriptInitialized.get(context)) {
+        // Using `setProcessValue` on initialization crashes the host, so we don't do it the
+        // first time.
+        this.isScriptInitialized.set(context, true);
+      } else {
+        this.devices.forEach((device) => {
+          if (device instanceof MainDevice) {
+            const { smpte: smpteLed, beats: beatsLed } = device.controlSectionElements.displayLeds;
+
+            smpteLed.mSurfaceValue.setProcessValue(context, +/^(?:[\d]+\:){3}[\d]+$/.test(time));
+            beatsLed.mSurfaceValue.setProcessValue(
+              context,
+              +/^(?:[ \d]+\.){2} \d\.[\d ]+$/.test(time)
+            );
+          }
+        });
+      }
+    }
+
     // If `time` is separated three times by `.` or `:`, fill it with spaces to match the way digits
     // are grouped on the device
     const match = /^([\d ]+[\.\:])([\d ]+)([\.\:])([\d ]+)([\.\:])([\d ]+)$/.exec(time);

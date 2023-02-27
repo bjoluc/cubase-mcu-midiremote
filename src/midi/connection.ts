@@ -1,20 +1,22 @@
+import { Devices } from "../Devices";
 import { makeCallbackCollection } from "../util";
-import { createMidiManagers } from "./managers";
-import { MidiPorts } from "./MidiPorts";
+import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
 
 export type ActivationCallbacks = ReturnType<typeof setupDeviceConnection>["activationCallbacks"];
 
-export function setupDeviceConnection(driver: MR_DeviceDriver, ports: MidiPorts) {
+export function setupDeviceConnection(driver: MR_DeviceDriver, devices: Devices) {
   const activationCallbacks = makeCallbackCollection(driver, "mOnActivate");
-  const midiManagers = createMidiManagers(ports);
+  const segmentDisplayManager = new SegmentDisplayManager(devices);
 
   driver.mOnDeactivate = (context) => {
-    midiManagers.color.resetColors(context);
-    midiManagers.lcd.clearDisplays(context);
-    midiManagers.segmentDisplay.clearAssignment(context);
-    midiManagers.segmentDisplay.clearTime(context);
+    segmentDisplayManager.clearAssignment(context);
+    segmentDisplayManager.clearTime(context);
 
-    ports.forEachPortPair(({ output }) => {
+    devices.forEach((device) => {
+      device.colorManager.resetColors(context);
+      device.lcdManager.clearDisplays(context);
+
+      const output = device.ports.output;
       // Reset via `output.sendSysex(context, [0x63])` is not recognized by the X-Touch :(
 
       // Reset faders
@@ -34,5 +36,5 @@ export function setupDeviceConnection(driver: MR_DeviceDriver, ports: MidiPorts)
     });
   };
 
-  return { activationCallbacks, midiManagers };
+  return { activationCallbacks, segmentDisplayManager };
 }

@@ -1,6 +1,6 @@
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
-import { EnhancedMidiOutput, MidiPorts } from "../MidiPorts";
+import { Device } from "../../Devices";
 
 export class LcdManager {
   /**
@@ -38,33 +38,21 @@ export class LcdManager {
     return Array(length + 1).join(" ");
   }
 
-  constructor(private ports: MidiPorts) {}
+  constructor(private device: Device) {}
 
-  private sendText(
-    output: EnhancedMidiOutput,
-    context: MR_ActiveDevice,
-    startIndex: number,
-    text: string
-  ) {
+  private sendText(context: MR_ActiveDevice, startIndex: number, text: string) {
     const chars = LcdManager.stringToUtf8CharArray(text.slice(0, 112));
-    output.sendSysex(context, [0x12, startIndex, ...chars]);
+    this.device.ports.output.sendSysex(context, [0x12, startIndex, ...chars]);
   }
 
   setChannelText(context: MR_ActiveDevice, row: number, channelIndex: number, text: string) {
     while (text.length < 7) {
       text += " ";
     }
-    this.sendText(
-      this.ports.getPortsByChannelIndex(channelIndex).output,
-      context,
-      row * 56 + (channelIndex % 8) * 7,
-      text
-    );
+    this.sendText(context, row * 56 + (channelIndex % 8) * 7, text);
   }
 
   clearDisplays(context: MR_ActiveDevice) {
-    this.ports.forEachPortPair(({ output }) => {
-      this.sendText(output, context, 0, LcdManager.makeSpaces(112));
-    });
+    this.sendText(context, 0, LcdManager.makeSpaces(112));
   }
 }

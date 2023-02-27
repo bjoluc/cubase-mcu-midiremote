@@ -20,11 +20,16 @@ export const config = CONFIGURATION as ScriptConfiguration;
  */
 var CONFIGURATION = {
   /**
-   * If you have an extender unit, change this to either `["extender", "main"]` (if your extender is
-   * placed on the left side of the main unit) or `["main", "extender"]` (if the extender is on the
-   * right side).
+   * If you have an extender unit, change this option to either `["extender", "main"]` (if your
+   * extender is placed on the left side of the main unit) or `["main", "extender"]` (if the
+   * extender is on the right side).
    *
-   * Do you have more than one extender? Let me know and I'll add support for multiple extenders!
+   * You can also specify an arbitrary combination of "main" and "extender" devices here, including
+   * multiple X-Touch ("main") and multiple X-Touch Extender ("extender") devices. The order of the
+   * list below should match the order of the devices on your desk from left to right. The port
+   * setup in the "Add MIDI Controller Surface" dialog reflects this order for input and output
+   * ports, i.e., the first input and the first output port belong to the leftmost device while the
+   * last input and the last output port belong to the rightmost device.
    */
   devices: ["main"],
 
