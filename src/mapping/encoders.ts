@@ -117,8 +117,16 @@ export function bindEncoders(
               )
             : assignmentsConfig;
 
-        assignments.forEach((assignment, channelIndex) => {
-          const { encoder, fader } = channelElements[channelIndex];
+        for (const [channelIndex, { encoder, fader }] of channelElements.entries()) {
+          const assignment: EncoderAssignment = {
+            // @ts-expect-error `assignments[channelIndex]` may be undefined, but TS doesn't
+            // consider that
+            displayMode: EncoderDisplayMode.SingleDot,
+            // @ts-expect-error
+            encoderValue: page.mCustom.makeHostValueVariable("unassignedEncoderValue"),
+            pushToggleValue: page.mCustom.makeHostValueVariable("unassignedEncoderPushValue"),
+            ...assignments[channelIndex],
+          };
 
           // Non-flipped encoder page sub page bindings
           page.makeValueBinding(encoder.mEncoderValue, assignment.encoderValue).setSubPage(subPage);
@@ -163,7 +171,7 @@ export function bindEncoders(
             //   assignment.displayMode
             // );
           });
-        });
+        }
 
         return { subPage, flipSubPage };
       }
@@ -212,6 +220,7 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.Wrap,
         encoderValue: mixerBankChannel.mValue.mMonitorEnable,
+        pushToggleValue: mixerBankChannel.mValue.mMonitorEnable,
       }),
       areAssignmentsChannelRelated: true,
     },
