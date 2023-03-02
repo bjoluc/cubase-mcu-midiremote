@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.3.1...v1.4.0) (2023-03-02)
+
+
+### Features
+
+* Support arbitrary device combinations – thanks [@lamusician](https://github.com/lamusician) and [@limageurpublic](https://github.com/limageurpublic) for testing! ([db82022](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/db82022b450ad63c85f6f48da595f7a0530b9b0f))
+
+
+### Bug Fixes
+
+* **Encoder Assignments:** Prevent unassigned encoders from falling back to their previous assignment ([bc39c0e](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/bc39c0ea2b4fad1474e904052f4b1de5f5156dad))
+
 ## [1.3.1](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.3.0...v1.3.1) (2023-02-22)
 
 
