@@ -80,7 +80,13 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 - Open up Cubase and ensure you are running version v12.0.52 or later
 - In the studio setup window, remove any Mackie Control remote devices that you set up for your X-Touch / X-Touch Extender (don't forget to take screenshots of your command assignments)
 - On windows, open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` and create the nested directories `behringer\xtouch` within it.
+
+  > **Note** Directory names matter. Other names such as `X-Touch` will not work.
+
 - On MacOS, open `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/Local` and create the nested directories `behringer/xtouch` within it.
+
+  > **Note** Directory names matter. Other names such as `X-Touch` will not work.
+
 - Download the MIDI Remote script file [`behringer_xtouch.js`](https://github.com/bjoluc/cubase-xtouch-midiremote/releases/latest/download/behringer_xtouch.js) from the latest GitHub release and move it into the newly created directory (`.../Local/behringer/xtouch`).
 - Restart Cubase
 
