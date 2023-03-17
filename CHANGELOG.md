@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.1](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.4.0...v1.4.1) (2023-03-17)
+
+
+### Bug Fixes
+
+* Make MIDI port names unique to fix an issue where Cubase would randomly swap identically named MIDI ports (such as multiple extender ports) ([b7a0659](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/b7a06590e87ed95d10064b314d06a5bbde3b47db)), closes [#4](https://github.com/bjoluc/cubase-xtouch-midiremote/issues/4)
+
 ## [1.4.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.3.1...v1.4.0) (2023-03-02)
 
 
