@@ -8,10 +8,15 @@ export interface EnhancedMidiOutput extends MR_DeviceMidiOutput {
   sendNoteOn: (context: MR_ActiveDevice, pitch: number, velocity: number | boolean) => void;
 }
 
+let nextPortPairIndex = 1;
+
 export function makePortPair(driver: MR_DeviceDriver, isExtender: boolean): PortPair {
   const name = isExtender ? "Extender" : "Main";
-  const input = driver.mPorts.makeMidiInput(`${name} Input`);
-  const output = driver.mPorts.makeMidiOutput(`${name} Output`) as EnhancedMidiOutput;
+  const portPairIndex = nextPortPairIndex++;
+  const input = driver.mPorts.makeMidiInput(`Input ${portPairIndex} - ${name}`);
+  const output = driver.mPorts.makeMidiOutput(
+    `Output ${portPairIndex} - ${name}`
+  ) as EnhancedMidiOutput;
 
   output.sendSysex = (context, messageBody) => {
     output.sendMidi(context, [0xf0, 0x00, 0x00, 0x66, 0x14 + +isExtender, ...messageBody, 0xf7]);
