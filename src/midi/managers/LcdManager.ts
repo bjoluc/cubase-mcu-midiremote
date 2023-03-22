@@ -4,6 +4,13 @@ import { Device } from "../../Devices";
 
 export class LcdManager {
   /**
+   * Strips any non-ASCII character from the provided string, since devices only support ASCII.
+   **/
+  static stripNonAsciiCharacters(input: string) {
+    return input.replace(/[^\x00-\x7F]/g, "");
+  }
+
+  /**
    * Given a <= 7 characters long string, returns a left-padded version of it that appears
    * centered on a 7-character display.
    */
@@ -16,7 +23,7 @@ export class LcdManager {
   }
 
   /**
-   * Given a string, returns an abbreviated version of it consisting of at most 7 characters
+   * Given a string, returns an abbreviated version of it consisting of at most 7 characters.
    */
   static abbreviateString(input: string) {
     if (input.length < 7) {
@@ -26,7 +33,7 @@ export class LcdManager {
     return abbreviate(input, { length: 7 });
   }
 
-  static stringToUtf8CharArray(input: string) {
+  private static asciiStringToCharArray(input: string) {
     const chars = [];
     for (let i = 0; i < input.length; i++) {
       chars.push(input.charCodeAt(i));
@@ -41,7 +48,7 @@ export class LcdManager {
   constructor(private device: Device) {}
 
   private sendText(context: MR_ActiveDevice, startIndex: number, text: string) {
-    const chars = LcdManager.stringToUtf8CharArray(text.slice(0, 112));
+    const chars = LcdManager.asciiStringToCharArray(text.slice(0, 112));
     this.device.ports.output.sendSysex(context, [0x12, startIndex, ...chars]);
   }
 

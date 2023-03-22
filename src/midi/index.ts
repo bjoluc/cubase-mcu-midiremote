@@ -150,7 +150,30 @@ export function bindDeviceToMidi(
       );
     };
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
-      currentDisplayValue.set(context, LcdManager.centerString(LcdManager.abbreviateString(value)));
+      value =
+        {
+          // French
+          Éteint: "Eteint",
+
+          // Japanese
+          オン: "On",
+          オフ: "Off",
+
+          // Russian
+          "Вкл.": "On",
+          "Выкл.": "Off",
+
+          // Chinese
+          开: "On",
+          关: "Off",
+        }[value] ?? value;
+
+      currentDisplayValue.set(
+        context,
+        LcdManager.centerString(
+          LcdManager.abbreviateString(LcdManager.stripNonAsciiCharacters(value))
+        )
+      );
       isLocalValueModeActive.set(context, true);
       updateDisplay(context);
       setTimeout(
@@ -176,13 +199,52 @@ export function bindDeviceToMidi(
 
       title2 =
         {
+          // English
           "Pan Left-Right": "Pan",
+
+          // German
           "Pan links/rechts": "Pan",
+
+          // Spanish
+          "Pan izquierda-derecha": "Pan",
+
+          // French
+          "Pan gauche-droit": "Pan",
+          "Pré/Post": "PrePost",
+
+          // Italian
+          "Pan sinistra-destra": "Pan",
+          Monitoraggio: "Monitor",
+
+          // Japanese
+          左右パン: "Pan",
+          モニタリング: "Monitor",
+          レベル: "Level",
+          "Pre/Post フェーダー": "PrePost", // TODO is this still required now?
+
+          // Portuguese
+          "Pan Esquerda-Direita": "Pan",
+          Nível: "Nivel",
+          "Pré/Pós": "PrePost",
+
+          // Russian
+          "Панорама Лево-Право": "Pan",
+          Монитор: "Monitor",
+          Уровень: "Level",
+          "Пре/Пост": "PrePost",
+
+          // Chinese
+          "声像 左-右": "Pan",
+          监听: "Monitor",
+          电平: "Level",
+          "前置/后置": "PrePost",
         }[title2] ?? title2;
 
       currentParameterName.set(
         context,
-        LcdManager.centerString(LcdManager.abbreviateString(title2))
+        LcdManager.centerString(
+          LcdManager.abbreviateString(LcdManager.stripNonAsciiCharacters(title2))
+        )
       );
       updateDisplay(context);
     };
@@ -193,7 +255,7 @@ export function bindDeviceToMidi(
         context,
         1,
         channelIndex,
-        LcdManager.abbreviateString(title)
+        LcdManager.abbreviateString(LcdManager.stripNonAsciiCharacters(title))
       );
     };
 
