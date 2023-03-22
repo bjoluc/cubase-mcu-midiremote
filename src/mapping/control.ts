@@ -10,7 +10,14 @@ function setShiftableButtonsLedValues(
 ) {
   const buttons = controlSectionElements.buttons;
 
-  for (const button of [buttons.edit, buttons.modify[0], buttons.modify[2], buttons.utility[2]]) {
+  for (const button of [
+    buttons.edit,
+    buttons.modify[0],
+    buttons.modify[2],
+    buttons.utility[2],
+    buttons.transport[0],
+    buttons.transport[1],
+  ]) {
     button.mLedValue.setProcessValue(context, value);
   }
 }
@@ -188,8 +195,20 @@ export function bindControlButtons(
   // Transport buttons
   const mTransport = host.mTransport;
 
-  page.makeCommandBinding(buttons.transport[0].mSurfaceValue, "Transport", "To Left Locator");
-  page.makeCommandBinding(buttons.transport[1].mSurfaceValue, "Transport", "To Right Locator");
+  page
+    .makeCommandBinding(buttons.transport[0].mSurfaceValue, "Transport", "To Left Locator")
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.transport[0].mSurfaceValue, "Transport", "Set Left Locator")
+    .setSubPage(shiftSubPage);
+
+  page
+    .makeCommandBinding(buttons.transport[1].mSurfaceValue, "Transport", "To Right Locator")
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.transport[1].mSurfaceValue, "Transport", "Set Right Locator")
+    .setSubPage(shiftSubPage);
+
   page
     .makeValueBinding(buttons.transport[2].mSurfaceValue, mTransport.mValue.mCycleActive)
     .setTypeToggle();
