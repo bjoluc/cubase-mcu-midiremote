@@ -1,6 +1,6 @@
 {
   "name": "cubase-xtouch-midiremote",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "private": true,
   "scripts": {
     "build": "node build.mjs",

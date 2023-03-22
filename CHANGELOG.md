@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.2](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.4.1...v1.4.2) (2023-03-22)
+
+
+### Bug Fixes
+
+* **Internationalization:** Improve LCD display usage in various languages ([b4ce7ce](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/b4ce7ce12b1998f79d747c1fef66b4417a252767))
+* **Mapping:** Make "Shift + Left" and "Shift + Right" set the left and right locator, respectively ([8b08a7c](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/8b08a7cdc30e1e12c4ad2f0416bf2f1e7bd90e4d))
+
 ## [1.4.1](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.4.0...v1.4.1) (2023-03-17)
 
 
