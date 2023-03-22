@@ -220,7 +220,6 @@ export function bindDeviceToMidi(
           左右パン: "Pan",
           モニタリング: "Monitor",
           レベル: "Level",
-          "Pre/Post フェーダー": "PrePost", // TODO is this still required now?
 
           // Portuguese
           "Pan Esquerda-Direita": "Pan",
