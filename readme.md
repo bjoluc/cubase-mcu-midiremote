@@ -109,7 +109,6 @@ Each option is documented in a comment above it, so feel free to consult the [sc
 
 **Quirks to be fixed:**
 
-- The time display is not updated upon initialization to avoid https://forums.steinberg.net/t/829417
 - When controlling under-the-cursor values, the encoder's LED ring is not updated to single-dot mode but remains in whatever mode the currently active encoder assignment demands (blocked by https://forums.steinberg.net/t/831123).
 
 **Current limitations of the MIDI Remote API:**

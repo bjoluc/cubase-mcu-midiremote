@@ -47,7 +47,6 @@ export class SegmentDisplayManager {
   constructor(private devices: Devices) {}
 
   private lastTimeFormat = new ContextStateVariable("");
-  private isScriptInitialized = new ContextStateVariable(false);
 
   /**
    * Update the 7-segment displays to show the provided `time` string – a string consisting of
@@ -57,24 +56,17 @@ export class SegmentDisplayManager {
     if (timeFormat !== this.lastTimeFormat.get(context)) {
       this.lastTimeFormat.set(context, timeFormat);
 
-      // Time format has changed since last invocation – adapt time mode LEDs to new time format
-      if (!this.isScriptInitialized.get(context)) {
-        // Using `setProcessValue` on initialization crashes the host, so we don't do it the
-        // first time.
-        this.isScriptInitialized.set(context, true);
-      } else {
-        this.devices.forEach((device) => {
-          if (device instanceof MainDevice) {
-            const { smpte: smpteLed, beats: beatsLed } = device.controlSectionElements.displayLeds;
+      this.devices.forEach((device) => {
+        if (device instanceof MainDevice) {
+          const { smpte: smpteLed, beats: beatsLed } = device.controlSectionElements.displayLeds;
 
-            smpteLed.mSurfaceValue.setProcessValue(context, +/^(?:[\d]+\:){3}[\d]+$/.test(time));
-            beatsLed.mSurfaceValue.setProcessValue(
-              context,
-              +/^(?:[ \d]+\.){2} \d\.[\d ]+$/.test(time)
-            );
-          }
-        });
-      }
+          smpteLed.mSurfaceValue.setProcessValue(context, +/^(?:[\d]+\:){3}[\d]+$/.test(time));
+          beatsLed.mSurfaceValue.setProcessValue(
+            context,
+            +/^(?:[ \d]+\.){2} \d\.[\d ]+$/.test(time)
+          );
+        }
+      });
     }
 
     // If `time` is separated three times by `.` or `:`, fill it with spaces to match the way digits

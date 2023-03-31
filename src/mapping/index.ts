@@ -1,9 +1,10 @@
-import { Devices, MainDevice } from "../Devices";
-import { GlobalBooleanVariables } from "../midi";
-import { SegmentDisplayManager } from "../midi/managers/SegmentDisplayManager";
 import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
-
+import { Devices, MainDevice } from "../Devices";
+import { GlobalBooleanVariables } from "../midi";
+import { ActivationCallbacks } from "../midi/connection";
+import { SegmentDisplayManager } from "../midi/managers/SegmentDisplayManager";
+import { ContextStateVariable } from "../util";
 import {
   bindControlButtons,
   bindDirectionButtons,
@@ -17,7 +18,8 @@ export function makeHostMapping(
   page: DecoratedFactoryMappingPage,
   devices: Devices,
   segmentDisplayManager: SegmentDisplayManager,
-  globalBooleanVariables: GlobalBooleanVariables
+  globalBooleanVariables: GlobalBooleanVariables,
+  activationCallbacks: ActivationCallbacks
 ) {
   // Mixer channels
   const mixerBankZone = page.mHostAccess.mMixConsole
@@ -86,6 +88,30 @@ export function makeHostMapping(
     }
   });
 
+  // The `mTransportLocator.mOnChange` callback is first invoked before the device driver is
+  // activated. The workaround below defers the first time display update until the driver is
+  // activated.
+  const isDriverActivated = new ContextStateVariable(false);
+  const initialTransportLocatorPosition = new ContextStateVariable({ time: "", timeFormat: "" });
+
+  activationCallbacks.addCallback((context) => {
+    isDriverActivated.set(context, true);
+
+    const { time, timeFormat } = initialTransportLocatorPosition.get(context);
+    segmentDisplayManager.updateTime(context, time, timeFormat);
+
+    // TODO: This is a workaround forcing the Beats/SMPTE LEDs to be set. It is required since
+    // calling `myHostValue.setProcessValue()` doesn't trigger `mOnProcessValueChange` when called
+    // on device driver activation.
+    devices.forEach((device) => {
+      if (device instanceof MainDevice) {
+        const output = device.ports.output;
+        output.sendNoteOn(context, 0x71, +/^(?:[\d]+\:){3}[\d]+$/.test(time)); // SMPTE LED
+        output.sendNoteOn(context, 0x72, +/^(?:[ \d]+\.){2} \d\.[\d ]+$/.test(time)); // Beats LED
+      }
+    });
+  });
+
   // Time display – once for all devices; individual devices are handled by the
   // SegmentDisplayManager
   page.mHostAccess.mTransport.mTimeDisplay.mPrimary.mTransportLocator.mOnChange = (
@@ -94,6 +120,10 @@ export function makeHostMapping(
     time,
     timeFormat
   ) => {
-    segmentDisplayManager.updateTime(context, time, timeFormat);
+    if (!isDriverActivated.get(context)) {
+      initialTransportLocatorPosition.set(context, { time, timeFormat });
+    } else {
+      segmentDisplayManager.updateTime(context, time, timeFormat);
+    }
   };
 }

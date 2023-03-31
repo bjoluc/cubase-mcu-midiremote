@@ -53,4 +53,4 @@ devices.forEach((device) => {
 });
 
 // Map elements to host functions
-makeHostMapping(page, devices, segmentDisplayManager, globalBooleanVariables);
+makeHostMapping(page, devices, segmentDisplayManager, globalBooleanVariables, activationCallbacks);
