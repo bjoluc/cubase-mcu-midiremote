@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.4.2...v1.5.0) (2023-03-31)
+
+
+### Features
+
+* Add encoder assignments for channel strip plugins ([fad1e7a](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/fad1e7a1ca937a87ff219f0cd2a39081a051ea48))
+
+
+### Bug Fixes
+
+* Fix track titles not being updated in Cubase v12.0.60 ([cbf7c27](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/cbf7c2704d9dc589d6c64aeb7ae06a53b338f11e))
+* Update time display and Beats/SMPTE LEDs on script activation ([ebcfa0f](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/ebcfa0f0d6130c8e283d1b28b8fa4c84aa587db5))
+
 ## [1.4.2](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.4.1...v1.4.2) (2023-03-22)
 
 
