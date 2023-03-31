@@ -334,6 +334,9 @@ export function bindEncoders(
   }
 
   const mQuickControls = page.mHostAccess.mTrackSelection.mMixerChannel.mQuickControls;
+  const mStripEffects =
+    page.mHostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects;
+
   bindEncoderAssignments(5, [
     {
       name: "Quick Controls",
@@ -343,6 +346,26 @@ export function bindEncoders(
           displayMode: EncoderDisplayMode.SingleDot,
         };
       },
+      areAssignmentsChannelRelated: false,
+    },
+    {
+      name: "Channel Strip",
+      assignments: [
+        mStripEffects.mGate,
+        mStripEffects.mCompressor,
+        mStripEffects.mTools,
+        mStripEffects.mSaturator,
+        mStripEffects.mLimiter,
+      ].flatMap((stripEffect) => {
+        return createElements(8, () => {
+          const parameterValue = stripEffect.mParameterBankZone.makeParameterValue();
+          return {
+            encoderValue: parameterValue,
+            displayMode: EncoderDisplayMode.SingleDot,
+            pushToggleValue: stripEffect.mBypass,
+          };
+        });
+      }),
       areAssignmentsChannelRelated: false,
     },
   ]);

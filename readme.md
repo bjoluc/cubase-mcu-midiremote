@@ -59,7 +59,7 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 - The lower scribble strip row always shows track names. Parameter page numbers are displayed on the otherwise unused two-digit Assignment display below the Encoder Assign buttons. If an encoder assignment only has one parameter page, the Assignment display remains blank.
 - Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages now. The "Level" and "On" pages have been combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses.
 - The "Plug-In" encoder assignment always follows the currently focused plugin window to avoid tedious plugin selection via push encoders.
-- The "Inst" encoder assignment maps to the VST Quick Controls of the currently selected instrument track instead of channel strip parameters.
+- The first page of the "Inst" encoder assignment maps encoders to the VST Quick Controls of the currently selected instrument track. The remaining pages map 8 encoders to each part of the channel strip, i.e., gate, compressor, tools, saturation, and limiter. Pushing an encoder toggles the bypass status of the corresponding channel strip plugin.
 
 **Buttons**
 
@@ -114,10 +114,11 @@ Each option is documented in a comment above it, so feel free to consult the [sc
 
 **Current limitations of the MIDI Remote API:**
 
-- The "Track" encoder assignment is missing the "Input Bus" and "Output Bus" pages which are not exposed by the MIDI Remote API. I prefer to use the mouse for routing anyway, as apposed to a push encoder and a tiny single-row string on a scribble strip display.
+- The "Track" encoder assignment is missing the "Input Bus" and "Output Bus" pages which are not exposed by the MIDI Remote API. I prefer to use the mouse for routing anyway, as opposed to a push encoder and a tiny single-row string on a scribble strip display.
 - The "Pan/Surround" encoder assignment is missing a second page for vertical panning which is not exposed by the MIDI Remote API.
 - The "Send" encoder assignment doesn't include a "Bus" page because send busses are not exposed by the MIDI Remote API.
 - The "Plug-In" encoder assignment doesn't display the number of the active parameter page because it is not exposed by the MIDI Remote API.
+- The "Inst" encoder assignment doesn't allow loading/switching channel strip plugins because the MIDI Remote API doesn't provide options for it.
 - The punch button doesn't light up when "Auto Punch In" is activated – no host value available
 - The global "Solo" LED and the "Solo Defeat" button don't light up when a channel is in solo mode – no host value available
 - Channel visibility presets do not yet affect channel assignments since the `MixerBankZone` of the MIDI Remote API doesn't respect channel visibility presets (["`.setFollowVisibility()` is a teaser for future updates"](https://forums.steinberg.net/t/820531/2)).
