@@ -32,7 +32,7 @@ export function makeHostMapping(
       const channel = mixerBankZone.makeMixerBankChannel();
 
       // Scribble strips
-      page.makeValueBinding(channelElements.scribbleStrip.trackTitle, channel.mValue.mVolume);
+      page.makeValueBinding(channelElements.scribbleStrip.trackTitle, channel.mValue.mSelected);
 
       // VU Meter
       page.makeValueBinding(channelElements.vuMeter, channel.mValue.mVUMeter);

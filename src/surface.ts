@@ -25,7 +25,7 @@ export function createChannelSurfaceElements(surface: DecoratedDeviceSurface, x:
         encoderLabel: surface
           .makeLabelField(currentChannelXPosition + 1, 7, 4, 2)
           .relateTo(encoder),
-        trackTitle: surface.makeCustomValueVariable("scribbleStriptrackTitle"),
+        trackTitle: surface.makeCustomValueVariable("scribbleStripTrackTitle"),
       },
       vuMeter: surface.makeCustomValueVariable("vuMeter"),
       buttons: {
