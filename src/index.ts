@@ -20,7 +20,7 @@ import { Devices } from "./Devices";
 import { bindDeviceToMidi, makeGlobalBooleanVariables } from "./midi";
 import { makeHostMapping } from "./mapping";
 
-const driver = midiremoteApi.makeDeviceDriver("Behringer", "X-Touch", "github.com/bjoluc");
+const driver = midiremoteApi.makeDeviceDriver(VENDOR_NAME, DEVICE_NAME, "github.com/bjoluc");
 
 const surface = decorateSurface(driver.mSurface);
 
@@ -29,10 +29,9 @@ const devices = new Devices(driver, surface);
 
 const { activationCallbacks, segmentDisplayManager } = setupDeviceConnection(driver, devices);
 activationCallbacks.addCallback(() => {
-  // @ts-expect-error The script version is filled in by esbuild
-  console.log("Activating cubase-xtouch-midiremote v" + SCRIPT_VERSION);
+  console.log("Activating cubase-mcu-midiremote v" + SCRIPT_VERSION);
   console.log(
-    "A newer version may be available at https://github.com/bjoluc/cubase-xtouch-midiremote/releases"
+    "A newer version may be available at https://github.com/bjoluc/cubase-mcu-midiremote/releases"
   );
 });
 

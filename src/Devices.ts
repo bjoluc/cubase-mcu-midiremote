@@ -1,75 +1,62 @@
-import { config } from "./config";
+import { config, deviceConfig } from "./config";
 import { DecoratedDeviceSurface } from "./decorators/surface";
+import { ChannelSurfaceElements, ControlSectionSurfaceElements, DeviceSurface } from "./devices";
 import { ColorManager } from "./midi/managers/ColorManager";
 import { LcdManager } from "./midi/managers/LcdManager";
 
 import { makePortPair, PortPair } from "./midi/PortPair";
-import {
-  channelElementsWidth,
-  ChannelSurfaceElements,
-  controlSectionElementsWidth,
-  ControlSectionSurfaceElements,
-  createChannelSurfaceElements,
-  createControlSectionSurfaceElements,
-  surfaceHeight,
-} from "./surface";
-
-interface DeviceProperties {
-  driver: MR_DeviceDriver;
-  surface: DecoratedDeviceSurface;
-  firstChannelIndex: number;
-  surfaceXPosition: number;
-}
 
 /**
  * A `Device` represents a physical device and manages its MIDI ports and surface elements
  */
 export abstract class Device {
+  surfaceWidth: number;
+  channelElements: ChannelSurfaceElements[];
+
   ports: PortPair;
   colorManager: ColorManager;
   lcdManager: LcdManager;
 
-  readonly firstChannelIndex: number;
-  channelElements: ChannelSurfaceElements;
-
   constructor(
-    { driver, firstChannelIndex, surface, surfaceXPosition }: DeviceProperties,
-    isExtender: boolean,
-    panelWidth: number
+    driver: MR_DeviceDriver,
+    public firstChannelIndex: number,
+    deviceSurface: DeviceSurface,
+    isExtender: boolean
   ) {
-    this.firstChannelIndex = firstChannelIndex;
+    this.surfaceWidth = deviceSurface.width;
+    this.channelElements = deviceSurface.channelElements;
 
     this.ports = makePortPair(driver, isExtender);
     this.colorManager = new ColorManager(this);
     this.lcdManager = new LcdManager(this);
-
-    // Draw device frame
-    surface.makeBlindPanel(surfaceXPosition, 0, panelWidth, surfaceHeight);
-
-    this.channelElements = createChannelSurfaceElements(surface, surfaceXPosition);
   }
 }
 
 export class MainDevice extends Device {
-  static readonly surfaceWidth = channelElementsWidth + controlSectionElementsWidth;
-
   controlSectionElements: ControlSectionSurfaceElements;
 
-  constructor(properties: DeviceProperties) {
-    super(properties, false, MainDevice.surfaceWidth);
+  constructor(
+    driver: MR_DeviceDriver,
+    surface: DecoratedDeviceSurface,
+    firstChannelIndex: number,
+    surfaceXPosition: number
+  ) {
+    const deviceSurface = deviceConfig.createMainSurface(surface, surfaceXPosition);
+    super(driver, firstChannelIndex, deviceSurface, false);
 
-    this.controlSectionElements = createControlSectionSurfaceElements(
-      properties.surface,
-      properties.surfaceXPosition + channelElementsWidth
-    );
+    this.controlSectionElements = deviceSurface.controlSectionElements!;
   }
 }
 
 export class ExtenderDevice extends Device {
-  static readonly surfaceWidth = channelElementsWidth + 1;
-
-  constructor(properties: DeviceProperties) {
-    super(properties, true, ExtenderDevice.surfaceWidth);
+  constructor(
+    driver: MR_DeviceDriver,
+    surface: DecoratedDeviceSurface,
+    firstChannelIndex: number,
+    surfaceXPosition: number
+  ) {
+    const deviceSurface = deviceConfig.createExtenderSurface(surface, surfaceXPosition);
+    super(driver, firstChannelIndex, deviceSurface, true);
   }
 }
 
@@ -85,14 +72,9 @@ export class Devices {
 
     this.devices.push(
       ...deviceClasses.map((deviceClass, deviceIndex) => {
-        const device = new deviceClass({
-          firstChannelIndex: deviceIndex * 8,
-          driver,
-          surface,
-          surfaceXPosition: nextDeviceXPosition,
-        });
+        const device = new deviceClass(driver, surface, deviceIndex * 8, nextDeviceXPosition);
 
-        nextDeviceXPosition += deviceClass.surfaceWidth;
+        nextDeviceXPosition += device.surfaceWidth;
 
         return device;
       })

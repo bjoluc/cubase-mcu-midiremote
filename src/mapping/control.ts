@@ -1,7 +1,7 @@
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { JogWheel, LedButton, LedPushEncoder } from "../decorators/surface";
 import { EncoderDisplayMode } from "../midi";
-import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../surface";
+import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../devices";
 
 function setShiftableButtonsLedValues(
   controlSectionElements: ControlSectionSurfaceElements,
@@ -68,7 +68,7 @@ function bindCursorValueControlButton(
 export function bindControlButtons(
   page: DecoratedFactoryMappingPage,
   controlSectionElements: ControlSectionSurfaceElements,
-  channelElements: ChannelSurfaceElements,
+  channelElements: ChannelSurfaceElements[],
   mixerBankZone: MR_MixerBankZone
 ) {
   const host = page.mHostAccess;
