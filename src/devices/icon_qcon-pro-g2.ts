@@ -126,7 +126,7 @@ export const deviceConfig: DeviceConfig = {
           ),
           utility: [
             ...lowerControlButtons.slice(0, 2),
-            surface.makeHiddenLedButton(),
+            lowerControlButtons[8],
             lowerControlButtons[2],
           ],
           transport: [
