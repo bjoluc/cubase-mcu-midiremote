@@ -13,7 +13,7 @@ export function setupDeviceConnection(driver: MR_DeviceDriver, devices: Devices)
     segmentDisplayManager.clearTime(context);
 
     devices.forEach((device) => {
-      device.colorManager.resetColors(context);
+      device.colorManager?.resetColors(context);
       device.lcdManager.clearDisplays(context);
 
       const output = device.ports.output;

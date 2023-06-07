@@ -14,8 +14,8 @@ export abstract class Device {
   channelElements: ChannelSurfaceElements[];
 
   ports: PortPair;
-  colorManager: ColorManager;
   lcdManager: LcdManager;
+  colorManager?: ColorManager;
 
   constructor(
     driver: MR_DeviceDriver,
@@ -27,8 +27,11 @@ export abstract class Device {
     this.channelElements = deviceSurface.channelElements;
 
     this.ports = makePortPair(driver, isExtender);
-    this.colorManager = new ColorManager(this);
     this.lcdManager = new LcdManager(this);
+
+    if (DEVICE_NAME === "X-Touch") {
+      this.colorManager = new ColorManager(this);
+    }
   }
 }
 

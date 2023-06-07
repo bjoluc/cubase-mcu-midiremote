@@ -111,27 +111,30 @@ export function bindDeviceToMidi(
       ]);
     };
 
-    const encoderColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
-    channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
-      encoderColor.set(context, { isAssigned, r, g, b });
-      updateColor(context);
-    };
+    // Display colors – only supported by the X-Touch
+    if (DEVICE_NAME === "X-Touch") {
+      const encoderColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
+      channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
+        encoderColor.set(context, { isAssigned, r, g, b });
+        updateColor(context);
+      };
 
-    const channelColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
-    channel.buttons.select.mSurfaceValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
-      channelColor.set(context, { isAssigned, r, g, b });
-      updateColor(context);
-    };
+      const channelColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
+      channel.buttons.select.mSurfaceValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
+        channelColor.set(context, { isAssigned, r, g, b });
+        updateColor(context);
+      };
 
-    const updateColor = (context: MR_ActiveDevice) => {
-      const currentEncoderColor = encoderColor.get(context);
-      device.colorManager.setChannelColorRgb(
-        context,
-        channelIndex,
-        // Fall back to channel color if encoder is not assigned
-        currentEncoderColor.isAssigned ? currentEncoderColor : channelColor.get(context)
-      );
-    };
+      const updateColor = (context: MR_ActiveDevice) => {
+        const currentEncoderColor = encoderColor.get(context);
+        device.colorManager?.setChannelColorRgb(
+          context,
+          channelIndex,
+          // Fall back to channel color if encoder is not assigned
+          currentEncoderColor.isAssigned ? currentEncoderColor : channelColor.get(context)
+        );
+      };
+    }
 
     // Scribble Strip
     const currentParameterName = new ContextStateVariable("");
