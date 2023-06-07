@@ -1,5 +1,5 @@
 import { Except, Simplify } from "type-fest";
-import { DeviceConfig } from "./devices";
+import { DeviceConfig } from "./device-configs";
 
 // @ts-expect-error This path is resolved by a custom esbuild plugin
 import { deviceConfig as sourceDeviceConfig } from "current-device";

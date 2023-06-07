@@ -21,9 +21,10 @@ const scriptConfig = /BEGIN JS\n([\s\S]+)/
 // Create a list of all available device configurations and their target directory names by
 // enumerating the `src/devices` directory and parsing all `vendor` and `device` pragmas of the
 // files therein.
-const devices = readdirSync("./src/devices")
+const deviceConfigsDir = "./src/device-configs/";
+const devices = readdirSync(deviceConfigsDir)
   .map((filename) => ({
-    ...(parse(extract(readFileSync(`./src/devices/${filename}`, { encoding: "utf-8" }))) as {
+    ...(parse(extract(readFileSync(deviceConfigsDir + filename, { encoding: "utf-8" }))) as {
       vendor: string;
       device: string;
     }),
@@ -73,7 +74,7 @@ export default defineConfig(
         name: "device-config-loader",
         setup(build) {
           build.onResolve({ filter: /^current-device$/ }, () => ({
-            path: resolve("./src/devices/" + device.deviceConfigFilename),
+            path: resolve(deviceConfigsDir + device.deviceConfigFilename),
           }));
         },
       },

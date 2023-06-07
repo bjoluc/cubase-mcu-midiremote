@@ -1,9 +1,12 @@
 import { config, deviceConfig } from "./config";
 import { DecoratedDeviceSurface } from "./decorators/surface";
-import { ChannelSurfaceElements, ControlSectionSurfaceElements, DeviceSurface } from "./devices";
+import {
+  ChannelSurfaceElements,
+  ControlSectionSurfaceElements,
+  DeviceSurface,
+} from "./device-configs";
 import { ColorManager } from "./midi/managers/ColorManager";
 import { LcdManager } from "./midi/managers/LcdManager";
-
 import { makePortPair, PortPair } from "./midi/PortPair";
 
 /**
