@@ -46,6 +46,12 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
 }
 
 export const deviceConfig: DeviceConfig = {
+  configureMainDeviceDetectionPortPair(detectionPortPair) {
+    detectionPortPair
+      .expectInputNameContains("iCON QCON Pro G2")
+      .expectOutputNameContains("iCON QCON Pro G2");
+  },
+
   createExtenderSurface(surface, x) {
     const surfaceWidth = channelElementsWidth + 3.1;
 

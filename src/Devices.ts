@@ -87,11 +87,11 @@ export class Devices {
     );
 
     if (this.devices.length === 1) {
-      driver
-        .makeDetectionUnit()
-        .detectPortPair(this.devices[0].ports.input, this.devices[0].ports.output)
-        .expectInputNameEquals("X-Touch")
-        .expectOutputNameEquals("X-Touch");
+      deviceConfig.configureMainDeviceDetectionPortPair(
+        driver
+          .makeDetectionUnit()
+          .detectPortPair(this.devices[0].ports.input, this.devices[0].ports.output)
+      );
     }
   }
 

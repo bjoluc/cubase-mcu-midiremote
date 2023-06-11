@@ -80,6 +80,12 @@ export interface ControlSectionSurfaceElements {
 
 export interface DeviceConfig {
   /**
+   * Configures the provided `MR_DetectionPortPair` with the proper main device input and output
+   * port name detection rules.
+   */
+  configureMainDeviceDetectionPortPair(detectionPortPair: MR_DetectionPortPair): void;
+
+  /**
    * Creates and returns all surface elements of a main device, starting at the provided `x`
    * position.
    */
