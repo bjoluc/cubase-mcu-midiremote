@@ -56,7 +56,7 @@ export class LcdManager {
   }
 
   setChannelText(context: MR_ActiveDevice, row: number, channelIndex: number, text: string) {
-    while (text.length < LcdManager.channelWidth) {
+    while (text.length < 7) {
       text += " ";
     }
     this.sendText(context, row * 56 + (channelIndex % 8) * 7, text);
