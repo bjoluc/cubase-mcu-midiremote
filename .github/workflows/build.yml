@@ -21,7 +21,7 @@ jobs:
         run: npm run build
       - name: Upload scripts
         uses: actions/upload-artifact@v3
-        if: github.ref != 'refs/heads/main'
+        if: github.ref != 'refs/heads/main' && matrix.os == 'ubuntu-latest'
         with:
           name: scripts
           path: dist/
