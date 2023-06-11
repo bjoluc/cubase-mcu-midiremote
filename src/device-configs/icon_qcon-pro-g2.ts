@@ -3,7 +3,7 @@
  * @device QCon Pro G2
  */
 
-import { createElements } from "../util";
+import { createElements, getArrayElements } from "../util";
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { DecoratedDeviceSurface } from "../decorators/surface";
 
@@ -92,8 +92,15 @@ export const deviceConfig: DeviceConfig = {
         23.5 + buttonRowHeight * Math.floor(index / 6)
       )
     );
-    const getLowerControlButtons = (indices: number[]) =>
-      indices.map((index) => lowerControlButtons[index]);
+
+    const layer2FunctionButtons = createElements(8, (index) =>
+      surface.makeLedButton(
+        x + 3.5 + ((index % 4) + 2) * buttonDistance,
+        13 + buttonRowHeight * (Math.floor(index / 4) + 0.5) - 0.9,
+        1.8,
+        0.75
+      )
+    );
 
     return {
       width: surfaceWidth,
@@ -106,19 +113,14 @@ export const deviceConfig: DeviceConfig = {
         buttons: {
           display: upperControlButtons[0],
           timeMode: upperControlButtons[1],
-          edit: surface.makeLedButton(
-            x + 3.5 + 5 * buttonDistance,
-            13 + buttonRowHeight * 1.5 - 0.5,
-            1.8,
-            0.75
-          ),
+          edit: layer2FunctionButtons[7],
           flip: makeSquareButton(surface, x, 13 - buttonRowHeight),
           scrub: makeSquareButton(surface, x + 11.2, 28.75),
 
           encoderAssign: createElements(6, (index) =>
             makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 2)
           ),
-          number: surface.makeHiddenLedButtons(8),
+          number: [...layer2FunctionButtons.slice(0, 7), surface.makeHiddenLedButton()],
           function: createElements(8, (index) =>
             makeSquareButton(
               surface,
@@ -136,7 +138,7 @@ export const deviceConfig: DeviceConfig = {
             lowerControlButtons[2],
           ],
           transport: [
-            ...getLowerControlButtons([6, 7, 4]),
+            ...getArrayElements(lowerControlButtons, [6, 7, 4]),
             surface.makeHiddenLedButton(), //Cycle
             ...createElements(3, (index) =>
               surface.makeLedButton(
@@ -146,7 +148,7 @@ export const deviceConfig: DeviceConfig = {
                 0.75
               )
             ),
-            ...getLowerControlButtons([3, 5, 11, 10, 9]),
+            ...getArrayElements(lowerControlButtons, [3, 5, 11, 10, 9]),
           ],
 
           navigation: {

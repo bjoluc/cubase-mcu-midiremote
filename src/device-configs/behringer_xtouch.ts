@@ -3,7 +3,7 @@
  * @device X-Touch
  */
 
-import { createElements } from "../util";
+import { createElements, getArrayElements } from "../util";
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { DecoratedDeviceSurface } from "../decorators/surface";
 
@@ -77,8 +77,6 @@ export const deviceConfig: DeviceConfig = {
         17 + Math.floor(index / 7) * 2.5 + (index < 14 ? 0 : 0.5)
       )
     );
-    const getMiscControlButtons = (indices: number[]) =>
-      indices.map((index) => miscControlButtons[index]);
 
     return {
       width: surfaceWidth,
@@ -104,9 +102,9 @@ export const deviceConfig: DeviceConfig = {
           function: createElements(8, (index) =>
             makeSquareButton(surface, x + 6 + index * 2.25, 14)
           ),
-          modify: getMiscControlButtons([0, 1, 7, 8]),
-          automation: getMiscControlButtons([2, 3, 4, 9, 10, 11]),
-          utility: getMiscControlButtons([5, 6, 12, 13]),
+          modify: getArrayElements(miscControlButtons, [0, 1, 7, 8]),
+          automation: getArrayElements(miscControlButtons, [2, 3, 4, 9, 10, 11]),
+          utility: getArrayElements(miscControlButtons, [5, 6, 12, 13]),
           transport: [
             ...miscControlButtons.slice(14),
             ...createElements(5, (index) =>
