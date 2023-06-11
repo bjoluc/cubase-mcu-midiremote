@@ -14,7 +14,7 @@ const devicesConfiguration = process.env.DEVICES ?? '["main"]';
 
 // Read src/config.ts and prepare the configuration section to be prepended to script files
 const configFileContents = readFileSync("src/config.ts", { encoding: "utf-8" });
-const scriptConfig = /BEGIN JS\n([\s\S]+)/
+const scriptConfig = /BEGIN JS(?:\r?\n|\r)([\s\S]+)/
   .exec(configFileContents)![1]
   .replace('devices: ["main"]', `devices: ${devicesConfiguration}`);
 
