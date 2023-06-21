@@ -1,6 +1,6 @@
-import { ContextStateVariable, createElements } from "../../util";
-import { Device } from "../../Devices";
 import { closest as determineClosestColor } from "color-diff";
+import { Device } from "../../devices";
+import { ContextStateVariable, createElements } from "../../util";
 
 export enum ScribbleStripColor {
   black = 0x00,

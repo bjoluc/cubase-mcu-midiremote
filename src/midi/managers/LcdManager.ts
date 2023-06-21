@@ -1,6 +1,6 @@
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
-import { Device } from "../../Devices";
+import { Device } from "../../devices";
 
 export class LcdManager {
   static readonly channelWidth = DEVICE_NAME === "X-Touch" ? 7 : 6;

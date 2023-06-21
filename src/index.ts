@@ -12,20 +12,20 @@ import "core-js/es/reflect/construct";
 Reflect.get = undefined;
 
 import midiremoteApi from "midiremote_api_v1";
+import { createDevices } from "./devices";
 import { decoratePage } from "./decorators/page";
 import { decorateSurface } from "./decorators/surface";
+import { makeHostMapping } from "./mapping";
+import { bindDeviceToMidi, makeGlobalBooleanVariables } from "./midi";
 import { setupDeviceConnection } from "./midi/connection";
 import { makeTimerUtils } from "./util";
-import { Devices } from "./Devices";
-import { bindDeviceToMidi, makeGlobalBooleanVariables } from "./midi";
-import { makeHostMapping } from "./mapping";
 
 const driver = midiremoteApi.makeDeviceDriver(VENDOR_NAME, DEVICE_NAME, "github.com/bjoluc");
 
 const surface = decorateSurface(driver.mSurface);
 
 // Create devices, i.e., midi ports and surface elements for each physical device
-const devices = new Devices(driver, surface);
+const devices = createDevices(driver, surface);
 
 const { activationCallbacks, segmentDisplayManager } = setupDeviceConnection(driver, devices);
 activationCallbacks.addCallback(() => {

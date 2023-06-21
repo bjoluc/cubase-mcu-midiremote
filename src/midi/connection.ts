@@ -1,10 +1,10 @@
-import { Devices } from "../Devices";
+import { Device } from "../devices";
 import { makeCallbackCollection } from "../util";
 import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
 
 export type ActivationCallbacks = ReturnType<typeof setupDeviceConnection>["activationCallbacks"];
 
-export function setupDeviceConnection(driver: MR_DeviceDriver, devices: Devices) {
+export function setupDeviceConnection(driver: MR_DeviceDriver, devices: Device[]) {
   const activationCallbacks = makeCallbackCollection(driver, "mOnActivate");
   const segmentDisplayManager = new SegmentDisplayManager(devices);
 

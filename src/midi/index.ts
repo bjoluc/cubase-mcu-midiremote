@@ -1,5 +1,5 @@
 import { TouchSensitiveFader } from "../decorators/surface";
-import { Device, MainDevice } from "../Devices";
+import { Device, MainDevice } from "../devices";
 import { ContextStateVariable, createElements, GlobalBooleanVariable, TimerUtils } from "../util";
 import { ActivationCallbacks } from "./connection";
 import { LcdManager } from "./managers/LcdManager";

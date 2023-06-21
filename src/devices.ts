@@ -66,41 +66,26 @@ export class ExtenderDevice extends Device {
   }
 }
 
-export class Devices {
-  private devices: Device[] = [];
+export function createDevices(driver: MR_DeviceDriver, surface: DecoratedDeviceSurface) {
+  const deviceClasses = config.devices.map((deviceType) =>
+    deviceType === "main" ? MainDevice : ExtenderDevice
+  );
 
-  constructor(driver: MR_DeviceDriver, surface: DecoratedDeviceSurface) {
-    const deviceClasses = config.devices.map((deviceType) =>
-      deviceType === "main" ? MainDevice : ExtenderDevice
+  let nextDeviceXPosition = 0;
+
+  const devices = deviceClasses.map((deviceClass, deviceIndex) => {
+    const device = new deviceClass(driver, surface, deviceIndex * 8, nextDeviceXPosition);
+
+    nextDeviceXPosition += device.surfaceWidth;
+
+    return device;
+  });
+
+  if (devices.length === 1) {
+    deviceConfig.configureMainDeviceDetectionPortPair(
+      driver.makeDetectionUnit().detectPortPair(devices[0].ports.input, devices[0].ports.output)
     );
-
-    let nextDeviceXPosition = 0;
-
-    this.devices.push(
-      ...deviceClasses.map((deviceClass, deviceIndex) => {
-        const device = new deviceClass(driver, surface, deviceIndex * 8, nextDeviceXPosition);
-
-        nextDeviceXPosition += device.surfaceWidth;
-
-        return device;
-      })
-    );
-
-    if (this.devices.length === 1) {
-      deviceConfig.configureMainDeviceDetectionPortPair(
-        driver
-          .makeDetectionUnit()
-          .detectPortPair(this.devices[0].ports.input, this.devices[0].ports.output)
-      );
-    }
   }
 
-  getDeviceByChannelIndex(channelIndex: number) {
-    return this.devices[Math.floor(channelIndex / 8)];
-  }
-
-  forEach = this.devices.forEach.bind(this.devices);
-  map = this.devices.map.bind(this.devices);
-  flatMap = this.devices.flatMap.bind(this.devices);
-  filter = this.devices.filter.bind(this.devices);
+  return devices;
 }

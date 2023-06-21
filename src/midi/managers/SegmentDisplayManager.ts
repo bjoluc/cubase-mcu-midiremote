@@ -1,4 +1,4 @@
-import { Devices, MainDevice } from "../../Devices";
+import { Device, MainDevice } from "../../devices";
 import { ContextStateVariable, createElements } from "../../util";
 
 export class SegmentDisplayManager {
@@ -44,7 +44,7 @@ export class SegmentDisplayManager {
     }
   }
 
-  constructor(private devices: Devices) {}
+  constructor(private devices: Device[]) {}
 
   private lastTimeFormat = new ContextStateVariable("");
 
