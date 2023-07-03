@@ -6,7 +6,11 @@
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Support me on Ko-fi](https://img.shields.io/badge/%E2%98%95-Support%20me%20on%20Ko--fi-brown)](https://ko-fi.com/bjoluc)
 
-Cubase 12 MIDI Remote scripts for DAW controllers using the MCU protocol.
+Cubase 12 MIDI Remote scripts for DAW controllers using the MCU protocol
+
+<div align="center">
+  <img alt="Surface Screenshot" width="800" src="./surface.png">
+</div>
 
 The following devices are explicitly supported:
 
@@ -15,10 +19,6 @@ The following devices are explicitly supported:
 
 Other MCU-compatible devices may work with any of these scripts, but their device surface is not explicitly displayed in Cubase.
 Feel free to open a discussion on GitHub if you would like your MCU-like device to be supported.
-
-<div align="center">
-  <img alt="Surface Screenshot" width="800" src="./surface.png">
-</div>
 
 ## TL;DR
 
@@ -102,7 +102,7 @@ Then restart Cubase and configure the MIDI Remote by clicking the "+" button in 
 The very top of the MIDI Remote script file declares a number of configuration options.
 You can edit these options to match your preferences.
 Each option is documented in a comment above it.
-For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/support-other-devices/src/config.ts#L27-L54).
+For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L27-L54).
 
 ## Drawbacks
 
