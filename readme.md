@@ -1,13 +1,20 @@
-# cubase-xtouch-midiremote
+# cubase-mcu-midiremote
 
 [![Latest version](https://img.shields.io/github/package-json/v/bjoluc/cubase-xtouch-midiremote)](https://github.com/bjoluc/cubase-xtouch-midiremote/releases)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bjoluc/cubase-xtouch-midiremote/build.yml)
-![Required Cubase version](https://img.shields.io/badge/Cubase->=_v12.0.52-blue)
-[![Required X-Touch firmware version](https://img.shields.io/badge/Firmware->=_v1.22-blue)](https://www.youtube.com/watch?v=Q4ZKXVXQP8g)
+![Minimum required Cubase version](https://img.shields.io/badge/Cubase->=_v12.0.52-blue)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Support me on Ko-fi](https://img.shields.io/badge/%E2%98%95-Support%20me%20on%20Ko--fi-brown)](https://ko-fi.com/bjoluc)
 
-Cubase 12 MIDI Remote Script for the Behringer X-Touch / X-Touch Extender
+Cubase 12 MIDI Remote scripts for DAW controllers using the MCU protocol.
+
+The following devices are explicitly supported:
+
+- Behringer X-Touch / X-Touch Extender
+- iCON QCon Pro G2 / QCon EX G2
+
+Other MCU-compatible devices may work with any of these scripts, but their device surface is not explicitly displayed in Cubase.
+Feel free to open a discussion on GitHub if you would like your MCU-like device to be supported.
 
 <div align="center">
   <img alt="Surface Screenshot" width="800" src="./surface.png">
@@ -15,48 +22,41 @@ Cubase 12 MIDI Remote Script for the Behringer X-Touch / X-Touch Extender
 
 ## TL;DR
 
-This Cubase MIDI Remote Script replaces the default Mackie Control device setup and is tailored specifically to the Behringer X-Touch.
-It can be [set up](#setup) with a standalone X-Touch or with an arbitrary combination of X-Touch and X-Touch Extender units.
-Notable features include:
-
-- Track-colored scribble strips
-- Full utilization of all scribble strip display segments – no padding characters, no words across scribble strip boundaries
-- A modus to control any value under your mouse cursor with the rightmost push encoder or the jog wheel ("Sends"/"Trim" button in the "Automation" section)
-- Encoder assignment for editing the currently focused plugin's parameters ("Plug-In" Encoder Assign button)
-- VST Quick Control encoder assignment ("Inst" Encoder Assign button)
+The Cubase MIDI Remote Scripts developed in this repository replace the default Mackie Control device setup for various MCU-like devices.
+They can be [set up](#setup) with single standalone controllers or with an arbitrary combination of standalone and extender units.
+The mapping is reasonably close to the default MCU mapping, with a few (workflow-)improving changes.
+Nevertheless, you can easily re-map most control elements using Cubase's MIDI Remote Mapping Assistant.
 
 ## Motivation
 
 Since version 12, Cubase supports the customized integration of MIDI controllers via a new MIDI Remote JavaScript API.
-The Behringer X-Touch, which is mostly a Mackie Control Universal (MCU) clone, is traditionally set up as a Mackie Control device in Cubase.
-However, it has some unique features which set it apart from other MCU-compliant devices:
+Several vendors are producing DAW controllers similar to the Mackie Control Universal (MCU) which are traditionally set up as Mackie Control devices in Cubase.
+Creating MIDI Remote API scripts for these controllers allows to improve the mapping where applicable and offers users the possibility to override parts of it themselves via Cubase's MIDI Remote Mapping Assistant.
 
-- The scribble strips are layed out as individual displays with a generous padding between them. MCU protocol implementations are designed to work with one continuous display and hence use empty characters for padding. Wouldn't it be nice to use all of the display space available, and at the same time avoid breaking words over channel boundaries?
-
-- The scribble strip displays of the X-Touch have an RGB LED backlight, supporting 7 distinct colors plus black. When configured as a Mackie Control device in Cubase, all LCD displays are permanently lit in a bluish white, making users miss out on one of the X-Touch's nicest features. How cool would it be to have scribble strips mirror track colors?
-
-- All buttons (except of two) on the X-Touch have integrated LEDs (instead of separate LEDs above some buttons only). Given the shiny product images, shouldn't there be some more light, at least while pressing buttons?
-
-In addition to the points above, there are a couple of things that always bothered me about the default MCU mapping and that can be solved by a custom driver script:
+Some points for improvement of the default MCU mapping are:
 
 - The main fader controls the first output channel's volume, not the Control Room volume.
-- The meters do not match the scale of the MixConsole meters and require rather high levels to show up.
-- Although there are exactly 8 push encoders, there is no encoder assignment for VST Quick controls.
+- The meters do not seem to fully match the scale of the MixConsole meters.
 - Bringing up the parameters of the currently focused plugin requires navigating through the list of insert slots with a push encoder.
-- There is no single knob that can control any parameter under the mouse cursor, like in some of Steinberg's own controllers.
+- There is no single knob that can control any parameter under the mouse cursor, like in Steinberg's CC121 controller.
+
+Moreover, some controllers have features that are not available with the default Mackie Control setup in Cubase.
+For instance, the Behringer X-Touch has an individual, generously padded, RGB backlit scribble strip display per channel, as well as integrated LEDs in most buttons.
+A MIDI Remote API script can illuminate these scribble strips according to their tracks' colors, avoid unnecessary display padding characters, and light up buttons while they are being pressed.
 
 ## About this Script
 
-The MIDI Remote Script developed in this repository serves as a full replacement for the default Mackie Control setup.
-Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf), with the following exceptions:
+The MIDI Remote Scripts developed in this repository serve as full replacements for the default Mackie Control setup.
+The mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf), with the following exceptions:
 
 > **Note**
-> In the rest of this document, all buttons below the 7-segment timecode display and above the five playback control buttons are referred to by their default Cubase MCU mapping labels instead of the ones printed on the X-Touch.
-> I recommend an overlay for reference (be it an image like in the [remote control devices docs](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf) or a [printed version](https://www.ebay.com/itm/255630543433)).
+> In the rest of this document, all buttons except the six encoder assign buttons are referred to by their Cubase MCU mapping labels.
+> I recommend using a Cubase overlay for your device, unless your device already has the Cubase labels printed on it, like the iCON QCon Pro G2.
+> Alternatively, page 7 of [Cubase's remote control devices documentation](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf) provides a Mackie MCU Pro overlay which you can use to figure out the Cubase button labels for your device.
 
 **Encoder Assignments**
 
-- The lower scribble strip row always shows track names. Parameter page numbers are displayed on the otherwise unused two-digit Assignment display below the Encoder Assign buttons. If an encoder assignment only has one parameter page, the Assignment display remains blank.
+- The lower scribble strip row always shows track names. Parameter page numbers are displayed on the otherwise unused two-digit Assignment display. If an encoder assignment only has one parameter page, the Assignment display remains blank.
 - Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages now. The "Level" and "On" pages have been combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses.
 - The "Plug-In" encoder assignment always follows the currently focused plugin window to avoid tedious plugin selection via push encoders.
 - The first page of the "Inst" encoder assignment maps encoders to the VST Quick Controls of the currently selected instrument track. The remaining pages map 8 encoders to each part of the channel strip, i.e., gate, compressor, tools, saturation, and limiter. Pushing an encoder toggles the bypass status of the corresponding channel strip plugin.
@@ -66,8 +66,8 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 - Like in the MCU default mapping, the 8 channel type buttons apply MixConsole channel visibility presets 1-8. In the likely case that you don't want to waste 8 prominent buttons for loading visibility presets, feel free to re-assign some buttons in the MIDI Remote Mapping Assistant.
 - The Channel Left/Right buttons below the Fader Bank buttons do not navigate between encoder parameter pages, but move the fader bank left/right by one channel. Navigating parameter banks can be achieved by pressing the respective Encoder Assign button multiple times to cycle through the available parameter pages in a round-robin fashion.
 - Pressing "Shift + Edit" closes all **plugin** windows instead of only the currently active window (I couldn't find a command to "close the currently active window").
-- The "Instrument" and "Master" buttons are assigned to the handy MixConsole History Undo and Redo commands, respectively. In the default MCU mapping, they would activate instrument and main effects encoder assignments. I find using these on the X-Touch more complicated than using the mouse for the same tasks and hence didn't implement them.
-- For the same reason, the "Sends" button doesn't activate a send effects encoder assignment. Instead, it turns the rightmost push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor.
+- The "Instrument" and "Master" buttons are assigned to the handy MixConsole History Undo and Redo commands, respectively. In the default MCU mapping, they would activate instrument and main insert effects encoder assignments. However, these can already be reached via the "Inst" and "Plug-In" encoder assign buttons, so I decided to use the buttons differently.
+- For the same reason, the "Sends" button doesn't activate a send effects encoder assignment. Instead, it turns the rightmost push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor – like the Steinberg CC121's AI knob.
 
 **Miscellaneous**
 
@@ -75,26 +75,24 @@ Its mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 
 ## Setup
 
-- Make sure the firmware of your X-Touch (/X-Touch Extender) [is up to date](https://www.youtube.com/watch?v=Q4ZKXVXQP8g) (>= v1.22)
-- Set your X-Touch unit(s) to [Mackie Control (MC) mode](https://www.youtube.com/watch?v=LrVWRgJbSyw&t=68s)
-- Open up Cubase and ensure you are running version v12.0.52 or later
-- In the studio setup window, remove any Mackie Control remote devices that you set up for your X-Touch / X-Touch Extender (don't forget to take screenshots of your command assignments)
-- On windows, open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` and create the nested directories `behringer\xtouch` within it.
+- Make sure the firmware of your device(s) is up to date ([iCON QCon Pro G2](https://iconproaudio.com/product/qcon-pro-g2/) >= 1.13, [Behringer X-Touch](https://www.youtube.com/watch?v=Q4ZKXVXQP8g) >= v1.22 or scribble strip colors will not work)
+- If your devices have multiple operation modes, select Mackie Control mode ([here's](https://www.youtube.com/watch?v=LrVWRgJbSyw&t=68s) how to do it on the X-Touch).
+- Open up Cubase and ensure you are running version 12.0.52 or later
+- In the studio setup window, remove any Mackie Control remote devices (don't forget to take screenshots of your command assignments). If you don't feel comfortable removing the devices, it is also fine to select "Not Connected" for their ports.
+- Open the [latest GitHub release page](https://github.com/bjoluc/cubase-xtouch-midiremote/releases/latest) and in the "Assets" section, download the script (.js) that is named like your device.
+- Open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` (Windows) or `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/Local` (MacOS).
+- The filename of the script you downloaded has the form `<Device>_<Vendor>.js`. Cubase expects scripts to be nested in subdirectories named precisely after the script's vendor and device. So within the `Local` folder, create the subdirectories `<Device>/<Vendor>` according to the device and vendor portions of the script's filename. For instance, if you downloaded `behringer_xtouch.js`, the subdirectories would need to be `behringer\xtouch`.
 
-  > **Note** Directory names matter. Other names such as `X-Touch` will not work.
+  > **Note** Directory names matter. Make sure your subdirectory names precisely match the device and vendor components of the script filename, or Cubase might not recognize the script.
 
-- On MacOS, open `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/Local` and create the nested directories `behringer/xtouch` within it.
+- Finally, move the script file into the newly created subdirectory and restart Cubase to pick up the script.
 
-  > **Note** Directory names matter. Other names such as `X-Touch` will not work.
+Cubase should automatically detect your device and enable it as a MIDI Remote.
+If it doesn't, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
 
-- Download the MIDI Remote script file [`behringer_xtouch.js`](https://github.com/bjoluc/cubase-xtouch-midiremote/releases/latest/download/behringer_xtouch.js) from the latest GitHub release and move it into the newly created directory (`.../Local/behringer/xtouch`).
-- Restart Cubase
+## Setup with an extender unit
 
-Cubase should automatically detect the X-Touch and enable it as a MIDI Remote. If it doesn't, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
-
-## Setup with an X-Touch Extender unit
-
-To use the X-Touch with an X-Touch Extender unit, follow the same steps as above, but edit the script file before restarting Cubase:
+To use your device with an extender unit, follow the same steps as above, but edit the script file before restarting Cubase:
 In the configuration options at the top of the file, replace `devices: ["main"]` with `devices: ["extender", "main"]` (or `devices: ["main", "extender"]` if you have your extender on the right side of the main device).
 
 Then restart Cubase and configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
@@ -103,15 +101,12 @@ Then restart Cubase and configure the MIDI Remote by clicking the "+" button in 
 
 The very top of the MIDI Remote script file declares a number of configuration options.
 You can edit these options to match your preferences.
-Each option is documented in a comment above it, so feel free to consult the [script file](https://github.com/bjoluc/cubase-xtouch-midiremote/releases/latest/download/behringer_xtouch.js) for all available configuration options.
+Each option is documented in a comment above it.
+For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/support-other-devices/src/config.ts#L27-L54).
 
 ## Drawbacks
 
-**Quirks to be fixed:**
-
-- When controlling under-the-cursor values, the encoder's LED ring is not updated to single-dot mode but remains in whatever mode the currently active encoder assignment demands (blocked by https://forums.steinberg.net/t/831123).
-
-**Current limitations of the MIDI Remote API:**
+Current limitations of the MIDI Remote API:
 
 - The "Track" encoder assignment is missing the "Input Bus" and "Output Bus" pages which are not exposed by the MIDI Remote API. I prefer to use the mouse for routing anyway, as opposed to a push encoder and a tiny single-row string on a scribble strip display.
 - The "Pan/Surround" encoder assignment is missing a second page for vertical panning which is not exposed by the MIDI Remote API.
@@ -122,3 +117,4 @@ Each option is documented in a comment above it, so feel free to consult the [sc
 - The global "Solo" LED and the "Solo Defeat" button don't light up when a channel is in solo mode – no host value available
 - Channel visibility presets do not yet affect channel assignments since the `MixerBankZone` of the MIDI Remote API doesn't respect channel visibility presets (["`.setFollowVisibility()` is a teaser for future updates"](https://forums.steinberg.net/t/820531/2)).
 - The function buttons F1-F8 can only have one assignment per button, no matter whether "Shift" is held or not ("Shift" activates a sub page and the Mapping Assistant doesn't consider sub pages)
+- When controlling under-the-cursor values, the encoder's LED ring is not updated to single-dot mode but remains in whatever mode the currently active encoder assignment demands (blocked by https://forums.steinberg.net/t/831123).
