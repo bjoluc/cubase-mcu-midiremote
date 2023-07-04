@@ -214,6 +214,8 @@ export function bindEncoders(
     },
   ]);
 
+  const mMixerChannel = page.mHostAccess.mTrackSelection.mMixerChannel;
+
   bindEncoderAssignments(0, [
     {
       name: "Monitor",
@@ -240,9 +242,19 @@ export function bindEncoders(
       }),
       areAssignmentsChannelRelated: true,
     },
+    {
+      name: "Track Quick Controls",
+      assignments: (mixerBankChannel, channelIndex) => {
+        return {
+          encoderValue: mMixerChannel.mQuickControls.getByIndex(channelIndex),
+          displayMode: EncoderDisplayMode.SingleDot,
+        };
+      },
+      areAssignmentsChannelRelated: false,
+    },
   ]);
 
-  const mChannelEQ = page.mHostAccess.mTrackSelection.mMixerChannel.mChannelEQ;
+  const mChannelEQ = mMixerChannel.mChannelEQ;
   bindEncoderAssignments(2, [
     {
       name: "EQ",
@@ -277,7 +289,7 @@ export function bindEncoders(
     },
   ]);
 
-  const mSends = page.mHostAccess.mTrackSelection.mMixerChannel.mSends;
+  const mSends = mMixerChannel.mSends;
   const sendSlotsCount = mDefaults.getNumberOfSendSlots();
   bindEncoderAssignments(3, [
     {
@@ -304,7 +316,7 @@ export function bindEncoders(
     },
   ]);
 
-  const effectsViewer = page.mHostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects
+  const effectsViewer = mMixerChannel.mInsertAndStripEffects
     .makeInsertEffectViewer("Inserts")
     .followPluginWindowInFocus();
   const parameterBankZone = effectsViewer.mParameterBankZone;
@@ -333,16 +345,14 @@ export function bindEncoders(
     }
   }
 
-  const mQuickControls = page.mHostAccess.mTrackSelection.mMixerChannel.mQuickControls;
-  const mStripEffects =
-    page.mHostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects;
+  const mStripEffects = mMixerChannel.mInsertAndStripEffects.mStripEffects;
 
   bindEncoderAssignments(5, [
     {
       name: "Quick Controls",
       assignments: (mixerBankChannel, channelIndex) => {
         return {
-          encoderValue: mQuickControls.getByIndex(channelIndex),
+          encoderValue: mMixerChannel.mQuickControls.getByIndex(channelIndex),
           displayMode: EncoderDisplayMode.SingleDot,
         };
       },
