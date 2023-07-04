@@ -44,7 +44,11 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
 
 export const deviceConfig: DeviceConfig = {
   configureMainDeviceDetectionPortPair(detectionPortPair) {
-    detectionPortPair.expectInputNameEquals("X-Touch").expectOutputNameEquals("X-Touch");
+    detectionPortPair
+      .expectInputNameEquals("X-Touch")
+      .expectOutputNameEquals("X-Touch")
+      .expectInputNameEquals("X-Touch INT")
+      .expectOutputNameEquals("X-Touch INT");
   },
 
   createExtenderSurface(surface, x) {
