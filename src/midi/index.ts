@@ -181,7 +181,7 @@ export function bindDeviceToMidi(
       updateDisplay(context);
       setTimeout(
         context,
-        `updateDisplay${channelIndex}`,
+        `updateDisplay${device.firstChannelIndex + channelIndex}`,
         (context) => {
           isLocalValueModeActive.set(context, false);
           updateDisplay(context);
