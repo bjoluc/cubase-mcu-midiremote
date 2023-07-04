@@ -15,7 +15,7 @@ export enum ScribbleStripColor {
 
 export type RgbColor = { r: number; g: number; b: number };
 
-type DeviceColorDefinition = { R: number; G: number; B: number; code: number };
+type DeviceColorDefinition = { R: number; G: number; B: number; code: ScribbleStripColor };
 
 const scribbleStripColorsRGB: DeviceColorDefinition[] = [
   { code: ScribbleStripColor.black, R: 0, G: 0, B: 0 },
@@ -29,7 +29,7 @@ const scribbleStripColorsRGB: DeviceColorDefinition[] = [
 ];
 
 export class ColorManager {
-  private static rgbToScribbleStripColor({ r, g, b }: RgbColor): ScribbleStripColor {
+  private static rgbToScribbleStripColor({ r, g, b }: RgbColor) {
     return (
       determineClosestColor(
         { R: r * 0xff, G: g * 0xff, B: b * 0xff },

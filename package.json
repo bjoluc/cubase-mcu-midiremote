@@ -12,23 +12,23 @@
   "author": "bjoluc",
   "license": "MIT",
   "dependencies": {
-    "abbreviate": "^0.0.3",
-    "color-diff": "^1.2.0",
-    "core-js": "^3.28.0"
+    "abbreviate": "0.0.3",
+    "color-diff": "1.4.0",
+    "core-js": "3.30.1"
   },
   "devDependencies": {
-    "@bjoluc/semantic-release-config-npm": "^3.0.0",
+    "@bjoluc/semantic-release-config-npm": "^4.0.0",
     "@sindresorhus/slugify": "^2.2.1",
     "@types/color-diff": "^1.2.1",
-    "@types/node": "^20.2.5",
-    "dotenv": "^16.0.3",
-    "execa": "^7.0.0",
+    "@types/node": "^20.3.3",
+    "dotenv": "^16.3.1",
+    "execa": "^7.1.1",
     "jest-docblock": "^29.4.3",
-    "patch-package": "^6.5.1",
+    "patch-package": "^7.0.0",
     "prepend-file": "^2.0.1",
-    "tsup": "^6.6.3",
-    "type-fest": "^3.5.7",
-    "typescript": "^4.9.5"
+    "tsup": "^7.1.0",
+    "type-fest": "^3.12.0",
+    "typescript": "^5.1.6"
   },
   "babel": {
     "presets": [
