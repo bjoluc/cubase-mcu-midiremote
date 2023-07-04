@@ -3,8 +3,8 @@
   "version": "1.5.0",
   "private": true,
   "scripts": {
-    "build": "node build.mjs",
-    "start": "node build.mjs --watch",
+    "build": "tsup",
+    "start": "tsup --watch",
     "tsc": "tsc",
     "postversion": "npm run build",
     "postinstall": "patch-package"
@@ -18,9 +18,12 @@
   },
   "devDependencies": {
     "@bjoluc/semantic-release-config-npm": "^3.0.0",
+    "@sindresorhus/slugify": "^2.2.1",
     "@types/color-diff": "^1.2.1",
+    "@types/node": "^20.2.5",
     "dotenv": "^16.0.3",
     "execa": "^7.0.0",
+    "jest-docblock": "^29.4.3",
     "patch-package": "^6.5.1",
     "prepend-file": "^2.0.1",
     "tsup": "^6.6.3",

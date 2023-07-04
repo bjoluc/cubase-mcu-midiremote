@@ -1,10 +1,10 @@
 import { mDefaults } from "midiremote_api_v1";
-import { Devices, MainDevice } from "../Devices";
+import { SegmentDisplayManager } from "src/midi/managers/SegmentDisplayManager";
 import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
+import { Device, MainDevice } from "../devices";
 import { EncoderDisplayMode, GlobalBooleanVariables } from "../midi";
 import { createElements, makeCallbackCollection } from "../util";
-import { SegmentDisplayManager } from "src/midi/managers/SegmentDisplayManager";
 
 export interface EncoderAssignment {
   encoderValue: MR_HostValue;
@@ -24,7 +24,7 @@ export interface EncoderPage {
 
 export function bindEncoders(
   page: DecoratedFactoryMappingPage,
-  devices: Devices,
+  devices: Device[],
   mixerBankChannels: MR_MixerBankChannel[],
   segmentDisplayManager: SegmentDisplayManager,
   globalBooleanVariables: GlobalBooleanVariables

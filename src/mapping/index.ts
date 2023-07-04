@@ -1,6 +1,6 @@
 import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
-import { Devices, MainDevice } from "../Devices";
+import { Device, MainDevice } from "../devices";
 import { GlobalBooleanVariables } from "../midi";
 import { ActivationCallbacks } from "../midi/connection";
 import { SegmentDisplayManager } from "../midi/managers/SegmentDisplayManager";
@@ -16,7 +16,7 @@ import { bindEncoders } from "./encoders";
 
 export function makeHostMapping(
   page: DecoratedFactoryMappingPage,
-  devices: Devices,
+  devices: Device[],
   segmentDisplayManager: SegmentDisplayManager,
   globalBooleanVariables: GlobalBooleanVariables,
   activationCallbacks: ActivationCallbacks

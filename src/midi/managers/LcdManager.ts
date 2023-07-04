@@ -1,8 +1,10 @@
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
-import { Device } from "../../Devices";
+import { Device } from "../../devices";
 
 export class LcdManager {
+  static readonly channelWidth = DEVICE_NAME === "X-Touch" ? 7 : 6;
+
   /**
    * Strips any non-ASCII character from the provided string, since devices only support ASCII.
    **/
@@ -11,26 +13,27 @@ export class LcdManager {
   }
 
   /**
-   * Given a <= 7 characters long string, returns a left-padded version of it that appears
-   * centered on a 7-character display.
+   * Given a <= `LcdManager.channelWidth` characters long string, returns a left-padded version of
+   * it that appears centered on a `LcdManager.channelWidth`-character display.
    */
   static centerString(input: string) {
-    if (input.length >= 7) {
+    if (input.length >= LcdManager.channelWidth) {
       return input;
     }
 
-    return LcdManager.makeSpaces(Math.floor((7 - input.length) / 2)) + input;
+    return LcdManager.makeSpaces(Math.floor((LcdManager.channelWidth - input.length) / 2)) + input;
   }
 
   /**
-   * Given a string, returns an abbreviated version of it consisting of at most 7 characters.
+   * Given a string, returns an abbreviated version of it consisting of at most
+   * `LcdManager.channelWidth` characters.
    */
   static abbreviateString(input: string) {
-    if (input.length < 7) {
+    if (input.length < LcdManager.channelWidth) {
       return input;
     }
 
-    return abbreviate(input, { length: 7 });
+    return abbreviate(input, { length: LcdManager.channelWidth });
   }
 
   private static asciiStringToCharArray(input: string) {

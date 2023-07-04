@@ -1,5 +1,6 @@
 import { EnhancedMidiOutput, PortPair } from "../midi/PortPair";
-import { CallbackCollection, ContextStateVariable, makeCallbackCollection } from "../util";
+import { CallbackCollection, createElements } from "../util";
+import { enhanceButtonToLedButton } from "./button";
 
 export interface LedButton extends MR_Button {
   mLedValue: MR_SurfaceCustomValueVariable;
@@ -31,6 +32,14 @@ export interface DecoratedLamp extends MR_Lamp {
 
 export interface DecoratedDeviceSurface extends MR_DeviceSurface {
   makeLedButton: (...args: Parameters<MR_DeviceSurface["makeButton"]>) => LedButton;
+
+  /**
+   * Creates a mock LedButton that doesn't have a surface element, but uses a `customValueVariable`
+   * internally. While it's typed as a button for convenience, it doesn't implement all the button
+   * methods, like `setTypeToggle()` and friends.
+   */
+  makeHiddenLedButton: () => LedButton;
+  makeHiddenLedButtons: (numberOfButtons: number) => LedButton[];
   makeLedPushEncoder: (...args: Parameters<MR_DeviceSurface["makePushEncoder"]>) => LedPushEncoder;
   makeTouchSensitiveFader: (
     ...args: Parameters<MR_DeviceSurface["makeFader"]>
@@ -42,55 +51,17 @@ export interface DecoratedDeviceSurface extends MR_DeviceSurface {
 export function decorateSurface(surface: MR_DeviceSurface) {
   const decoratedSurface = surface as DecoratedDeviceSurface;
 
-  decoratedSurface.makeLedButton = (...args) => {
-    const button = surface.makeButton(...args) as LedButton;
+  decoratedSurface.makeLedButton = (...args) =>
+    enhanceButtonToLedButton(surface.makeButton(...args), surface);
 
-    button.onSurfaceValueChange = makeCallbackCollection(
-      button.mSurfaceValue,
-      "mOnProcessValueChange"
+  decoratedSurface.makeHiddenLedButton = () =>
+    enhanceButtonToLedButton(
+      { mSurfaceValue: surface.makeCustomValueVariable("HiddenLedButton") } as MR_Button,
+      surface
     );
-    button.mLedValue = surface.makeCustomValueVariable("LedButtonLed");
 
-    const shadowValue = surface.makeCustomValueVariable("LedButtonProxy");
-
-    button.bindToNote = (ports, note, isChannelButton = false) => {
-      const currentSurfaceValue = new ContextStateVariable(0);
-      button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
-      button.onSurfaceValueChange.addCallback((context, newValue) => {
-        currentSurfaceValue.set(context, newValue);
-        ports.output.sendNoteOn(context, note, newValue || currentLedValue.get(context));
-      });
-
-      const currentLedValue = new ContextStateVariable(0);
-      button.mLedValue.mOnProcessValueChange = (context, newValue) => {
-        currentLedValue.set(context, newValue);
-        ports.output.sendNoteOn(context, note, newValue);
-      };
-
-      // Binding the button's mSurfaceValue to a host function may alter it to not change when the
-      // button is pressed. Hence, `shadowValue` is used to make the button light up while it's
-      // pressed.
-      shadowValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
-      shadowValue.mOnProcessValueChange = (context, newValue) => {
-        ports.output.sendNoteOn(
-          context,
-          note,
-          newValue || currentSurfaceValue.get(context) || currentLedValue.get(context)
-        );
-      };
-
-      if (isChannelButton) {
-        // Turn the button's LED off when it becomes unassigned
-        button.mSurfaceValue.mOnTitleChange = (context, title) => {
-          if (title === "") {
-            ports.output.sendNoteOn(context, note, 0);
-          }
-        };
-      }
-    };
-
-    return button;
-  };
+  decoratedSurface.makeHiddenLedButtons = (numberOfButtons) =>
+    createElements(numberOfButtons, () => decoratedSurface.makeHiddenLedButton());
 
   decoratedSurface.makeLedPushEncoder = (...args) => {
     const encoder = surface.makePushEncoder(...args) as LedPushEncoder;
