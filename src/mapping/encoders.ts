@@ -346,13 +346,12 @@ export function bindEncoders(
   }
 
   const mStripEffects = mMixerChannel.mInsertAndStripEffects.mStripEffects;
-
   bindEncoderAssignments(5, [
     {
-      name: "Quick Controls",
-      assignments: (mixerBankChannel, channelIndex) => {
+      name: "VST Quick Controls",
+      assignments: () => {
         return {
-          encoderValue: mMixerChannel.mQuickControls.getByIndex(channelIndex),
+          encoderValue: mMixerChannel.mInstrumentPluginSlot.mParameterBankZone.makeParameterValue(),
           displayMode: EncoderDisplayMode.SingleDot,
         };
       },
