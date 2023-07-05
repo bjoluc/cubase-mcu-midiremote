@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.5.0...v1.6.0) (2023-07-05)
+
+
+### Features
+
+* Add low-cut and high-cut filter pages to the "Track" encoder assign button ([6551319](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/6551319a58912ed8efd00cf932e22c111006a3b0))
+* Add support for the iCON QCon Pro G2 ([#7](https://github.com/bjoluc/cubase-xtouch-midiremote/issues/7)) ([ee4a800](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/ee4a8009830f73ab02591449e432e7175147a2e0))
+* Add Track Quick Controls page to "Track" encoder assignment ([a0a697c](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/a0a697cc7500f556f5326654db6ab610d0e483e5))
+* **X-Touch:** Extend port detection by ports named "X-Touch INT" ([d25b2ff](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/d25b2ff49a848d2e55c06957fb48f7e80f6c4f33))
+
+
+### Bug Fixes
+
+* Fix an issue where turning multiple devices' encoders at once would leave channel strip displays showing values instead of returning to the respective parameter names ([832a052](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/832a052277b2c69de0ea10e98b7878f290e4e023))
+* Use VST Quick Controls in "Inst" encoder assignment instead of Track Quick Controls ([129cf46](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/129cf468e2e561a857ba77a99314f5e646f904a8))
+* Work around the regressions introduced in Cubase 12.0.60 ([fd3a69b](https://github.com/bjoluc/cubase-xtouch-midiremote/commit/fd3a69bc0d3e7a9e87d4c48ba95deb33d34c547c)), closes [#6](https://github.com/bjoluc/cubase-xtouch-midiremote/issues/6) [#5](https://github.com/bjoluc/cubase-xtouch-midiremote/issues/5)
+
 ## [1.5.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.4.2...v1.5.0) (2023-03-31)
 
 
