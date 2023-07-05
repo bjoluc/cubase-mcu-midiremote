@@ -34,22 +34,29 @@ export function makeHostMapping(
       const channel = mixerBankZone.makeMixerBankChannel();
 
       // Scribble strips
-      page.makeValueBinding(channelElements.scribbleStrip.trackTitle, channel.mValue.mSelected);
+      page.makeValueBinding(channelElements.scribbleStrip.trackTitle, channel.mValue.mVolume);
 
       // VU Meter
       page.makeValueBinding(channelElements.vuMeter, channel.mValue.mVUMeter);
 
-      // Buttons
-      const buttons = channelElements.buttons;
-      page
-        .makeValueBinding(buttons.record.mSurfaceValue, channel.mValue.mRecordEnable)
-        .setTypeToggle();
-      page.makeValueBinding(buttons.solo.mSurfaceValue, channel.mValue.mSolo).setTypeToggle();
-      page.makeValueBinding(buttons.mute.mSurfaceValue, channel.mValue.mMute).setTypeToggle();
-      page.makeValueBinding(buttons.select.mSurfaceValue, channel.mValue.mSelected).setTypeToggle();
+      // This is a crazy workaround for https://forums.steinberg.net/t/842187: Running the below
+      // block twice keeps `mOnTitleChange` and `mOnColorChange` working on Cubase >= 12.0.60 for
+      // surface variables bound to the involved host variables.
+      for (let i = 0; i < 2; i++) {
+        // Buttons
+        const buttons = channelElements.buttons;
+        page
+          .makeValueBinding(buttons.record.mSurfaceValue, channel.mValue.mRecordEnable)
+          .setTypeToggle();
+        page.makeValueBinding(buttons.solo.mSurfaceValue, channel.mValue.mSolo).setTypeToggle();
+        page.makeValueBinding(buttons.mute.mSurfaceValue, channel.mValue.mMute).setTypeToggle();
+        page
+          .makeValueBinding(buttons.select.mSurfaceValue, channel.mValue.mSelected)
+          .setTypeToggle();
 
-      // Fader
-      page.makeValueBinding(channelElements.fader.mSurfaceValue, channel.mValue.mVolume);
+        // Fader
+        page.makeValueBinding(channelElements.fader.mSurfaceValue, channel.mValue.mVolume);
+      }
 
       return channel;
     });

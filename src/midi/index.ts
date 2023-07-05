@@ -120,7 +120,7 @@ export function bindDeviceToMidi(
       };
 
       const channelColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
-      channel.buttons.select.mSurfaceValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
+      channel.scribbleStrip.trackTitle.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
         channelColor.set(context, { isAssigned, r, g, b });
         updateColor(context);
       };
@@ -293,7 +293,7 @@ export function bindDeviceToMidi(
     bindFader(ports, channel.fader, channelIndex);
   }
 
-  // Control Section (X-Touch only)
+  // Control Section (main devices only)
   if (device instanceof MainDevice) {
     const elements = device.controlSectionElements;
     const buttons = elements.buttons;
