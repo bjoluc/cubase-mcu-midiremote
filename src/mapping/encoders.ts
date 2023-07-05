@@ -243,6 +243,24 @@ export function bindEncoders(
       areAssignmentsChannelRelated: true,
     },
     {
+      name: "Low Cut",
+      assignments: (mixerBankChannel) => ({
+        displayMode: EncoderDisplayMode.Wrap,
+        encoderValue: mixerBankChannel.mPreFilter.mLowCutFreq,
+        pushToggleValue: mixerBankChannel.mPreFilter.mLowCutOn,
+      }),
+      areAssignmentsChannelRelated: true,
+    },
+    {
+      name: "High Cut",
+      assignments: (mixerBankChannel) => ({
+        displayMode: EncoderDisplayMode.Wrap,
+        encoderValue: mixerBankChannel.mPreFilter.mHighCutFreq,
+        pushToggleValue: mixerBankChannel.mPreFilter.mHighCutOn,
+      }),
+      areAssignmentsChannelRelated: true,
+    },
+    {
       name: "Track Quick Controls",
       assignments: (mixerBankChannel, channelIndex) => {
         return {
