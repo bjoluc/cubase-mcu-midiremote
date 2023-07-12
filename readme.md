@@ -16,6 +16,7 @@ The following devices are explicitly supported:
 
 - Behringer X-Touch / X-Touch Extender
 - iCON QCon Pro G2 / QCon EX G2
+- Mackie Control Universal Pro / XT Pro
 
 Other MCU-compatible devices may work with any of these scripts, but their device surface is not explicitly displayed in Cubase.
 Feel free to open a discussion on GitHub if you would like your MCU-like device to be supported.
