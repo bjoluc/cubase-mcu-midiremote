@@ -2,6 +2,7 @@ import { Device, MainDevice } from "../../devices";
 import { ContextStateVariable, createElements } from "../../util";
 
 export class SegmentDisplayManager {
+  private devices: MainDevice[];
   private segmentValues = createElements(12, () => new ContextStateVariable(0x00));
 
   private updateSegment(
@@ -18,9 +19,7 @@ export class SegmentDisplayManager {
     if (value !== this.segmentValues[segmentId].get(context)) {
       this.segmentValues[segmentId].set(context, value);
       for (const device of this.devices) {
-        if (device instanceof MainDevice) {
-          device.ports.output.sendMidi(context, [0xb0, 0x40 + segmentId, value]);
-        }
+        device.ports.output.sendMidi(context, [0xb0, 0x40 + segmentId, value]);
       }
     }
   }
@@ -44,7 +43,9 @@ export class SegmentDisplayManager {
     }
   }
 
-  constructor(private devices: Device[]) {}
+  constructor(devices: Device[]) {
+    this.devices = devices.filter((device) => device instanceof MainDevice) as MainDevice[];
+  }
 
   private lastTimeFormat = new ContextStateVariable("");
 
@@ -57,15 +58,10 @@ export class SegmentDisplayManager {
       this.lastTimeFormat.set(context, timeFormat);
 
       for (const device of this.devices) {
-        if (device instanceof MainDevice) {
-          const { smpte: smpteLed, beats: beatsLed } = device.controlSectionElements.displayLeds;
+        const { smpte: smpteLed, beats: beatsLed } = device.controlSectionElements.displayLeds;
 
-          smpteLed.mSurfaceValue.setProcessValue(context, +/^(?:[\d]+\:){3}[\d]+$/.test(time));
-          beatsLed.mSurfaceValue.setProcessValue(
-            context,
-            +/^(?:[ \d]+\.){2} \d\.[\d ]+$/.test(time)
-          );
-        }
+        smpteLed.mSurfaceValue.setProcessValue(context, +/^(?:[\d]+\:){3}[\d]+$/.test(time));
+        beatsLed.mSurfaceValue.setProcessValue(context, +/^(?:[ \d]+\.){2} \d\.[\d ]+$/.test(time));
       }
     }
 
