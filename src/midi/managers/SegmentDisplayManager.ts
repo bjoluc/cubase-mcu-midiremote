@@ -17,11 +17,11 @@ export class SegmentDisplayManager {
 
     if (value !== this.segmentValues[segmentId].get(context)) {
       this.segmentValues[segmentId].set(context, value);
-      this.devices.forEach((device) => {
+      for (const device of this.devices) {
         if (device instanceof MainDevice) {
           device.ports.output.sendMidi(context, [0xb0, 0x40 + segmentId, value]);
         }
-      });
+      }
     }
   }
 
@@ -56,7 +56,7 @@ export class SegmentDisplayManager {
     if (timeFormat !== this.lastTimeFormat.get(context)) {
       this.lastTimeFormat.set(context, timeFormat);
 
-      this.devices.forEach((device) => {
+      for (const device of this.devices) {
         if (device instanceof MainDevice) {
           const { smpte: smpteLed, beats: beatsLed } = device.controlSectionElements.displayLeds;
 
@@ -66,7 +66,7 @@ export class SegmentDisplayManager {
             +/^(?:[ \d]+\.){2} \d\.[\d ]+$/.test(time)
           );
         }
-      });
+      }
     }
 
     // If `time` is separated three times by `.` or `:`, fill it with spaces to match the way digits

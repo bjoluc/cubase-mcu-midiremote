@@ -12,7 +12,7 @@ export function setupDeviceConnection(driver: MR_DeviceDriver, devices: Device[]
     segmentDisplayManager.clearAssignment(context);
     segmentDisplayManager.clearTime(context);
 
-    devices.forEach((device) => {
+    for (const device of devices) {
       device.colorManager?.resetColors(context);
       device.lcdManager.clearDisplays(context);
 
@@ -33,7 +33,7 @@ export function setupDeviceConnection(driver: MR_DeviceDriver, devices: Device[]
       for (let encoderIndex = 0; encoderIndex < 8; encoderIndex++) {
         output.sendMidi(context, [0xb0, 0x30 + encoderIndex, 0]);
       }
-    });
+    }
   };
 
   return { activationCallbacks, segmentDisplayManager };
