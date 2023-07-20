@@ -62,7 +62,7 @@ export function makeHostMapping(
 
   bindEncoders(page, devices, mixerBankChannels, segmentDisplayManager, globalBooleanVariables);
 
-  devices.forEach((device) => {
+  for (const device of devices) {
     if (device instanceof MainDevice) {
       const controlSectionElements = device.controlSectionElements;
 
@@ -95,7 +95,7 @@ export function makeHostMapping(
       // Foot Control
       bindFootControl(page, controlSectionElements);
     }
-  });
+  }
 
   // The `mTransportLocator.mOnChange` callback is first invoked before the device driver is
   // activated. The workaround below defers the first time display update until the driver is
@@ -112,13 +112,13 @@ export function makeHostMapping(
     // TODO: This is a workaround forcing the Beats/SMPTE LEDs to be set. It is required since
     // calling `myHostValue.setProcessValue()` doesn't trigger `mOnProcessValueChange` when called
     // on device driver activation.
-    devices.forEach((device) => {
+    for (const device of devices) {
       if (device instanceof MainDevice) {
         const output = device.ports.output;
         output.sendNoteOn(context, 0x71, +/^(?:[\d]+\:){3}[\d]+$/.test(time)); // SMPTE LED
         output.sendNoteOn(context, 0x72, +/^(?:[ \d]+\.){2} \d\.[\d ]+$/.test(time)); // Beats LED
       }
-    });
+    }
   });
 
   // Time display – once for all devices; individual devices are handled by the

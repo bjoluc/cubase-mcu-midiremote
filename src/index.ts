@@ -47,9 +47,9 @@ const page = decoratePage(driver.mMapping.makePage("Mixer"), surface);
 const timerUtils = makeTimerUtils(page, surface);
 
 // Bind elements to MIDI
-devices.forEach((device) => {
+for (const device of devices) {
   bindDeviceToMidi(device, globalBooleanVariables, activationCallbacks, timerUtils);
-});
+}
 
 // Map elements to host functions
 makeHostMapping(page, devices, segmentDisplayManager, globalBooleanVariables, activationCallbacks);
