@@ -1,7 +1,7 @@
 import { Device } from "../devices";
 import { makeCallbackCollection } from "../util";
 import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
-import { sendChannelMeterMode } from "./util";
+import { sendChannelMeterMode, setGlobalMeterModeOrientation } from "./util";
 
 export type ActivationCallbacks = ReturnType<typeof setupDeviceConnection>["activationCallbacks"];
 
@@ -12,6 +12,7 @@ export function setupDeviceConnection(driver: MR_DeviceDriver, devices: Device[]
   activationCallbacks.addCallback((context) => {
     // Initially disable LCD channel metering for all devices
     for (const device of devices) {
+      setGlobalMeterModeOrientation(context, device.ports.output, true);
       sendChannelMeterMode(context, device.ports.output, false);
     }
   });
