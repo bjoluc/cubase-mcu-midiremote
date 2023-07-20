@@ -14,17 +14,16 @@ export enum EncoderDisplayMode {
 }
 
 /** Declares some global context-dependent variables that (may) affect multiple devices */
-export const makeGlobalBooleanVariables = (surface: MR_DeviceSurface) => ({
+export const createGlobalBooleanVariables = (surface: MR_DeviceSurface) => ({
   areMotorsActive: new GlobalBooleanVariable(surface),
   isValueDisplayModeActive: new GlobalBooleanVariable(surface),
   isEncoderAssignmentActive: createElements(6, () => new GlobalBooleanVariable(surface)),
   isFlipModeActive: new GlobalBooleanVariable(surface),
   areChannelMetersEnabled: new GlobalBooleanVariable(surface),
   isGlobalLcdMeterModeVertical: new GlobalBooleanVariable(surface),
-  isShiftButtonHeld: new GlobalBooleanVariable(surface),
 });
 
-export type GlobalBooleanVariables = ReturnType<typeof makeGlobalBooleanVariables>;
+export type GlobalBooleanVariables = ReturnType<typeof createGlobalBooleanVariables>;
 
 export function bindDeviceToMidi(
   device: Device,
@@ -314,16 +313,6 @@ export function bindDeviceToMidi(
     const elements = device.controlSectionElements;
     const buttons = elements.buttons;
 
-    const motorButton = buttons.automation[5];
-    motorButton.onSurfaceValueChange.addCallback((context, value) => {
-      if (value === 1) {
-        globalBooleanVariables.areMotorsActive.toggle(context);
-      }
-    });
-    globalBooleanVariables.areMotorsActive.addOnChangeCallback((context, value) => {
-      motorButton.mLedValue.setProcessValue(context, +value);
-    });
-
     activationCallbacks.addCallback((context) => {
       // Workaround for https://forums.steinberg.net/t/831123:
       ports.output.sendNoteOn(context, 0x4f, 1);
@@ -337,12 +326,6 @@ export function bindDeviceToMidi(
     });
 
     bindFader(ports, elements.mainFader, 8);
-
-    buttons.display.onSurfaceValueChange.addCallback((context, value) => {
-      if (value === 1) {
-        globalBooleanVariables.isValueDisplayModeActive.toggle(context);
-      }
-    });
 
     globalBooleanVariables.isFlipModeActive.addOnChangeCallback((context, value) => {
       buttons.flip.mLedValue.setProcessValue(context, +value);

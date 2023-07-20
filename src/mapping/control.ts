@@ -79,6 +79,13 @@ export function bindControlButtons(
   const regularSubPage = buttonsSubPageArea.makeSubPage("Regular");
   const shiftSubPage = buttonsSubPageArea.makeSubPage("Shift");
 
+  // Display mode button
+  buttons.display.onSurfaceValueChange.addCallback((context, value) => {
+    if (value) {
+      globalBooleanVariables.isValueDisplayModeActive.toggle(context);
+    }
+  });
+
   // SMPTE/Beats button
 
   page
@@ -114,13 +121,13 @@ export function bindControlButtons(
   };
 
   // 1-8
-  buttons.number.forEach((button, buttonIndex) => {
+  for (const [buttonIndex, button] of buttons.number.entries()) {
     page.makeCommandBinding(
       button.mSurfaceValue,
       "Channel & Track Visibility",
       `Channel and Rack Configuration ${buttonIndex + 1}`
     );
-  });
+  }
 
   // Function buttons
   for (const button of buttons.function) {
@@ -191,6 +198,17 @@ export function bindControlButtons(
   // Mixer
   page.makeCommandBinding(buttons.automation[4].mSurfaceValue, "Devices", "Mixer");
 
+  // Motor
+  const motorButton = buttons.automation[5];
+  motorButton.onSurfaceValueChange.addCallback((context, value) => {
+    if (value) {
+      globalBooleanVariables.areMotorsActive.toggle(context);
+    }
+  });
+  globalBooleanVariables.areMotorsActive.addOnChangeCallback((context, value) => {
+    motorButton.mLedValue.setProcessValue(context, +value);
+  });
+
   // Instrument
   page.makeCommandBinding(
     buttons.utility[0].mSurfaceValue,
@@ -218,12 +236,7 @@ export function bindControlButtons(
     buttons.utility[3].mSurfaceValue,
     shiftSubPage.mAction.mActivate
   ).mOnValueChange = (context, mapping, value) => {
-    if (value) {
-      shiftSubPage.mAction.mActivate.trigger(mapping);
-    } else {
-      regularSubPage.mAction.mActivate.trigger(mapping);
-    }
-    globalBooleanVariables.isShiftButtonHeld.set(context, Boolean(value));
+    (value ? shiftSubPage : regularSubPage).mAction.mActivate.trigger(mapping);
     setShiftableButtonsLedValues(controlSectionElements, context, value);
   };
 

@@ -16,7 +16,7 @@ import { createDevices } from "./devices";
 import { decoratePage } from "./decorators/page";
 import { decorateSurface } from "./decorators/surface";
 import { makeHostMapping } from "./mapping";
-import { bindDeviceToMidi, makeGlobalBooleanVariables } from "./midi";
+import { bindDeviceToMidi, createGlobalBooleanVariables } from "./midi";
 import { setupDeviceConnection } from "./midi/connection";
 import { makeTimerUtils } from "./util";
 
@@ -35,7 +35,7 @@ activationCallbacks.addCallback(() => {
   );
 });
 
-const globalBooleanVariables = makeGlobalBooleanVariables(surface);
+const globalBooleanVariables = createGlobalBooleanVariables(surface);
 
 activationCallbacks.addCallback((context) => {
   // Setting `runCallbacksInstantly` to `true` below is a workaround for
