@@ -1,6 +1,6 @@
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { JogWheel, LedButton, LedPushEncoder } from "../decorators/surface";
-import { EncoderDisplayMode } from "../midi";
+import { EncoderDisplayMode, GlobalBooleanVariables } from "../midi";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../device-configs";
 
 function setShiftableButtonsLedValues(
@@ -69,7 +69,8 @@ export function bindControlButtons(
   page: DecoratedFactoryMappingPage,
   controlSectionElements: ControlSectionSurfaceElements,
   channelElements: ChannelSurfaceElements[],
-  mixerBankZone: MR_MixerBankZone
+  mixerBankZone: MR_MixerBankZone,
+  globalBooleanVariables: GlobalBooleanVariables
 ) {
   const host = page.mHostAccess;
   const buttons = controlSectionElements.buttons;
@@ -77,6 +78,29 @@ export function bindControlButtons(
   const buttonsSubPageArea = page.makeSubPageArea("Control Buttons");
   const regularSubPage = buttonsSubPageArea.makeSubPage("Regular");
   const shiftSubPage = buttonsSubPageArea.makeSubPage("Shift");
+
+  // Display mode button
+  page
+    .makeValueBinding(
+      buttons.display.mSurfaceValue,
+      page.mCustom.makeHostValueVariable("Display Name/Value")
+    )
+    .setSubPage(regularSubPage).mOnValueChange = (context, mapping, value) => {
+    if (value) {
+      globalBooleanVariables.isValueDisplayModeActive.toggle(context);
+    }
+  };
+
+  page
+    .makeValueBinding(
+      buttons.display.mSurfaceValue,
+      page.mCustom.makeHostValueVariable("Flip Display Rows")
+    )
+    .setSubPage(shiftSubPage).mOnValueChange = (context, mapping, value) => {
+    if (value) {
+      globalBooleanVariables.areDisplayRowsFlipped.toggle(context);
+    }
+  };
 
   // 1-8
   buttons.number.forEach((button, buttonIndex) => {

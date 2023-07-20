@@ -82,7 +82,13 @@ export function makeHostMapping(
       );
 
       // 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation
-      bindControlButtons(page, controlSectionElements, device.channelElements, mixerBankZone);
+      bindControlButtons(
+        page,
+        controlSectionElements,
+        device.channelElements,
+        mixerBankZone,
+        globalBooleanVariables
+      );
 
       // Directions
       bindDirectionButtons(page, controlSectionElements);
