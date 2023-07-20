@@ -6,7 +6,7 @@ export function sendChannelMeterModes(
   enableLcdLevelMeter: boolean
 ) {
   for (let channelId = 0; channelId < 8; channelId++) {
-    outputPort.sendSysex(context, [0x20, channelId, 4 * +enableLcdLevelMeter + 1]);
+    outputPort.sendSysex(context, [0x20, channelId, 2 * +enableLcdLevelMeter + 1]);
   }
 }
 
