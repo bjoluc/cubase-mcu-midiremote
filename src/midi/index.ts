@@ -17,6 +17,7 @@ export enum EncoderDisplayMode {
 export const createGlobalBooleanVariables = (surface: MR_DeviceSurface) => ({
   areMotorsActive: new GlobalBooleanVariable(surface),
   isValueDisplayModeActive: new GlobalBooleanVariable(surface),
+  areDisplayRowsFlipped: new GlobalBooleanVariable(surface),
   isEncoderAssignmentActive: createElements(6, () => new GlobalBooleanVariable(surface)),
   isFlipModeActive: new GlobalBooleanVariable(surface),
   areChannelMetersEnabled: new GlobalBooleanVariable(surface),
@@ -154,12 +155,13 @@ export function bindDeviceToMidi(
     // Scribble Strip
     const currentParameterName = new ContextStateVariable("");
     const currentDisplayValue = new ContextStateVariable("");
+    const currentChannelName = new ContextStateVariable("");
     const isLocalValueModeActive = new ContextStateVariable(false);
 
-    const updateDisplay = (context: MR_ActiveDevice) => {
+    const updateNameValueDisplay = (context: MR_ActiveDevice) => {
       device.lcdManager.setChannelText(
         context,
-        0,
+        +globalBooleanVariables.areDisplayRowsFlipped.get(context),
         channelIndex,
         isLocalValueModeActive.get(context) ||
           globalBooleanVariables.isValueDisplayModeActive.get(context)
@@ -193,13 +195,13 @@ export function bindDeviceToMidi(
         )
       );
       isLocalValueModeActive.set(context, true);
-      updateDisplay(context);
+      updateNameValueDisplay(context);
       setTimeout(
         context,
         `updateDisplay${device.firstChannelIndex + channelIndex}`,
         (context) => {
           isLocalValueModeActive.set(context, false);
-          updateDisplay(context);
+          updateNameValueDisplay(context);
         },
         1
       );
@@ -263,18 +265,27 @@ export function bindDeviceToMidi(
           LcdManager.abbreviateString(LcdManager.stripNonAsciiCharacters(title2))
         )
       );
-      updateDisplay(context);
+      updateNameValueDisplay(context);
     };
-    globalBooleanVariables.isValueDisplayModeActive.addOnChangeCallback(updateDisplay);
+    globalBooleanVariables.isValueDisplayModeActive.addOnChangeCallback(updateNameValueDisplay);
+    globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateNameValueDisplay);
 
-    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
+    const updateTrackTitleDisplay = (context: MR_ActiveDevice) => {
       device.lcdManager.setChannelText(
         context,
-        1,
+        1 - +globalBooleanVariables.areDisplayRowsFlipped.get(context),
         channelIndex,
-        LcdManager.abbreviateString(LcdManager.stripNonAsciiCharacters(title))
+        currentChannelName.get(context)
       );
     };
+    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
+      currentChannelName.set(
+        context,
+        LcdManager.abbreviateString(LcdManager.stripNonAsciiCharacters(title))
+      );
+      updateTrackTitleDisplay(context);
+    };
+    globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateTrackTitleDisplay);
 
     // VU Meter
     let lastMeterUpdateTime = 0;

@@ -80,11 +80,27 @@ export function bindControlButtons(
   const shiftSubPage = buttonsSubPageArea.makeSubPage("Shift");
 
   // Display mode button
-  buttons.display.onSurfaceValueChange.addCallback((context, value) => {
+  page
+    .makeValueBinding(
+      buttons.display.mSurfaceValue,
+      page.mCustom.makeHostValueVariable("Display Name/Value")
+    )
+    .setSubPage(regularSubPage).mOnValueChange = (context, mapping, value) => {
     if (value) {
       globalBooleanVariables.isValueDisplayModeActive.toggle(context);
     }
-  });
+  };
+
+  page
+    .makeValueBinding(
+      buttons.display.mSurfaceValue,
+      page.mCustom.makeHostValueVariable("Flip Display Rows")
+    )
+    .setSubPage(shiftSubPage).mOnValueChange = (context, mapping, value) => {
+    if (value) {
+      globalBooleanVariables.areDisplayRowsFlipped.toggle(context);
+    }
+  };
 
   // SMPTE/Beats button
 
