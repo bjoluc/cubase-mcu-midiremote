@@ -1,6 +1,6 @@
 import { EnhancedMidiOutput } from "./PortPair";
 
-export function sendChannelMeterMode(
+export function sendChannelMeterModes(
   context: MR_ActiveDevice,
   outputPort: EnhancedMidiOutput,
   enableLcdLevelMeter: boolean
@@ -10,7 +10,7 @@ export function sendChannelMeterMode(
   }
 }
 
-export function setGlobalMeterModeOrientation(
+export function sendGlobalMeterModeOrientation(
   context: MR_ActiveDevice,
   outputPort: EnhancedMidiOutput,
   isVertical: boolean

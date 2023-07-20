@@ -1,6 +1,6 @@
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { JogWheel, LedButton, LedPushEncoder } from "../decorators/surface";
-import { EncoderDisplayMode } from "../midi";
+import { EncoderDisplayMode, GlobalBooleanVariables } from "../midi";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../device-configs";
 
 function setShiftableButtonsLedValues(
@@ -69,7 +69,8 @@ export function bindControlButtons(
   page: DecoratedFactoryMappingPage,
   controlSectionElements: ControlSectionSurfaceElements,
   channelElements: ChannelSurfaceElements[],
-  mixerBankZone: MR_MixerBankZone
+  mixerBankZone: MR_MixerBankZone,
+  globalBooleanVariables: GlobalBooleanVariables
 ) {
   const host = page.mHostAccess;
   const buttons = controlSectionElements.buttons;
@@ -77,6 +78,40 @@ export function bindControlButtons(
   const buttonsSubPageArea = page.makeSubPageArea("Control Buttons");
   const regularSubPage = buttonsSubPageArea.makeSubPage("Regular");
   const shiftSubPage = buttonsSubPageArea.makeSubPage("Shift");
+
+  // SMPTE/Beats button
+
+  page
+    .makeCommandBinding(
+      controlSectionElements.buttons.timeMode.mSurfaceValue,
+      "Transport",
+      "Exchange Time Formats"
+    )
+    .setSubPage(regularSubPage);
+
+  page
+    .makeValueBinding(
+      controlSectionElements.buttons.timeMode.mSurfaceValue,
+      page.mCustom.makeHostValueVariable("Metering mode")
+    )
+    .setSubPage(shiftSubPage).mOnValueChange = (context, mapping, value) => {
+    if (value === 1) {
+      const areMetersEnabled = globalBooleanVariables.areChannelMetersEnabled;
+      const isMeterModeVertical = globalBooleanVariables.isGlobalLcdMeterModeVertical;
+
+      // Toggle between no LCD metering, vertical, and horizontal mode
+      if (!areMetersEnabled.get(context)) {
+        isMeterModeVertical.set(context, true);
+        areMetersEnabled.set(context, true);
+      } else {
+        if (isMeterModeVertical.get(context)) {
+          isMeterModeVertical.set(context, false);
+        } else {
+          areMetersEnabled.set(context, false);
+        }
+      }
+    }
+  };
 
   // 1-8
   buttons.number.forEach((button, buttonIndex) => {
@@ -87,7 +122,7 @@ export function bindControlButtons(
     );
   });
 
-  // Free buttons
+  // Function buttons
   for (const button of buttons.function) {
     page.makeCommandBinding(
       button.mSurfaceValue,
@@ -185,11 +220,11 @@ export function bindControlButtons(
   ).mOnValueChange = (context, mapping, value) => {
     if (value) {
       shiftSubPage.mAction.mActivate.trigger(mapping);
-      setShiftableButtonsLedValues(controlSectionElements, context, 1);
     } else {
       regularSubPage.mAction.mActivate.trigger(mapping);
-      setShiftableButtonsLedValues(controlSectionElements, context, 0);
     }
+    globalBooleanVariables.isShiftButtonHeld.set(context, Boolean(value));
+    setShiftableButtonsLedValues(controlSectionElements, context, value);
   };
 
   // Transport buttons
@@ -266,17 +301,6 @@ export function bindJogWheelSection(
   page.makeCommandBinding(jogRight, "Transport", "Jog Right").setSubPage(jogSubPage);
   page.makeCommandBinding(jogLeft, "Transport", "Nudge Cursor Left").setSubPage(scrubSubPage);
   page.makeCommandBinding(jogRight, "Transport", "Nudge Cursor Right").setSubPage(scrubSubPage);
-}
-
-export function bindSegmentDisplaySection(
-  page: MR_FactoryMappingPage,
-  controlSectionElements: ControlSectionSurfaceElements
-) {
-  page.makeCommandBinding(
-    controlSectionElements.buttons.timeMode.mSurfaceValue,
-    "Transport",
-    "Exchange Time Formats"
-  );
 }
 
 export function bindDirectionButtons(

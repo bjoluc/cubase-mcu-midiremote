@@ -4,6 +4,7 @@ import { ContextStateVariable, createElements, GlobalBooleanVariable, TimerUtils
 import { ActivationCallbacks } from "./connection";
 import { LcdManager } from "./managers/LcdManager";
 import { PortPair } from "./PortPair";
+import { sendChannelMeterModes, sendGlobalMeterModeOrientation } from "./util";
 
 export enum EncoderDisplayMode {
   SingleDot = 0,
@@ -18,6 +19,9 @@ export const makeGlobalBooleanVariables = (surface: MR_DeviceSurface) => ({
   isValueDisplayModeActive: new GlobalBooleanVariable(surface),
   isEncoderAssignmentActive: createElements(6, () => new GlobalBooleanVariable(surface)),
   isFlipModeActive: new GlobalBooleanVariable(surface),
+  areChannelMetersEnabled: new GlobalBooleanVariable(surface),
+  isGlobalLcdMeterModeVertical: new GlobalBooleanVariable(surface),
+  isShiftButtonHeld: new GlobalBooleanVariable(surface),
 });
 
 export type GlobalBooleanVariables = ReturnType<typeof makeGlobalBooleanVariables>;
@@ -29,6 +33,18 @@ export function bindDeviceToMidi(
   { setTimeout }: TimerUtils
 ) {
   const ports = device.ports;
+
+  // Handle metering mode changes for the device
+  globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
+    (context, areChannelMetersEnabled) => {
+      sendChannelMeterModes(context, ports.output, areChannelMetersEnabled);
+    }
+  );
+  globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
+    (context, isGlobalLcdMeterModeVertical) => {
+      sendGlobalMeterModeOrientation(context, ports.output, isGlobalLcdMeterModeVertical);
+    }
+  );
 
   function bindFader(ports: PortPair, fader: TouchSensitiveFader, faderIndex: number) {
     fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
