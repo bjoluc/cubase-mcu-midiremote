@@ -115,7 +115,7 @@ export function bindControlButtons(
   page
     .makeValueBinding(
       controlSectionElements.buttons.timeMode.mSurfaceValue,
-      page.mCustom.makeHostValueVariable("Metering mode")
+      page.mCustom.makeHostValueVariable("Metering Mode")
     )
     .setSubPage(shiftSubPage).mOnValueChange = (context, mapping, value) => {
     if (value === 1) {
@@ -130,6 +130,7 @@ export function bindControlButtons(
         if (isMeterModeVertical.get(context)) {
           isMeterModeVertical.set(context, false);
         } else {
+          isMeterModeVertical.set(context, true);
           areMetersEnabled.set(context, false);
         }
       }

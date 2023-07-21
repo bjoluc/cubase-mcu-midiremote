@@ -1,21 +1,12 @@
 import { Device } from "../devices";
 import { makeCallbackCollection } from "../util";
 import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
-import { sendChannelMeterModes, sendGlobalMeterModeOrientation } from "./util";
 
 export type ActivationCallbacks = ReturnType<typeof setupDeviceConnection>["activationCallbacks"];
 
 export function setupDeviceConnection(driver: MR_DeviceDriver, devices: Device[]) {
   const activationCallbacks = makeCallbackCollection(driver, "mOnActivate");
   const segmentDisplayManager = new SegmentDisplayManager(devices);
-
-  activationCallbacks.addCallback((context) => {
-    // Initially disable LCD channel metering for all devices
-    for (const device of devices) {
-      sendGlobalMeterModeOrientation(context, device.ports.output, true);
-      sendChannelMeterModes(context, device.ports.output, false);
-    }
-  });
 
   driver.mOnDeactivate = (context) => {
     segmentDisplayManager.clearAssignment(context);

@@ -34,18 +34,6 @@ export function bindDeviceToMidi(
 ) {
   const ports = device.ports;
 
-  // Handle metering mode changes for the device
-  globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
-    (context, areChannelMetersEnabled) => {
-      sendChannelMeterModes(context, ports.output, areChannelMetersEnabled);
-    }
-  );
-  globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
-    (context, isGlobalLcdMeterModeVertical) => {
-      sendGlobalMeterModeOrientation(context, ports.output, isGlobalLcdMeterModeVertical);
-    }
-  );
-
   function bindFader(ports: PortPair, fader: TouchSensitiveFader, faderIndex: number) {
     fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
     fader.mTouchedValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 104 + faderIndex);
@@ -159,15 +147,19 @@ export function bindDeviceToMidi(
     const isLocalValueModeActive = new ContextStateVariable(false);
 
     const updateNameValueDisplay = (context: MR_ActiveDevice) => {
-      device.lcdManager.setChannelText(
-        context,
-        +globalBooleanVariables.areDisplayRowsFlipped.get(context),
-        channelIndex,
-        isLocalValueModeActive.get(context) ||
-          globalBooleanVariables.isValueDisplayModeActive.get(context)
-          ? currentDisplayValue.get(context)
-          : currentParameterName.get(context)
-      );
+      const row = +globalBooleanVariables.areDisplayRowsFlipped.get(context);
+
+      if (row === 0 || globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)) {
+        device.lcdManager.setChannelText(
+          context,
+          row,
+          channelIndex,
+          isLocalValueModeActive.get(context) ||
+            globalBooleanVariables.isValueDisplayModeActive.get(context)
+            ? currentDisplayValue.get(context)
+            : currentParameterName.get(context)
+        );
+      }
     };
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
       value =
@@ -271,12 +263,15 @@ export function bindDeviceToMidi(
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateNameValueDisplay);
 
     const updateTrackTitleDisplay = (context: MR_ActiveDevice) => {
-      device.lcdManager.setChannelText(
-        context,
-        1 - +globalBooleanVariables.areDisplayRowsFlipped.get(context),
-        channelIndex,
-        currentChannelName.get(context)
-      );
+      const row = 1 - +globalBooleanVariables.areDisplayRowsFlipped.get(context);
+      if (row === 0 || globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)) {
+        device.lcdManager.setChannelText(
+          context,
+          row,
+          channelIndex,
+          currentChannelName.get(context)
+        );
+      }
     };
     channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
       currentChannelName.set(
@@ -286,6 +281,18 @@ export function bindDeviceToMidi(
       updateTrackTitleDisplay(context);
     };
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateTrackTitleDisplay);
+
+    globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
+      (context, areMetersEnabled) => {
+        if (!areMetersEnabled) {
+          // Re-send the lower row after disabling (horizontal because that's the previous mode)
+          // channel meters
+          (globalBooleanVariables.areDisplayRowsFlipped.get(context)
+            ? updateNameValueDisplay
+            : updateTrackTitleDisplay)(context);
+        }
+      }
+    );
 
     // VU Meter
     let lastMeterUpdateTime = 0;
@@ -318,6 +325,21 @@ export function bindDeviceToMidi(
     // Fader
     bindFader(ports, channel.fader, channelIndex);
   }
+
+  // Handle metering mode changes for the device. We add these callbacks after the display handling
+  // callbacks have been attached to the global boolean variables so display updates are sent before
+  // changing meter modes (the manual mentions that it's not safe to send display updates <= 600 ms
+  // after changing meter modes).
+  globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
+    (context, areChannelMetersEnabled) => {
+      sendChannelMeterModes(context, ports.output, areChannelMetersEnabled);
+    }
+  );
+  globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
+    (context, isGlobalLcdMeterModeVertical) => {
+      sendGlobalMeterModeOrientation(context, ports.output, isGlobalLcdMeterModeVertical);
+    }
+  );
 
   // Control Section (main devices only)
   if (device instanceof MainDevice) {
