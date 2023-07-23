@@ -92,6 +92,18 @@ export function bindDeviceToMidi(
     });
   }
 
+  // Handle metering mode changes for the device
+  globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
+    (context, areChannelMetersEnabled) => {
+      sendChannelMeterModes(context, ports.output, areChannelMetersEnabled);
+    }
+  );
+  globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
+    (context, isGlobalLcdMeterModeVertical) => {
+      sendGlobalMeterModeOrientation(context, ports.output, isGlobalLcdMeterModeVertical);
+    }
+  );
+
   for (const [channelIndex, channel] of device.channelElements.entries()) {
     // Push Encoder
     channel.encoder.mEncoderValue.mMidiBinding
@@ -325,21 +337,6 @@ export function bindDeviceToMidi(
     // Fader
     bindFader(ports, channel.fader, channelIndex);
   }
-
-  // Handle metering mode changes for the device. We add these callbacks after the display handling
-  // callbacks have been attached to the global boolean variables so display updates are sent before
-  // changing meter modes (the manual mentions that it's not safe to send display updates <= 600 ms
-  // after changing meter modes).
-  globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
-    (context, areChannelMetersEnabled) => {
-      sendChannelMeterModes(context, ports.output, areChannelMetersEnabled);
-    }
-  );
-  globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
-    (context, isGlobalLcdMeterModeVertical) => {
-      sendGlobalMeterModeOrientation(context, ports.output, isGlobalLcdMeterModeVertical);
-    }
-  );
 
   // Control Section (main devices only)
   if (device instanceof MainDevice) {
