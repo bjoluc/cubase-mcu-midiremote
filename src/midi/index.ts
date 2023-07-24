@@ -308,18 +308,28 @@ export function bindDeviceToMidi(
 
     // VU Meter
     let lastMeterUpdateTime = 0;
+    let isOverloadSet = false;
     channel.vuMeter.mOnProcessValueChange = (context, newValue) => {
       const now: number = performance.now(); // ms
 
       if (now - lastMeterUpdateTime > 125) {
-        // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
-        newValue = 1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)));
-
         lastMeterUpdateTime = now;
-        ports.output.sendMidi(context, [
-          0xd0,
-          (channelIndex << 4) + Math.ceil(newValue * 14 - 0.25),
-        ]);
+
+        // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
+        const meterLevel = Math.ceil(
+          (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) * 0xe - 0.25
+        );
+
+        if (meterLevel === 0xe) {
+          isOverloadSet = true;
+        }
+
+        ports.output.sendMidi(context, [0xd0, (channelIndex << 4) + meterLevel]);
+
+        if (meterLevel === 0 && isOverloadSet) {
+          ports.output.sendMidi(context, [0xd0, (channelIndex << 4) + 0xf]);
+          isOverloadSet = false;
+        }
       }
     };
 
