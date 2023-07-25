@@ -13,12 +13,12 @@ export enum EncoderDisplayMode {
 }
 
 /** Declares some global context-dependent variables that (may) affect multiple devices */
-export const makeGlobalBooleanVariables = (surface: MR_DeviceSurface) => ({
-  areMotorsActive: new GlobalBooleanVariable(surface),
-  isValueDisplayModeActive: new GlobalBooleanVariable(surface),
-  areDisplayRowsFlipped: new GlobalBooleanVariable(surface),
-  isEncoderAssignmentActive: createElements(6, () => new GlobalBooleanVariable(surface)),
-  isFlipModeActive: new GlobalBooleanVariable(surface),
+export const makeGlobalBooleanVariables = () => ({
+  areMotorsActive: new GlobalBooleanVariable(),
+  isValueDisplayModeActive: new GlobalBooleanVariable(),
+  areDisplayRowsFlipped: new GlobalBooleanVariable(),
+  isEncoderAssignmentActive: createElements(6, () => new GlobalBooleanVariable()),
+  isFlipModeActive: new GlobalBooleanVariable(),
 });
 
 export type GlobalBooleanVariables = ReturnType<typeof makeGlobalBooleanVariables>;

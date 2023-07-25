@@ -98,16 +98,14 @@ export function bindEncoders(
             assignmentId,
             isActive,
           ] of globalBooleanVariables.isEncoderAssignmentActive.entries()) {
-            // `runCallbacksInstantly=true` to update the LED(s) right away:
-            isActive.set(context, assignmentButtonId === assignmentId, true);
+            isActive.set(context, assignmentButtonId === assignmentId);
           }
           globalBooleanVariables.isFlipModeActive.set(context, false);
           globalBooleanVariables.isValueDisplayModeActive.set(context, false);
         });
 
         flipSubPage.mOnActivate = (context) => {
-          // `runCallbacksInstantly=true` to update the LED(s) right away:
-          globalBooleanVariables.isFlipModeActive.set(context, true, true);
+          globalBooleanVariables.isFlipModeActive.set(context, true);
         };
 
         const assignments =

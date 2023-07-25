@@ -12,9 +12,9 @@ import "core-js/es/reflect/construct";
 Reflect.get = undefined;
 
 import midiremoteApi from "midiremote_api_v1";
-import { createDevices } from "./devices";
 import { decoratePage } from "./decorators/page";
 import { decorateSurface } from "./decorators/surface";
+import { createDevices } from "./devices";
 import { makeHostMapping } from "./mapping";
 import { bindDeviceToMidi, makeGlobalBooleanVariables } from "./midi";
 import { setupDeviceConnection } from "./midi/connection";
@@ -35,12 +35,10 @@ activationCallbacks.addCallback(() => {
   );
 });
 
-const globalBooleanVariables = makeGlobalBooleanVariables(surface);
+const globalBooleanVariables = makeGlobalBooleanVariables();
 
 activationCallbacks.addCallback((context) => {
-  // Setting `runCallbacksInstantly` to `true` below is a workaround for
-  // https://forums.steinberg.net/t/831123.
-  globalBooleanVariables.areMotorsActive.set(context, true, true);
+  globalBooleanVariables.areMotorsActive.set(context, true);
 });
 
 const page = decoratePage(driver.mMapping.makePage("Mixer"), surface);
