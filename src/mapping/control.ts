@@ -180,6 +180,19 @@ export function bindControlButtons(
   // Mixer
   page.makeCommandBinding(buttons.automation[4].mSurfaceValue, "Devices", "Mixer");
 
+  // Motor
+  page.makeValueBinding(
+    buttons.automation[5].mSurfaceValue,
+    page.mCustom.makeHostValueVariable("Disable/Enable Fader Motors")
+  ).mOnValueChange = (context, mapping, value) => {
+    if (value) {
+      globalBooleanVariables.areMotorsActive.toggle(context);
+    }
+  };
+  globalBooleanVariables.areMotorsActive.addOnChangeCallback((context, value) => {
+    buttons.automation[5].mLedValue.setProcessValue(context, +value);
+  });
+
   // Instrument
   page.makeCommandBinding(
     buttons.utility[0].mSurfaceValue,
