@@ -9,7 +9,7 @@ import {
 import { ActivationCallbacks } from "./connection";
 import { LcdManager } from "./managers/LcdManager";
 import { PortPair } from "./PortPair";
-import { sendChannelMeterModes, sendGlobalMeterModeOrientation } from "./util";
+import { sendChannelMeterModes, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 
 export enum EncoderDisplayMode {
   SingleDot = 0,
@@ -27,6 +27,7 @@ export const createGlobalBooleanVariables = () => ({
   isFlipModeActive: new BooleanContextStateVariable(),
   areChannelMetersEnabled: new BooleanContextStateVariable(),
   isGlobalLcdMeterModeVertical: new BooleanContextStateVariable(),
+  shouldMeterOverloadsBeCleared: new BooleanContextStateVariable(true),
 });
 
 export type GlobalBooleanVariables = ReturnType<typeof createGlobalBooleanVariables>;
@@ -311,6 +312,10 @@ export function bindDeviceToMidi(
         LcdManager.abbreviateString(LcdManager.stripNonAsciiCharacters(title))
       );
       updateTrackTitleDisplay(context);
+
+      if (DEVICE_NAME === "MCU Pro") {
+        clearOverload(context);
+      }
     };
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateTrackTitleDisplay);
 
@@ -332,7 +337,6 @@ export function bindDeviceToMidi(
 
     // VU Meter
     let lastMeterUpdateTime = 0;
-    let isOverloadSet = false;
     channel.vuMeter.mOnProcessValueChange = (context, newValue) => {
       const now: number = performance.now(); // ms
 
@@ -344,18 +348,20 @@ export function bindDeviceToMidi(
           (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) * 0xe - 0.25
         );
 
-        if (meterLevel === 0xe) {
-          isOverloadSet = true;
-        }
-
-        ports.output.sendMidi(context, [0xd0, (channelIndex << 4) + meterLevel]);
-
-        if (meterLevel === 0 && isOverloadSet) {
-          ports.output.sendMidi(context, [0xd0, (channelIndex << 4) + 0xf]);
-          isOverloadSet = false;
-        }
+        sendMeterLevel(context, ports.output, channelIndex, meterLevel);
       }
     };
+    /** Clears the channel meter's overload indicator */
+    const clearOverload = (context: MR_ActiveDevice) => {
+      sendMeterLevel(context, ports.output, channelIndex, 0xf);
+    };
+    globalBooleanVariables.shouldMeterOverloadsBeCleared.addOnChangeCallback(
+      (context, shouldOverloadsBeCleared) => {
+        if (shouldOverloadsBeCleared) {
+          clearOverload(context);
+        }
+      }
+    );
 
     // Channel Buttons
     const buttons = channel.buttons;
