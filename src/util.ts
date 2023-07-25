@@ -100,11 +100,9 @@ export function makeTimerUtils(page: MR_FactoryMappingPage, surface: MR_DeviceSu
 
 export class ContextStateVariable<ValueType> {
   private static nextVariableId = 0;
+  private name = `contextStateVariable${ContextStateVariable.nextVariableId++}`;
 
-  constructor(
-    private initialValue: ValueType,
-    private name: string = `contextStateVariable${ContextStateVariable.nextVariableId++}`
-  ) {}
+  constructor(private initialValue: ValueType) {}
 
   set(context: MR_ActiveDevice, value: ValueType) {
     context.setState(this.name, JSON.stringify(value));
@@ -116,45 +114,32 @@ export class ContextStateVariable<ValueType> {
   }
 }
 
-type GlobalBooleanVariableChangeCallback = (context: MR_ActiveDevice, newValue: boolean) => void;
+export class ObservableContextStateVariable<ValueType> extends ContextStateVariable<ValueType> {
+  private onChangeCallbacks: Array<(context: MR_ActiveDevice, newValue: ValueType) => void> = [];
 
-export class GlobalBooleanVariable {
-  private static nextVariableId = 0;
+  constructor(initialValue: ValueType) {
+    super(initialValue);
+  }
 
-  private surfaceVariable: MR_SurfaceCustomValueVariable;
-  private onChangeCallbacks: GlobalBooleanVariableChangeCallback[] = [];
+  addOnChangeCallback(callback: (context: MR_ActiveDevice, newValue: ValueType) => void) {
+    this.onChangeCallbacks.push(callback);
+  }
 
-  private invokeCallbacks(context: MR_ActiveDevice, value: boolean) {
+  set(context: MR_ActiveDevice, value: ValueType) {
+    super.set(context, value);
+
     for (const callback of this.onChangeCallbacks) {
       callback(context, value);
     }
   }
+}
 
-  constructor(surface: MR_DeviceSurface) {
-    this.surfaceVariable = surface.makeCustomValueVariable(
-      `globalBooleanVariable${GlobalBooleanVariable.nextVariableId++}`
-    );
-    this.surfaceVariable.mOnProcessValueChange = (context, value) => {
-      this.invokeCallbacks(context, Boolean(value));
-    };
+export class BooleanContextStateVariable extends ObservableContextStateVariable<boolean> {
+  constructor(initialValue = false) {
+    super(initialValue);
   }
 
-  addOnChangeCallback(callback: GlobalBooleanVariableChangeCallback) {
-    this.onChangeCallbacks.push(callback);
-  }
-
-  set(context: MR_ActiveDevice, value: boolean, runCallbacksInstantly = false) {
-    this.surfaceVariable.setProcessValue(context, +value);
-    if (runCallbacksInstantly) {
-      this.invokeCallbacks(context, value);
-    }
-  }
-
-  get(context: MR_ActiveDevice) {
-    return Boolean(this.surfaceVariable.getProcessValue(context));
-  }
-
-  toggle(context: MR_ActiveDevice, runCallbacksInstantly = false) {
-    this.set(context, !this.get(context), runCallbacksInstantly);
+  toggle(context: MR_ActiveDevice) {
+    this.set(context, !this.get(context));
   }
 }

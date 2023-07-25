@@ -1,6 +1,11 @@
 import { TouchSensitiveFader } from "../decorators/surface";
 import { Device, MainDevice } from "../devices";
-import { ContextStateVariable, createElements, GlobalBooleanVariable, TimerUtils } from "../util";
+import {
+  BooleanContextStateVariable,
+  ContextStateVariable,
+  createElements,
+  TimerUtils,
+} from "../util";
 import { ActivationCallbacks } from "./connection";
 import { LcdManager } from "./managers/LcdManager";
 import { PortPair } from "./PortPair";
@@ -14,14 +19,14 @@ export enum EncoderDisplayMode {
 }
 
 /** Declares some global context-dependent variables that (may) affect multiple devices */
-export const createGlobalBooleanVariables = (surface: MR_DeviceSurface) => ({
-  areMotorsActive: new GlobalBooleanVariable(surface),
-  isValueDisplayModeActive: new GlobalBooleanVariable(surface),
-  areDisplayRowsFlipped: new GlobalBooleanVariable(surface),
-  isEncoderAssignmentActive: createElements(6, () => new GlobalBooleanVariable(surface)),
-  isFlipModeActive: new GlobalBooleanVariable(surface),
-  areChannelMetersEnabled: new GlobalBooleanVariable(surface),
-  isGlobalLcdMeterModeVertical: new GlobalBooleanVariable(surface),
+export const createGlobalBooleanVariables = () => ({
+  areMotorsActive: new BooleanContextStateVariable(),
+  isValueDisplayModeActive: new BooleanContextStateVariable(),
+  areDisplayRowsFlipped: new BooleanContextStateVariable(),
+  isEncoderAssignmentActive: createElements(6, () => new BooleanContextStateVariable()),
+  isFlipModeActive: new BooleanContextStateVariable(),
+  areChannelMetersEnabled: new BooleanContextStateVariable(),
+  isGlobalLcdMeterModeVertical: new BooleanContextStateVariable(),
 });
 
 export type GlobalBooleanVariables = ReturnType<typeof createGlobalBooleanVariables>;

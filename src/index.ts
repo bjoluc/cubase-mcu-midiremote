@@ -12,9 +12,9 @@ import "core-js/es/reflect/construct";
 Reflect.get = undefined;
 
 import midiremoteApi from "midiremote_api_v1";
-import { createDevices } from "./devices";
 import { decoratePage } from "./decorators/page";
 import { decorateSurface } from "./decorators/surface";
+import { createDevices } from "./devices";
 import { makeHostMapping } from "./mapping";
 import { bindDeviceToMidi, createGlobalBooleanVariables } from "./midi";
 import { setupDeviceConnection } from "./midi/connection";
@@ -35,17 +35,17 @@ activationCallbacks.addCallback(() => {
   );
 });
 
-const globalBooleanVariables = createGlobalBooleanVariables(surface);
+const globalBooleanVariables = createGlobalBooleanVariables();
 
 activationCallbacks.addCallback((context) => {
   // Setting `runCallbacksInstantly` to `true` below is a workaround for
   // https://forums.steinberg.net/t/831123.
-  globalBooleanVariables.areMotorsActive.set(context, true, true);
+  globalBooleanVariables.areMotorsActive.set(context, true);
 
   if (DEVICE_NAME === "MCU Pro") {
     // Initially disable LCD channel metering for all devices
-    globalBooleanVariables.isGlobalLcdMeterModeVertical.set(context, true, true);
-    globalBooleanVariables.areChannelMetersEnabled.set(context, false, true);
+    globalBooleanVariables.isGlobalLcdMeterModeVertical.set(context, true);
+    globalBooleanVariables.areChannelMetersEnabled.set(context, false);
   }
 });
 
