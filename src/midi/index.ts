@@ -92,17 +92,19 @@ export function bindDeviceToMidi(
     });
   }
 
-  // Handle metering mode changes for the device
-  globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
-    (context, areChannelMetersEnabled) => {
-      sendChannelMeterModes(context, ports.output, areChannelMetersEnabled);
-    }
-  );
-  globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
-    (context, isGlobalLcdMeterModeVertical) => {
-      sendGlobalMeterModeOrientation(context, ports.output, isGlobalLcdMeterModeVertical);
-    }
-  );
+  if (DEVICE_NAME === "MCU Pro") {
+    // Handle metering mode changes for the device
+    globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
+      (context, areChannelMetersEnabled) => {
+        sendChannelMeterModes(context, ports.output, areChannelMetersEnabled);
+      }
+    );
+    globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
+      (context, isGlobalLcdMeterModeVertical) => {
+        sendGlobalMeterModeOrientation(context, ports.output, isGlobalLcdMeterModeVertical);
+      }
+    );
+  }
 
   for (const [channelIndex, channel] of device.channelElements.entries()) {
     // Push Encoder
@@ -161,17 +163,26 @@ export function bindDeviceToMidi(
     const updateNameValueDisplay = (context: MR_ActiveDevice) => {
       const row = +globalBooleanVariables.areDisplayRowsFlipped.get(context);
 
-      if (row === 0 || globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)) {
-        device.lcdManager.setChannelText(
-          context,
-          row,
-          channelIndex,
-          isLocalValueModeActive.get(context) ||
-            globalBooleanVariables.isValueDisplayModeActive.get(context)
-            ? currentDisplayValue.get(context)
-            : currentParameterName.get(context)
-        );
+      // Skip updating the lower display row on MCU Pro when horizontal metering mode is enabled
+      if (
+        DEVICE_NAME === "MCU Pro" &&
+        row === 1 &&
+        globalBooleanVariables.areChannelMetersEnabled.get(context) &&
+        !globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
+      ) {
+        // Skip updating the lower display row on MCU Pro when horizontal metering mode is enabled
+        return;
       }
+
+      device.lcdManager.setChannelText(
+        context,
+        row,
+        channelIndex,
+        isLocalValueModeActive.get(context) ||
+          globalBooleanVariables.isValueDisplayModeActive.get(context)
+          ? currentDisplayValue.get(context)
+          : currentParameterName.get(context)
+      );
     };
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
       value =
@@ -276,14 +287,18 @@ export function bindDeviceToMidi(
 
     const updateTrackTitleDisplay = (context: MR_ActiveDevice) => {
       const row = 1 - +globalBooleanVariables.areDisplayRowsFlipped.get(context);
-      if (row === 0 || globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)) {
-        device.lcdManager.setChannelText(
-          context,
-          row,
-          channelIndex,
-          currentChannelName.get(context)
-        );
+
+      if (
+        DEVICE_NAME === "MCU Pro" &&
+        row === 1 &&
+        globalBooleanVariables.areChannelMetersEnabled.get(context) &&
+        !globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
+      ) {
+        // Skip updating the lower display row on MCU Pro when horizontal metering mode is enabled
+        return;
       }
+
+      device.lcdManager.setChannelText(context, row, channelIndex, currentChannelName.get(context));
     };
     channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
       currentChannelName.set(
@@ -294,17 +309,21 @@ export function bindDeviceToMidi(
     };
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateTrackTitleDisplay);
 
-    globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
-      (context, areMetersEnabled) => {
-        if (!areMetersEnabled) {
-          // Re-send the lower row after disabling (horizontal because that's the previous mode)
-          // channel meters
-          (globalBooleanVariables.areDisplayRowsFlipped.get(context)
-            ? updateNameValueDisplay
-            : updateTrackTitleDisplay)(context);
+    if (DEVICE_NAME === "MCU Pro") {
+      // Update the lower display row after disabling horizontal channel meters
+      globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
+        (context, areMetersEnabled) => {
+          if (
+            !areMetersEnabled &&
+            !globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
+          ) {
+            (globalBooleanVariables.areDisplayRowsFlipped.get(context)
+              ? updateNameValueDisplay
+              : updateTrackTitleDisplay)(context);
+          }
         }
-      }
-    );
+      );
+    }
 
     // VU Meter
     let lastMeterUpdateTime = 0;

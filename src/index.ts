@@ -19,7 +19,6 @@ import { makeHostMapping } from "./mapping";
 import { bindDeviceToMidi, createGlobalBooleanVariables } from "./midi";
 import { setupDeviceConnection } from "./midi/connection";
 import { makeTimerUtils } from "./util";
-import { sendChannelMeterModes } from "./midi/util";
 
 const driver = midiremoteApi.makeDeviceDriver(VENDOR_NAME, DEVICE_NAME, "github.com/bjoluc");
 
@@ -43,12 +42,10 @@ activationCallbacks.addCallback((context) => {
   // https://forums.steinberg.net/t/831123.
   globalBooleanVariables.areMotorsActive.set(context, true, true);
 
-  // Initially disable LCD channel metering for all devices
-  globalBooleanVariables.isGlobalLcdMeterModeVertical.set(context, true, true);
-  for (const device of devices) {
-    // Not using the global boolean variable here because its callbacks also send the lower scribble
-    // strip row which is still empty at this point
-    sendChannelMeterModes(context, device.ports.output, false);
+  if (DEVICE_NAME === "MCU Pro") {
+    // Initially disable LCD channel metering for all devices
+    globalBooleanVariables.isGlobalLcdMeterModeVertical.set(context, true, true);
+    globalBooleanVariables.areChannelMetersEnabled.set(context, false, true);
   }
 });
 

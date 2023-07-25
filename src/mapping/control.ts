@@ -112,30 +112,32 @@ export function bindControlButtons(
     )
     .setSubPage(regularSubPage);
 
-  page
-    .makeValueBinding(
-      controlSectionElements.buttons.timeMode.mSurfaceValue,
-      page.mCustom.makeHostValueVariable("Metering Mode")
-    )
-    .setSubPage(shiftSubPage).mOnValueChange = (context, mapping, value) => {
-    if (value === 1) {
-      const areMetersEnabled = globalBooleanVariables.areChannelMetersEnabled;
-      const isMeterModeVertical = globalBooleanVariables.isGlobalLcdMeterModeVertical;
+  if (DEVICE_NAME === "MCU Pro") {
+    // LCD metering is only supported by the original MCU
+    page
+      .makeValueBinding(
+        controlSectionElements.buttons.timeMode.mSurfaceValue,
+        page.mCustom.makeHostValueVariable("Metering Mode")
+      )
+      .setSubPage(shiftSubPage).mOnValueChange = (context, mapping, value) => {
+      if (value === 1) {
+        const areMetersEnabled = globalBooleanVariables.areChannelMetersEnabled;
+        const isMeterModeVertical = globalBooleanVariables.isGlobalLcdMeterModeVertical;
 
-      // Toggle between no LCD metering, vertical, and horizontal mode
-      if (!areMetersEnabled.get(context)) {
-        isMeterModeVertical.set(context, true);
-        areMetersEnabled.set(context, true);
-      } else {
-        if (isMeterModeVertical.get(context)) {
-          isMeterModeVertical.set(context, false);
-        } else {
+        // Toggle between no LCD metering, vertical, and horizontal mode
+        if (!areMetersEnabled.get(context)) {
           isMeterModeVertical.set(context, true);
-          areMetersEnabled.set(context, false);
+          areMetersEnabled.set(context, true);
+        } else {
+          if (isMeterModeVertical.get(context)) {
+            isMeterModeVertical.set(context, false);
+          } else {
+            areMetersEnabled.set(context, false);
+          }
         }
       }
-    }
-  };
+    };
+  }
 
   // 1-8
   for (const [buttonIndex, button] of buttons.number.entries()) {
