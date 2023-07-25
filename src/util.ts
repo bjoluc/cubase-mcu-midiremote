@@ -100,11 +100,9 @@ export function makeTimerUtils(page: MR_FactoryMappingPage, surface: MR_DeviceSu
 
 export class ContextStateVariable<ValueType> {
   private static nextVariableId = 0;
+  private name = `contextStateVariable${ContextStateVariable.nextVariableId++}`;
 
-  constructor(
-    private initialValue: ValueType,
-    private name: string = `contextStateVariable${ContextStateVariable.nextVariableId++}`
-  ) {}
+  constructor(private initialValue: ValueType) {}
 
   set(context: MR_ActiveDevice, value: ValueType) {
     context.setState(this.name, JSON.stringify(value));
@@ -116,25 +114,29 @@ export class ContextStateVariable<ValueType> {
   }
 }
 
-type GlobalBooleanVariableChangeCallback = (context: MR_ActiveDevice, newValue: boolean) => void;
+export class ObservableContextStateVariable<ValueType> extends ContextStateVariable<ValueType> {
+  private onChangeCallbacks: Array<(context: MR_ActiveDevice, newValue: ValueType) => void> = [];
 
-export class GlobalBooleanVariable extends ContextStateVariable<boolean> {
-  private onChangeCallbacks: GlobalBooleanVariableChangeCallback[] = [];
-
-  constructor(initialValue = false) {
+  constructor(initialValue: ValueType) {
     super(initialValue);
   }
 
-  addOnChangeCallback(callback: GlobalBooleanVariableChangeCallback) {
+  addOnChangeCallback(callback: (context: MR_ActiveDevice, newValue: ValueType) => void) {
     this.onChangeCallbacks.push(callback);
   }
 
-  set(context: MR_ActiveDevice, value: boolean) {
+  set(context: MR_ActiveDevice, value: ValueType) {
     super.set(context, value);
 
     for (const callback of this.onChangeCallbacks) {
       callback(context, value);
     }
+  }
+}
+
+export class BooleanContextStateVariable extends ObservableContextStateVariable<boolean> {
+  constructor(initialValue = false) {
+    super(initialValue);
   }
 
   toggle(context: MR_ActiveDevice) {
