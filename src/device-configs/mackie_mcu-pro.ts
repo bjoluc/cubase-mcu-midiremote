@@ -52,7 +52,9 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
 
 export const deviceConfig: DeviceConfig = {
   configureMainDeviceDetectionPortPair(detectionPortPair) {
-    // detectionPortPair.expectInputNameEquals("X-Touch").expectOutputNameEquals("X-Touch");
+    detectionPortPair
+      .expectInputNameStartsWith("MCU Pro USB v")
+      .expectOutputNameStartsWith("MCU Pro USB v");
   },
 
   createExtenderSurface(surface, x) {
