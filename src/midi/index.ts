@@ -173,7 +173,6 @@ export function bindDeviceToMidi(
       if (
         DEVICE_NAME === "MCU Pro" &&
         row === 1 &&
-        globalBooleanVariables.areChannelMetersEnabled.get(context) &&
         !globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
       ) {
         // Skip updating the lower display row on MCU Pro when horizontal metering mode is enabled
@@ -297,7 +296,6 @@ export function bindDeviceToMidi(
       if (
         DEVICE_NAME === "MCU Pro" &&
         row === 1 &&
-        globalBooleanVariables.areChannelMetersEnabled.get(context) &&
         !globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
       ) {
         // Skip updating the lower display row on MCU Pro when horizontal metering mode is enabled
@@ -320,13 +318,10 @@ export function bindDeviceToMidi(
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateTrackTitleDisplay);
 
     if (DEVICE_NAME === "MCU Pro") {
-      // Update the lower display row after disabling horizontal channel meters
+      // Update the lower display row after disabling channel meters
       globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
         (context, areMetersEnabled) => {
-          if (
-            !areMetersEnabled &&
-            !globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
-          ) {
+          if (!areMetersEnabled) {
             (globalBooleanVariables.areDisplayRowsFlipped.get(context)
               ? updateNameValueDisplay
               : updateTrackTitleDisplay)(context);

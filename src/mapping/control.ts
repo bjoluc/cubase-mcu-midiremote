@@ -132,6 +132,7 @@ export function bindControlButtons(
           if (isMeterModeVertical.get(context)) {
             isMeterModeVertical.set(context, false);
           } else {
+            isMeterModeVertical.set(context, true);
             areMetersEnabled.set(context, false);
           }
         }
