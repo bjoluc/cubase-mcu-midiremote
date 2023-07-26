@@ -98,16 +98,6 @@ export function bindDeviceToMidi(
     });
   }
 
-  if (DEVICE_NAME === "MCU Pro") {
-    globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
-      (context, isMeterModeVertical) => {
-        if (isMeterModeVertical) {
-          sendGlobalMeterModeOrientation(context, ports.output, true);
-        }
-      }
-    );
-  }
-
   for (const [channelIndex, channel] of device.channelElements.entries()) {
     // Push Encoder
     channel.encoder.mEncoderValue.mMidiBinding
@@ -314,8 +304,7 @@ export function bindDeviceToMidi(
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateTrackTitleDisplay);
 
     if (DEVICE_NAME === "MCU Pro") {
-      // Handle metering mode changes
-
+      // Handle metering mode changes (per channel)
       globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
         (context, isMeterModeVertical) => {
           // Update the upper display row before leaving vertical metering mode
@@ -385,11 +374,10 @@ export function bindDeviceToMidi(
   }
 
   if (DEVICE_NAME === "MCU Pro") {
+    // Handle metering mode changes (globally)
     globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
       (context, isMeterModeVertical) => {
-        if (!isMeterModeVertical) {
-          sendGlobalMeterModeOrientation(context, ports.output, false);
-        }
+        sendGlobalMeterModeOrientation(context, ports.output, isMeterModeVertical);
       }
     );
   }
