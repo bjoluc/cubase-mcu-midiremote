@@ -318,6 +318,17 @@ export function bindDeviceToMidi(
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateTrackTitleDisplay);
 
     if (DEVICE_NAME === "MCU Pro") {
+      // Update the upper display row after leaving vertical metering mode
+      globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
+        (context, isMeterModeVertical) => {
+          if (!isMeterModeVertical) {
+            (globalBooleanVariables.areDisplayRowsFlipped.get(context)
+              ? updateTrackTitleDisplay
+              : updateNameValueDisplay)(context);
+          }
+        }
+      );
+
       // Update the lower display row after disabling channel meters
       globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
         (context, areMetersEnabled) => {
