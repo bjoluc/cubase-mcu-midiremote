@@ -51,4 +51,13 @@ var CONFIGURATION = {
    * You can achieve this by replacing `true` with `false` below.
    */
   mapMainFaderToControlRoom: true,
+
+  /**
+   * If you are frequently using display metering on your MCU, you can set this option to `true` to
+   * make the SMPTE/Beats button toggle metering modes by default and switch between time formats
+   * only when the Shift button is held.
+   *
+   * @device MCU Pro
+   */
+  toggleMeteringModeWithoutShift: false,
 };

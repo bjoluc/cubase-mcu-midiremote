@@ -2,6 +2,7 @@ import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { JogWheel, LedButton, LedPushEncoder } from "../decorators/surface";
 import { EncoderDisplayMode, GlobalBooleanVariables } from "../midi";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../device-configs";
+import { config } from "src/config";
 
 function setShiftableButtonsLedValues(
   controlSectionElements: ControlSectionSurfaceElements,
@@ -103,14 +104,13 @@ export function bindControlButtons(
   };
 
   // SMPTE/Beats button
-
   page
     .makeCommandBinding(
       controlSectionElements.buttons.timeMode.mSurfaceValue,
       "Transport",
       "Exchange Time Formats"
     )
-    .setSubPage(regularSubPage);
+    .setSubPage(config.toggleMeteringModeWithoutShift ? shiftSubPage : regularSubPage);
 
   if (DEVICE_NAME === "MCU Pro") {
     // LCD metering is only supported by the original MCU
@@ -119,7 +119,9 @@ export function bindControlButtons(
         controlSectionElements.buttons.timeMode.mSurfaceValue,
         page.mCustom.makeHostValueVariable("Metering Mode")
       )
-      .setSubPage(shiftSubPage).mOnValueChange = (context, mapping, value) => {
+      .setSubPage(
+        config.toggleMeteringModeWithoutShift ? regularSubPage : shiftSubPage
+      ).mOnValueChange = (context, mapping, value) => {
       if (value === 1) {
         const areMetersEnabled = globalBooleanVariables.areChannelMetersEnabled;
         const isMeterModeVertical = globalBooleanVariables.isGlobalLcdMeterModeVertical;
