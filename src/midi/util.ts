@@ -1,13 +1,12 @@
 import { EnhancedMidiOutput } from "./PortPair";
 
-export function sendChannelMeterModes(
+export function sendChannelMeterMode(
   context: MR_ActiveDevice,
   outputPort: EnhancedMidiOutput,
+  channelId: number,
   enableLcdLevelMeter: boolean
 ) {
-  for (let channelId = 0; channelId < 8; channelId++) {
-    outputPort.sendSysex(context, [0x20, channelId, 2 * +enableLcdLevelMeter + 1]);
-  }
+  outputPort.sendSysex(context, [0x20, channelId, 2 * +enableLcdLevelMeter + 1]);
 }
 
 export function sendGlobalMeterModeOrientation(

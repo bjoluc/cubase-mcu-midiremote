@@ -9,7 +9,7 @@ import {
 import { ActivationCallbacks } from "./connection";
 import { LcdManager } from "./managers/LcdManager";
 import { PortPair } from "./PortPair";
-import { sendChannelMeterModes, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
+import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 
 export enum EncoderDisplayMode {
   SingleDot = 0,
@@ -99,15 +99,11 @@ export function bindDeviceToMidi(
   }
 
   if (DEVICE_NAME === "MCU Pro") {
-    // Handle metering mode changes for the device
-    globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
-      (context, areChannelMetersEnabled) => {
-        sendChannelMeterModes(context, ports.output, areChannelMetersEnabled);
-      }
-    );
     globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
-      (context, isGlobalLcdMeterModeVertical) => {
-        sendGlobalMeterModeOrientation(context, ports.output, isGlobalLcdMeterModeVertical);
+      (context, isMeterModeVertical) => {
+        if (isMeterModeVertical) {
+          sendGlobalMeterModeOrientation(context, ports.output, true);
+        }
       }
     );
   }
@@ -318,9 +314,11 @@ export function bindDeviceToMidi(
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateTrackTitleDisplay);
 
     if (DEVICE_NAME === "MCU Pro") {
-      // Update the upper display row after leaving vertical metering mode
+      // Handle metering mode changes
+
       globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
         (context, isMeterModeVertical) => {
+          // Update the upper display row before leaving vertical metering mode
           if (!isMeterModeVertical) {
             (globalBooleanVariables.areDisplayRowsFlipped.get(context)
               ? updateTrackTitleDisplay
@@ -329,9 +327,11 @@ export function bindDeviceToMidi(
         }
       );
 
-      // Update the lower display row after disabling channel meters
       globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
         (context, areMetersEnabled) => {
+          sendChannelMeterMode(context, ports.output, channelIndex, areMetersEnabled);
+
+          // Update the lower display row after disabling channel meters
           if (!areMetersEnabled) {
             (globalBooleanVariables.areDisplayRowsFlipped.get(context)
               ? updateNameValueDisplay
@@ -382,6 +382,16 @@ export function bindDeviceToMidi(
 
     // Fader
     bindFader(ports, channel.fader, channelIndex);
+  }
+
+  if (DEVICE_NAME === "MCU Pro") {
+    globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
+      (context, isMeterModeVertical) => {
+        if (!isMeterModeVertical) {
+          sendGlobalMeterModeOrientation(context, ports.output, false);
+        }
+      }
+    );
   }
 
   // Control Section (main devices only)
