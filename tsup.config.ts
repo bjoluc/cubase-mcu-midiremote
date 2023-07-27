@@ -57,7 +57,18 @@ export default defineConfig(
     external: ["midiremote_api_v1"],
     noExternal: ["abbreviate", "core-js", "color-diff"],
     onSuccess: async () => {
-      await prependFile(`${device.targetPath}/${device.targetFilename}.js`, scriptConfig + "\n\n");
+      // Remove all config options that have a `@device` pragma for a different device
+      const deviceSpecificScriptConfig = scriptConfig.replace(
+        /(?:\r?\n|\r)\s*\/\*\*\s*(?:\r?\n|\r)(?:[^\*]|(?:\*(?!\/)))*@device ([\S ]+)(?:\r?\n|\r)\s+\*\/(?:\r?\n|\r)[\S ]+/gm,
+        (match, devicePragma) => {
+          return devicePragma === device.device ? match : "";
+        }
+      );
+
+      await prependFile(
+        `${device.targetPath}/${device.targetFilename}.js`,
+        deviceSpecificScriptConfig
+      );
 
       if (copyCommand) {
         await execaCommand(copyCommand, { shell: true, stdout: process.stdout });
