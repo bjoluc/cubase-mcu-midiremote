@@ -128,14 +128,14 @@ export function bindControlButtons(
 
         // Toggle between no LCD metering, vertical, and horizontal mode
         if (!areMetersEnabled.get(context)) {
-          isMeterModeVertical.set(context, true);
           areMetersEnabled.set(context, true);
+          isMeterModeVertical.set(context, true);
         } else {
           if (isMeterModeVertical.get(context)) {
             isMeterModeVertical.set(context, false);
           } else {
-            isMeterModeVertical.set(context, true);
             areMetersEnabled.set(context, false);
+            isMeterModeVertical.set(context, true);
           }
         }
       }
