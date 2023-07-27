@@ -51,4 +51,16 @@ var CONFIGURATION = {
    * You can achieve this by replacing `true` with `false` below.
    */
   mapMainFaderToControlRoom: true,
+
+  /**
+   * By default, scribble strip displays pick up colors from encoders, i.e., each display uses the
+   * track color of the channel its encoder value belongs to. When an encoder is unassigned, the
+   * scribble strip below it falls back to the corresponding mixer channel's color.
+   *
+   * Setting this option to `false` makes scribble strips ignore encoder colors and always use their
+   * channels' track colors instead.
+   *
+   * @device X-Touch
+   */
+  useEncoderColors: true,
 };
