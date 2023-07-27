@@ -1,14 +1,16 @@
+import { config } from "../config";
 import { TouchSensitiveFader } from "../decorators/surface";
 import { Device, MainDevice } from "../devices";
 import {
   BooleanContextStateVariable,
   ContextStateVariable,
-  createElements,
   TimerUtils,
+  createElements,
 } from "../util";
-import { ActivationCallbacks } from "./connection";
-import { LcdManager } from "./managers/LcdManager";
 import { PortPair } from "./PortPair";
+import { ActivationCallbacks } from "./connection";
+import { RgbColor } from "./managers/ColorManager";
+import { LcdManager } from "./managers/LcdManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 
 export enum EncoderDisplayMode {
@@ -124,10 +126,13 @@ export function bindDeviceToMidi(
     // Display colors – only supported by the X-Touch
     if (DEVICE_NAME === "X-Touch") {
       const encoderColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
-      channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
-        encoderColor.set(context, { isAssigned, r, g, b });
-        updateColor(context);
-      };
+
+      if (config.useEncoderColors) {
+        channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
+          encoderColor.set(context, { isAssigned, r, g, b });
+          updateColor(context);
+        };
+      }
 
       const channelColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
       channel.scribbleStrip.trackTitle.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
@@ -136,13 +141,15 @@ export function bindDeviceToMidi(
       };
 
       const updateColor = (context: MR_ActiveDevice) => {
-        const currentEncoderColor = encoderColor.get(context);
-        device.colorManager?.setChannelColorRgb(
-          context,
-          channelIndex,
+        let color: RgbColor;
+        if (config.useEncoderColors) {
           // Fall back to channel color if encoder is not assigned
-          currentEncoderColor.isAssigned ? currentEncoderColor : channelColor.get(context)
-        );
+          const currentEncoderColor = encoderColor.get(context);
+          color = currentEncoderColor.isAssigned ? currentEncoderColor : channelColor.get(context);
+        } else {
+          color = channelColor.get(context);
+        }
+        device.colorManager?.setChannelColorRgb(context, channelIndex, color);
       };
     }
 
