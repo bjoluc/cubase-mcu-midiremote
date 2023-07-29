@@ -336,11 +336,28 @@ export function bindControlSection(
     scrubButton.mLedValue.setProcessValue(context, 0);
   };
 
-  const { mJogLeftValue: jogLeft, mJogRightValue: jogRight } = controlSectionElements.jogWheel;
-  page.makeCommandBinding(jogLeft, "Transport", "Jog Left").setSubPage(jogSubPage);
-  page.makeCommandBinding(jogRight, "Transport", "Jog Right").setSubPage(jogSubPage);
-  page.makeCommandBinding(jogLeft, "Transport", "Nudge Cursor Left").setSubPage(scrubSubPage);
-  page.makeCommandBinding(jogRight, "Transport", "Nudge Cursor Right").setSubPage(scrubSubPage);
+  const jogWheel = controlSectionElements.jogWheel;
+  page.makeCommandBinding(jogWheel.mJogLeftValue, "Transport", "Jog Left").setSubPage(jogSubPage);
+  page
+    .makeCommandBinding(jogWheel.mFastJogLeftValue, "Transport", "Jog Left")
+    .setSubPage(jogSubPage);
+  page.makeCommandBinding(jogWheel.mJogRightValue, "Transport", "Jog Right").setSubPage(jogSubPage);
+  page
+    .makeCommandBinding(jogWheel.mFastJogRightValue, "Transport", "Jog Right")
+    .setSubPage(jogSubPage);
+
+  page
+    .makeCommandBinding(jogWheel.mJogLeftValue, "Transport", "Nudge Cursor Left")
+    .setSubPage(scrubSubPage);
+  page
+    .makeCommandBinding(jogWheel.mFastJogLeftValue, "Transport", "Nudge Cursor -5 Seconds")
+    .setSubPage(scrubSubPage);
+  page
+    .makeCommandBinding(jogWheel.mJogRightValue, "Transport", "Nudge Cursor Right")
+    .setSubPage(scrubSubPage);
+  page
+    .makeCommandBinding(jogWheel.mFastJogRightValue, "Transport", "Nudge Cursor +5 Seconds")
+    .setSubPage(scrubSubPage);
 
   // Direction buttons
   const subPageArea = page.makeSubPageArea("Direction Buttons");
@@ -384,8 +401,10 @@ export function bindControlSection(
     .setSubPage(zoomSubPage);
 
   // Use the zoom subpage to make the jog wheel zoom too
-  page.makeCommandBinding(jogLeft, "Zoom", "Zoom Out").setSubPage(zoomSubPage);
-  page.makeCommandBinding(jogRight, "Zoom", "Zoom In").setSubPage(zoomSubPage);
+  page.makeCommandBinding(jogWheel.mJogLeftValue, "Zoom", "Zoom Out").setSubPage(zoomSubPage);
+  page.makeCommandBinding(jogWheel.mFastJogLeftValue, "Zoom", "Zoom Out").setSubPage(zoomSubPage);
+  page.makeCommandBinding(jogWheel.mJogRightValue, "Zoom", "Zoom In").setSubPage(zoomSubPage);
+  page.makeCommandBinding(jogWheel.mFastJogRightValue, "Zoom", "Zoom In").setSubPage(zoomSubPage);
 
   page.makeActionBinding(directions.center.mSurfaceValue, subPageArea.mAction.mNext);
 }
