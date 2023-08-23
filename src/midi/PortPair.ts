@@ -23,7 +23,7 @@ export function makePortPair(driver: MR_DeviceDriver, isExtender: boolean): Port
   };
 
   output.sendNoteOn = (context: MR_ActiveDevice, pitch: number, velocity: number | boolean) => {
-    output.sendMidi(context, [0x90, pitch, +Boolean(velocity) * 0xff]);
+    output.sendMidi(context, [0x90, pitch, +Boolean(velocity) * 0x7f]);
   };
 
   return { input, output };
