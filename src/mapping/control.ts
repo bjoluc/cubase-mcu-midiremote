@@ -18,6 +18,7 @@ function setShiftableButtonsLedValues(
     buttons.utility[2],
     buttons.transport[0],
     buttons.transport[1],
+    buttons.navigation.bank.left,
   ]) {
     button.mLedValue.setProcessValue(context, value);
   }
@@ -308,8 +309,14 @@ export function bindControlButtons(
 
   // Navigation Buttons
   const { bank, channel } = buttons.navigation;
-  page.makeActionBinding(bank.left.mSurfaceValue, mixerBankZone.mAction.mPrevBank);
+  page
+    .makeActionBinding(bank.left.mSurfaceValue, mixerBankZone.mAction.mPrevBank)
+    .setSubPage(regularSubPage);
+  page
+    .makeActionBinding(bank.left.mSurfaceValue, mixerBankZone.mAction.mResetBank)
+    .setSubPage(shiftSubPage);
   page.makeActionBinding(bank.right.mSurfaceValue, mixerBankZone.mAction.mNextBank);
+
   page.makeActionBinding(channel.left.mSurfaceValue, mixerBankZone.mAction.mShiftLeft);
   page.makeActionBinding(channel.right.mSurfaceValue, mixerBankZone.mAction.mShiftRight);
 }

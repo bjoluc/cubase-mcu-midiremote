@@ -44,7 +44,11 @@ export class ColorManager {
     this.colors = createElements(8, () => new ContextStateVariable(ScribbleStripColor.black));
   }
 
-  private sendColors(context: MR_ActiveDevice) {
+  /**
+   * Sends all colors to the device in a SysEx message. Unless on initialization, you don't need to
+   * call this method because it is automatically done by `setChannelColor()`.
+   */
+  sendColors(context: MR_ActiveDevice) {
     this.device.ports.output.sendSysex(context, [
       0x72,
       ...this.colors.map((color) => color.get(context)),

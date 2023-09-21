@@ -390,6 +390,15 @@ export function bindDeviceToMidi(
     );
   }
 
+  if (DEVICE_NAME === "X-Touch") {
+    // Send an initial (all-black by default) color message to the device. Otherwise, in projects
+    // without enough channels for each device, devices without channels assigned to them would not
+    // receive a color update at all, leaving their displays white although they should be black.
+    activationCallbacks.addCallback((context) => {
+      device.colorManager?.sendColors(context);
+    });
+  }
+
   // Control Section (main devices only)
   if (device instanceof MainDevice) {
     const elements = device.controlSectionElements;
