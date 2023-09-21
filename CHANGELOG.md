@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.0](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.6.0...v1.7.0) (2023-09-21)
+
+
+### Features
+
+* Add a Mackie MCU Pro script variant ([#11](https://github.com/bjoluc/cubase-mcu-midiremote/issues/11)) – thanks @JDubs73 and @Support-AT for testing! ([25508c4](https://github.com/bjoluc/cubase-mcu-midiremote/commit/25508c4ef4f58f1d247e0a882cf7b5020316ee3d))
+* Make "Shift + Display Name/Value" flip the scribble strip display rows ([dfd2453](https://github.com/bjoluc/cubase-mcu-midiremote/commit/dfd245378a0322bb88fcdb3b8b98c2a736fe713d))
+* **Mapping:** Make "Shift + Bank Left" navigate to the first mixer bank ([b9b3042](https://github.com/bjoluc/cubase-mcu-midiremote/commit/b9b30423453610d26ab00c34589f7366003c9802))
+* **X-Touch:** Add `useEncoderColors` config option ([e98f414](https://github.com/bjoluc/cubase-mcu-midiremote/commit/e98f414eb1b6f2c7f2f1aef7ba6c7086bcfbab6e))
+
+
+### Bug Fixes
+
+* Allow custom assignments of the Motor button ([1da391b](https://github.com/bjoluc/cubase-mcu-midiremote/commit/1da391b001bbd4969b1e5452fb000d9e0dc75aa7))
+* Fix invalid note-on messages for future Cubase versions ([c7d5597](https://github.com/bjoluc/cubase-mcu-midiremote/commit/c7d559724e0e4de378ddd3ad111f6f98ddd00758)), closes [#15](https://github.com/bjoluc/cubase-mcu-midiremote/issues/15)
+* **X-Touch:** Fix an issue where loading an empty project would not turn off the display backlights ([acccbc0](https://github.com/bjoluc/cubase-mcu-midiremote/commit/acccbc03d6803989d6acd2889296fdc35071dd1d)), closes [#12](https://github.com/bjoluc/cubase-mcu-midiremote/issues/12)
+
 ## [1.6.0](https://github.com/bjoluc/cubase-xtouch-midiremote/compare/v1.5.0...v1.6.0) (2023-07-05)
 
 
