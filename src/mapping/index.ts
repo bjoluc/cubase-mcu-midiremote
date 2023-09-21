@@ -10,7 +10,6 @@ import {
   bindDirectionButtons,
   bindFootControl,
   bindJogWheelSection,
-  bindSegmentDisplaySection,
 } from "./control";
 import { bindEncoders } from "./encoders";
 
@@ -67,9 +66,6 @@ export function makeHostMapping(
     if (device instanceof MainDevice) {
       const controlSectionElements = device.controlSectionElements;
 
-      // 7-segment display
-      bindSegmentDisplaySection(page, controlSectionElements);
-
       // Main fader
       page.makeValueBinding(
         controlSectionElements.mainFader.mSurfaceValue,
@@ -81,7 +77,7 @@ export function makeHostMapping(
               .makeMixerBankChannel().mValue.mVolume
       );
 
-      // 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation
+      // Display buttons, 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation
       bindControlButtons(
         page,
         controlSectionElements,

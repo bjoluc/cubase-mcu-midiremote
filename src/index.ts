@@ -16,7 +16,7 @@ import { decoratePage } from "./decorators/page";
 import { decorateSurface } from "./decorators/surface";
 import { createDevices } from "./devices";
 import { makeHostMapping } from "./mapping";
-import { bindDeviceToMidi, makeGlobalBooleanVariables } from "./midi";
+import { bindDeviceToMidi, createGlobalBooleanVariables } from "./midi";
 import { setupDeviceConnection } from "./midi/connection";
 import { makeTimerUtils } from "./util";
 
@@ -35,9 +35,11 @@ activationCallbacks.addCallback(() => {
   );
 });
 
-const globalBooleanVariables = makeGlobalBooleanVariables();
+const globalBooleanVariables = createGlobalBooleanVariables();
 
 activationCallbacks.addCallback((context) => {
+  // Setting `runCallbacksInstantly` to `true` below is a workaround for
+  // https://forums.steinberg.net/t/831123.
   globalBooleanVariables.areMotorsActive.set(context, true);
 });
 
@@ -51,3 +53,19 @@ for (const device of devices) {
 
 // Map elements to host functions
 makeHostMapping(page, devices, segmentDisplayManager, globalBooleanVariables, activationCallbacks);
+
+if (DEVICE_NAME === "MCU Pro") {
+  // Initially disable LCD channel metering for all devices
+  activationCallbacks.addCallback((context) => {
+    globalBooleanVariables.isGlobalLcdMeterModeVertical.set(context, true);
+    globalBooleanVariables.areChannelMetersEnabled.set(context, false);
+  });
+
+  // Clear meter overloads when playback is started
+  page.mHostAccess.mTransport.mValue.mStart.mOnProcessValueChange = (context, mapping, value) => {
+    const isPlaybackActive = Boolean(value);
+    if (isPlaybackActive !== globalBooleanVariables.shouldMeterOverloadsBeCleared.get(context)) {
+      globalBooleanVariables.shouldMeterOverloadsBeCleared.set(context, isPlaybackActive);
+    }
+  };
+}

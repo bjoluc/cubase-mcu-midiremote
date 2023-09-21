@@ -11,6 +11,7 @@ import { PortPair } from "./PortPair";
 import { ActivationCallbacks } from "./connection";
 import { RgbColor } from "./managers/ColorManager";
 import { LcdManager } from "./managers/LcdManager";
+import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 
 export enum EncoderDisplayMode {
   SingleDot = 0,
@@ -20,15 +21,18 @@ export enum EncoderDisplayMode {
 }
 
 /** Declares some global context-dependent variables that (may) affect multiple devices */
-export const makeGlobalBooleanVariables = () => ({
+export const createGlobalBooleanVariables = () => ({
   areMotorsActive: new BooleanContextStateVariable(),
   isValueDisplayModeActive: new BooleanContextStateVariable(),
   areDisplayRowsFlipped: new BooleanContextStateVariable(),
   isEncoderAssignmentActive: createElements(6, () => new BooleanContextStateVariable()),
   isFlipModeActive: new BooleanContextStateVariable(),
+  areChannelMetersEnabled: new BooleanContextStateVariable(),
+  isGlobalLcdMeterModeVertical: new BooleanContextStateVariable(),
+  shouldMeterOverloadsBeCleared: new BooleanContextStateVariable(true),
 });
 
-export type GlobalBooleanVariables = ReturnType<typeof makeGlobalBooleanVariables>;
+export type GlobalBooleanVariables = ReturnType<typeof createGlobalBooleanVariables>;
 
 export function bindDeviceToMidi(
   device: Device,
@@ -156,9 +160,21 @@ export function bindDeviceToMidi(
     const isLocalValueModeActive = new ContextStateVariable(false);
 
     const updateNameValueDisplay = (context: MR_ActiveDevice) => {
+      const row = +globalBooleanVariables.areDisplayRowsFlipped.get(context);
+
+      // Skip updating the lower display row on MCU Pro when horizontal metering mode is enabled
+      if (
+        DEVICE_NAME === "MCU Pro" &&
+        row === 1 &&
+        globalBooleanVariables.areChannelMetersEnabled.get(context) &&
+        !globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
+      ) {
+        return;
+      }
+
       device.lcdManager.setChannelText(
         context,
-        +globalBooleanVariables.areDisplayRowsFlipped.get(context),
+        row,
         channelIndex,
         isLocalValueModeActive.get(context) ||
           globalBooleanVariables.isValueDisplayModeActive.get(context)
@@ -268,12 +284,19 @@ export function bindDeviceToMidi(
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateNameValueDisplay);
 
     const updateTrackTitleDisplay = (context: MR_ActiveDevice) => {
-      device.lcdManager.setChannelText(
-        context,
-        1 - +globalBooleanVariables.areDisplayRowsFlipped.get(context),
-        channelIndex,
-        currentChannelName.get(context)
-      );
+      const row = 1 - +globalBooleanVariables.areDisplayRowsFlipped.get(context);
+
+      // Skip updating the lower display row on MCU Pro when horizontal metering mode is enabled
+      if (
+        DEVICE_NAME === "MCU Pro" &&
+        row === 1 &&
+        globalBooleanVariables.areChannelMetersEnabled.get(context) &&
+        !globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
+      ) {
+        return;
+      }
+
+      device.lcdManager.setChannelText(context, row, channelIndex, currentChannelName.get(context));
     };
     channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
       currentChannelName.set(
@@ -281,8 +304,39 @@ export function bindDeviceToMidi(
         LcdManager.abbreviateString(LcdManager.stripNonAsciiCharacters(title))
       );
       updateTrackTitleDisplay(context);
+
+      if (DEVICE_NAME === "MCU Pro") {
+        clearOverload(context);
+      }
     };
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateTrackTitleDisplay);
+
+    if (DEVICE_NAME === "MCU Pro") {
+      // Handle metering mode changes (per channel)
+      globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
+        (context, isMeterModeVertical) => {
+          // Update the upper display row before leaving vertical metering mode
+          if (!isMeterModeVertical) {
+            (globalBooleanVariables.areDisplayRowsFlipped.get(context)
+              ? updateTrackTitleDisplay
+              : updateNameValueDisplay)(context);
+          }
+        }
+      );
+
+      globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
+        (context, areMetersEnabled) => {
+          sendChannelMeterMode(context, ports.output, channelIndex, areMetersEnabled);
+
+          // Update the lower display row after disabling channel meters
+          if (!areMetersEnabled) {
+            (globalBooleanVariables.areDisplayRowsFlipped.get(context)
+              ? updateNameValueDisplay
+              : updateTrackTitleDisplay)(context);
+          }
+        }
+      );
+    }
 
     // VU Meter
     let lastMeterUpdateTime = 0;
@@ -290,16 +344,27 @@ export function bindDeviceToMidi(
       const now: number = performance.now(); // ms
 
       if (now - lastMeterUpdateTime > 125) {
-        // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
-        newValue = 1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)));
-
         lastMeterUpdateTime = now;
-        ports.output.sendMidi(context, [
-          0xd0,
-          (channelIndex << 4) + Math.ceil(newValue * 14 - 0.25),
-        ]);
+
+        // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
+        const meterLevel = Math.ceil(
+          (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) * 0xe - 0.25
+        );
+
+        sendMeterLevel(context, ports.output, channelIndex, meterLevel);
       }
     };
+    /** Clears the channel meter's overload indicator */
+    const clearOverload = (context: MR_ActiveDevice) => {
+      sendMeterLevel(context, ports.output, channelIndex, 0xf);
+    };
+    globalBooleanVariables.shouldMeterOverloadsBeCleared.addOnChangeCallback(
+      (context, shouldOverloadsBeCleared) => {
+        if (shouldOverloadsBeCleared) {
+          clearOverload(context);
+        }
+      }
+    );
 
     // Channel Buttons
     const buttons = channel.buttons;
@@ -314,6 +379,15 @@ export function bindDeviceToMidi(
 
     // Fader
     bindFader(ports, channel.fader, channelIndex);
+  }
+
+  if (DEVICE_NAME === "MCU Pro") {
+    // Handle metering mode changes (globally)
+    globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
+      (context, isMeterModeVertical) => {
+        sendGlobalMeterModeOrientation(context, ports.output, isMeterModeVertical);
+      }
+    );
   }
 
   if (DEVICE_NAME === "X-Touch") {
