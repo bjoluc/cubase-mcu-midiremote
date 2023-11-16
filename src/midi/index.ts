@@ -126,13 +126,10 @@ export function bindDeviceToMidi(
     // Display colors – only supported by the X-Touch
     if (DEVICE_NAME === "X-Touch") {
       const encoderColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
-
-      if (config.useEncoderColors) {
-        channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
-          encoderColor.set(context, { isAssigned, r, g, b });
-          updateColor(context);
-        };
-      }
+      channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
+        encoderColor.set(context, { isAssigned, r, g, b });
+        updateColor(context);
+      };
 
       const channelColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
       channel.scribbleStrip.trackTitle.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
@@ -140,15 +137,24 @@ export function bindDeviceToMidi(
         updateColor(context);
       };
 
-      const updateColor = (context: MR_ActiveDevice) => {
+      var updateColor = (context: MR_ActiveDevice) => {
         let color: RgbColor;
+        const currentEncoderColor = encoderColor.get(context);
+        const currentChannelColor = channelColor.get(context);
+
         if (config.useEncoderColors) {
           // Fall back to channel color if encoder is not assigned
-          const currentEncoderColor = encoderColor.get(context);
-          color = currentEncoderColor.isAssigned ? currentEncoderColor : channelColor.get(context);
+          color = currentEncoderColor.isAssigned ? currentEncoderColor : currentChannelColor;
         } else {
-          color = channelColor.get(context);
+          color = currentChannelColor;
+
+          // Use white if an encoder has a color but the channel has none. Otherwise, encoder titles
+          // on unassigned channels would not be readable.
+          if (!currentChannelColor.isAssigned && currentEncoderColor.isAssigned) {
+            color = { r: 1, g: 1, b: 1 };
+          }
         }
+
         device.colorManager?.setChannelColorRgb(context, channelIndex, color);
       };
     }
@@ -182,6 +188,7 @@ export function bindDeviceToMidi(
           : currentParameterName.get(context)
       );
     };
+
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
       value =
         {
@@ -219,6 +226,7 @@ export function bindDeviceToMidi(
         1
       );
     };
+
     channel.encoder.mEncoderValue.mOnTitleChange = (context, title1, title2) => {
       // Reset encoder LED ring when channel becomes unassigned
       if (title1 === "") {
@@ -280,6 +288,7 @@ export function bindDeviceToMidi(
       );
       updateNameValueDisplay(context);
     };
+
     globalBooleanVariables.isValueDisplayModeActive.addOnChangeCallback(updateNameValueDisplay);
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(updateNameValueDisplay);
 
