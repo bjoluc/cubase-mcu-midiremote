@@ -11,6 +11,7 @@ export type DevicesConfiguration = Array<"main" | "extender">;
 export type ScriptConfiguration = Simplify<
   Except<typeof CONFIGURATION, "devices"> & {
     devices: DevicesConfiguration;
+    displayColorMode: "encoders" | "channels" | "none";
   }
 >;
 
@@ -53,16 +54,24 @@ var CONFIGURATION = {
   mapMainFaderToControlRoom: true,
 
   /**
-   * By default, scribble strip displays pick up colors from encoders, i.e., each display uses the
-   * track color of the channel its encoder value belongs to. When an encoder is unassigned, the
-   * scribble strip below it falls back to the corresponding mixer channel's color.
+   * The way scribble strip display colors are determined. Set this to
    *
-   * Setting this option to `false` makes scribble strips ignore encoder colors and always use their
-   * channels' track colors instead.
+   *  * `"encoders"` to make scribble strip displays pick up colors from encoders, i.e., each
+   *    display uses the track color of the channel its encoder value belongs to. When an encoder is
+   *    unassigned, the scribble strip below it falls back to the corresponding mixer channel's
+   *    color.
+   *
+   *  * `"channels"` to makes scribble strips ignore encoder colors and always use their channels'
+   *    track colors instead. When a channel is unassigned but its encoder is assigned, the display
+   *    will be lit white anyway.
+   *
+   *  * `"none"` to disable display color management. In that case, scribble strip displays will
+   *    always be white unless a display's channel and encoder is unassigned, in which case the
+   *    display will revert to black.
    *
    * @device X-Touch
    */
-  useEncoderColors: true,
+  displayColorMode: "encoders",
 
   /**
    * If you are frequently using display metering on your MCU, you can set this option to `true` to

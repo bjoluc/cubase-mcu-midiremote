@@ -118,7 +118,7 @@ Then restart Cubase and configure the MIDI Remote by clicking the "+" button in 
 The very top of the MIDI Remote script file declares a number of configuration options.
 You can edit these options to match your preferences.
 Each option is documented in a comment above it.
-For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L27-L54).
+For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L28-L84).
 
 ## Drawbacks
 

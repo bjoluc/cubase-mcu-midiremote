@@ -142,10 +142,10 @@ export function bindDeviceToMidi(
         const currentEncoderColor = encoderColor.get(context);
         const currentChannelColor = channelColor.get(context);
 
-        if (config.useEncoderColors) {
+        if (config.displayColorMode === "encoders") {
           // Fall back to channel color if encoder is not assigned
           color = currentEncoderColor.isAssigned ? currentEncoderColor : currentChannelColor;
-        } else {
+        } else if (config.displayColorMode === "channels") {
           color = currentChannelColor;
 
           // Use white if an encoder has a color but the channel has none. Otherwise, encoder titles
@@ -153,6 +153,11 @@ export function bindDeviceToMidi(
           if (!currentChannelColor.isAssigned && currentEncoderColor.isAssigned) {
             color = { r: 1, g: 1, b: 1 };
           }
+        } else {
+          color =
+            currentChannelColor.isAssigned || currentEncoderColor.isAssigned
+              ? { r: 1, g: 1, b: 1 }
+              : { r: 0, g: 0, b: 0 };
         }
 
         device.colorManager?.setChannelColorRgb(context, channelIndex, color);
