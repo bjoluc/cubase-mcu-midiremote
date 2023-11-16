@@ -77,6 +77,11 @@ export function decorateSurface(surface: MR_DeviceSurface) {
     // `mOnProcessValueChange`
     fader.mTouchedValueInternal = surface.makeCustomValueVariable("faderTouchedInternal");
 
+    // Cubase 13 only:
+    if (fader.mSurfaceValue.mTouchState) {
+      fader.mSurfaceValue.mTouchState.bindTo(fader.mTouchedValue);
+    }
+
     return fader;
   };
 
