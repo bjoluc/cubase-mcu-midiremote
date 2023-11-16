@@ -21,11 +21,24 @@ export function makeHostMapping(
   activationCallbacks: ActivationCallbacks
 ) {
   // Mixer channels
-  const mixerBankZone = page.mHostAccess.mMixConsole
-    .makeMixerBankZone()
-    .excludeInputChannels()
-    .excludeOutputChannels()
-    .setFollowVisibility(true); // TODO MixConsole Visibility Presets are not taken into account here
+  const mixerBankZone = page.mHostAccess.mMixConsole.makeMixerBankZone();
+  for (const [configName, methodNamePart] of Object.entries(<const>{
+    audio: "Audio",
+    instrument: "Instrument",
+    sampler: "Sampler",
+    midi: "MIDI",
+    fx: "FX",
+    group: "Group",
+    vca: "VCA",
+    input: "Input",
+    output: "Output",
+  })) {
+    if (config.channelVisibility[configName]) {
+      mixerBankZone[`include${methodNamePart}Channels`]();
+    }
+  }
+
+  mixerBankZone.setFollowVisibility(true);
 
   const mixerBankChannels = devices
     .flatMap((device) => device.channelElements)

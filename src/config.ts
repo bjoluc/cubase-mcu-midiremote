@@ -54,6 +54,28 @@ var CONFIGURATION = {
   mapMainFaderToControlRoom: true,
 
   /**
+   * The flags below control which channel types will be visible (i.e. mapped) on your device(s).
+   * For each channel type,
+   *
+   *  * `true` means the corresponding channel type will be visible on your device(s).
+   *  * `false` means the corresponding channel type will be hidden on your device(s).
+   *
+   * By default, all channels except input and output channels are visible, like in the
+   * Cubase-builtin Mackie Control mapping. Feel free to change the flags below to your liking.
+   */
+  channelVisibility: {
+    audio: true,
+    instrument: true,
+    sampler: true,
+    midi: true,
+    fx: true,
+    group: true,
+    vca: true,
+    input: false,
+    output: false,
+  },
+
+  /**
    * The way scribble strip display colors are determined. Set this to
    *
    *  * `"encoders"` to make scribble strip displays pick up colors from encoders, i.e., each
