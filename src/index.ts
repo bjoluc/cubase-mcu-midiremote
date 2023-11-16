@@ -44,7 +44,7 @@ activationCallbacks.addCallback((context) => {
 });
 
 const page = decoratePage(driver.mMapping.makePage("Mixer"), surface);
-const timerUtils = makeTimerUtils(page, surface);
+const timerUtils = makeTimerUtils(driver, page, surface);
 
 // Bind elements to MIDI
 for (const device of devices) {
