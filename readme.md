@@ -89,6 +89,7 @@ The table below summarizes all available encoder assignments:
 **Miscellaneous**
 
 - The main fader controls the Control Room volume unless the `mapMainFaderToControlRoom` [config option](#configuration-options) is set to `false`.
+- In zoom mode, the jog wheel zooms in and out instead of moving the locator
 
 ## Setup
 

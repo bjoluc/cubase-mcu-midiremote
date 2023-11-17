@@ -67,7 +67,7 @@ function bindCursorValueControlButton(
     .setSubPage(activeSubpage);
 }
 
-export function bindControlButtons(
+export function bindControlSection(
   page: DecoratedFactoryMappingPage,
   controlSectionElements: ControlSectionSurfaceElements,
   channelElements: ChannelSurfaceElements[],
@@ -319,12 +319,8 @@ export function bindControlButtons(
 
   page.makeActionBinding(channel.left.mSurfaceValue, mixerBankZone.mAction.mShiftLeft);
   page.makeActionBinding(channel.right.mSurfaceValue, mixerBankZone.mAction.mShiftRight);
-}
 
-export function bindJogWheelSection(
-  page: MR_FactoryMappingPage,
-  controlSectionElements: ControlSectionSurfaceElements
-) {
+  // Jogwheel
   const jogWheelSubPageArea = page.makeSubPageArea("jogWeel");
   const scrubSubPage = jogWheelSubPageArea.makeSubPage("scrub");
   const jogSubPage = jogWheelSubPageArea.makeSubPage("jog");
@@ -345,14 +341,8 @@ export function bindJogWheelSection(
   page.makeCommandBinding(jogRight, "Transport", "Jog Right").setSubPage(jogSubPage);
   page.makeCommandBinding(jogLeft, "Transport", "Nudge Cursor Left").setSubPage(scrubSubPage);
   page.makeCommandBinding(jogRight, "Transport", "Nudge Cursor Right").setSubPage(scrubSubPage);
-}
 
-export function bindDirectionButtons(
-  page: MR_FactoryMappingPage,
-  controlSectionElements: ControlSectionSurfaceElements
-) {
-  const buttons = controlSectionElements.buttons;
-
+  // Direction buttons
   const subPageArea = page.makeSubPageArea("Direction Buttons");
   const navigateSubPage = subPageArea.makeSubPage("Navigate");
   const zoomSubPage = subPageArea.makeSubPage("Zoom");
@@ -392,6 +382,10 @@ export function bindDirectionButtons(
   page
     .makeCommandBinding(directions.right.mSurfaceValue, "Zoom", "Zoom In")
     .setSubPage(zoomSubPage);
+
+  // Use the zoom subpage to make the jog zoom too
+  page.makeCommandBinding(jogLeft, "Zoom", "Zoom Out").setSubPage(zoomSubPage);
+  page.makeCommandBinding(jogRight, "Zoom", "Zoom In").setSubPage(zoomSubPage);
 
   page.makeActionBinding(directions.center.mSurfaceValue, subPageArea.mAction.mNext);
 }

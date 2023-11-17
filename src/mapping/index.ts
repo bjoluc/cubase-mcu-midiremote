@@ -5,12 +5,7 @@ import { GlobalBooleanVariables } from "../midi";
 import { ActivationCallbacks } from "../midi/connection";
 import { SegmentDisplayManager } from "../midi/managers/SegmentDisplayManager";
 import { ContextStateVariable } from "../util";
-import {
-  bindControlButtons,
-  bindDirectionButtons,
-  bindFootControl,
-  bindJogWheelSection,
-} from "./control";
+import { bindControlSection, bindFootControl } from "./control";
 import { bindEncoders } from "./encoders";
 
 export function makeHostMapping(
@@ -90,20 +85,14 @@ export function makeHostMapping(
               .makeMixerBankChannel().mValue.mVolume
       );
 
-      // Display buttons, 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation
-      bindControlButtons(
+      // Display buttons, 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation, Jog wheel
+      bindControlSection(
         page,
         controlSectionElements,
         device.channelElements,
         mixerBankZone,
         globalBooleanVariables
       );
-
-      // Directions
-      bindDirectionButtons(page, controlSectionElements);
-
-      // Jog wheel
-      bindJogWheelSection(page, controlSectionElements);
 
       // Foot Control
       bindFootControl(page, controlSectionElements);
