@@ -9,7 +9,7 @@ import { DecoratedDeviceSurface } from "../decorators/surface";
 
 const channelWidth = 5;
 const channelElementsWidth = 8 * channelWidth;
-const surfaceHeight = 40;
+const surfaceHeight = 45;
 
 function makeSquareButton(surface: DecoratedDeviceSurface, x: number, y: number) {
   return surface.makeLedButton(x + 0.25, y, 1.5, 1.5);
@@ -19,25 +19,33 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
   return createElements(8, (index) => {
     const currentChannelXPosition = x + index * channelWidth;
     const encoder = surface.makeLedPushEncoder(currentChannelXPosition + 1, 3, 4, 4);
+    const selectButton = surface.makeLedButton(2 + currentChannelXPosition + 0.8, 18, 2, 1.5);
+
+    // Channel meter
+    surface.makeBlindPanel(currentChannelXPosition + 1.2, 11.5, 0.65, 8);
+
+    // Scribble strip
+    surface.makeBlindPanel(currentChannelXPosition + 1.2, 7.25, 3.6, 2.75);
+    surface.makeLabelField(currentChannelXPosition + 1.4, 7.45, 3.2, 1.175).relateTo(encoder);
+    surface
+      .makeLabelField(currentChannelXPosition + 1.4, 7.45 + 1.175, 3.2, 1.175)
+      .relateTo(selectButton);
 
     return {
       index,
       encoder,
       scribbleStrip: {
-        encoderLabel: surface
-          .makeLabelField(currentChannelXPosition + 1, 7, 4, 2)
-          .relateTo(encoder),
         trackTitle: surface.makeCustomValueVariable("scribbleStripTrackTitle"),
       },
       vuMeter: surface.makeCustomValueVariable("vuMeter"),
       buttons: {
-        record: makeSquareButton(surface, 2 + currentChannelXPosition, 10),
-        solo: makeSquareButton(surface, 2 + currentChannelXPosition, 12),
-        mute: makeSquareButton(surface, 2 + currentChannelXPosition, 14),
-        select: surface.makeLedButton(2 + currentChannelXPosition, 16, 2, 1.5),
+        record: surface.makeLedButton(currentChannelXPosition + 2.25 + 0.8, 11.5, 1.5, 1.25),
+        solo: makeSquareButton(surface, 2 + currentChannelXPosition + 0.8, 13.5),
+        mute: makeSquareButton(surface, 2 + currentChannelXPosition + 0.8, 15.75),
+        select: selectButton,
       },
 
-      fader: surface.makeTouchSensitiveFader(2 + currentChannelXPosition, 20, 2, 16),
+      fader: surface.makeTouchSensitiveFader(2 + currentChannelXPosition, 24.1, 2, 17.15),
     };
   });
 }
@@ -64,7 +72,7 @@ export const deviceConfig: DeviceConfig = {
   },
 
   createMainSurface(surface, x) {
-    const surfaceWidth = channelElementsWidth + 25.5;
+    const surfaceWidth = channelElementsWidth + 26.75;
 
     // Device frame
     surface.makeBlindPanel(x, 0, surfaceWidth, surfaceHeight);
@@ -72,13 +80,13 @@ export const deviceConfig: DeviceConfig = {
     const channelElements = makeChannelElements(surface, x);
     x += channelElementsWidth;
 
-    surface.makeBlindPanel(x + 1, 6, 23.25, 4); // Time display
+    surface.makeBlindPanel(x + 1, 6.4, 25.1, 4.5); // Time display
 
     const miscControlButtons = createElements(21, (index) =>
       makeSquareButton(
         surface,
-        x + 6 + (index % 7) * 2.625,
-        17 + Math.floor(index / 7) * 2.5 + (index < 14 ? 0 : 0.5)
+        x + 6 + (index % 7) * 2.975,
+        19.25 + Math.floor(index / 7) * 2.5 + (index < 14 ? 0 : 1.25)
       )
     );
 
@@ -86,25 +94,25 @@ export const deviceConfig: DeviceConfig = {
       width: surfaceWidth,
       channelElements,
       controlSectionElements: {
-        mainFader: surface.makeTouchSensitiveFader(x + 2, 20, 2, 16),
+        mainFader: surface.makeTouchSensitiveFader(x + 2, 24.1, 2, 17.15),
 
-        jogWheel: surface.makeJogWheel(x + 13, 29.25, 8.5, 8.5),
+        jogWheel: surface.makeJogWheel(x + 14.9, 34.2, 9, 9),
 
         buttons: {
-          display: makeSquareButton(surface, x + 2, 7.25),
-          timeMode: makeSquareButton(surface, x + 21.75, 7.25),
-          edit: surface.makeLedButton(x + 2, 10.5, 2, 1.5),
-          flip: surface.makeLedButton(x + 2, 16, 2, 1.5),
-          scrub: makeSquareButton(surface, x + 21.75, 28),
+          display: makeSquareButton(surface, x + 2, 7.9),
+          timeMode: makeSquareButton(surface, x + 23.85, 7.9),
+          edit: surface.makeLedButton(x + 2, 11.75, 2, 1.5),
+          flip: surface.makeLedButton(x + 2, 18, 2, 1.5),
+          scrub: makeSquareButton(surface, x + 23.85, 31.75),
 
           encoderAssign: createElements(6, (index) =>
-            makeSquareButton(surface, x + 2 + index * 2.25, 3.5)
+            makeSquareButton(surface, x + 2 + index * 2.55, 3.5)
           ),
           number: createElements(8, (index) =>
-            makeSquareButton(surface, x + 6 + index * 2.25, 10.5)
+            makeSquareButton(surface, x + 6 + index * 2.55, 11.75)
           ),
           function: createElements(8, (index) =>
-            makeSquareButton(surface, x + 6 + index * 2.25, 14)
+            makeSquareButton(surface, x + 6 + index * 2.55, 15.75)
           ),
           modify: getArrayElements(miscControlButtons, [0, 1, 7, 8]),
           automation: getArrayElements(miscControlButtons, [2, 3, 4, 9, 10, 11]),
@@ -112,38 +120,38 @@ export const deviceConfig: DeviceConfig = {
           transport: [
             ...miscControlButtons.slice(14),
             ...createElements(5, (index) =>
-              surface.makeLedButton(x + 6.25 + index * 3.56, 25, 3, 2)
+              surface.makeLedButton(x + 6.25 + index * 4.0625, 28.5, 3.1, 2.1)
             ),
           ],
 
           navigation: {
             bank: {
-              left: makeSquareButton(surface, x + 6.75, 28),
-              right: makeSquareButton(surface, x + 9.25, 28),
+              left: makeSquareButton(surface, x + 7, 31.8),
+              right: makeSquareButton(surface, x + 9.8, 31.8),
             },
             channel: {
-              left: makeSquareButton(surface, x + 6.75, 30),
-              right: makeSquareButton(surface, x + 9.25, 30),
+              left: makeSquareButton(surface, x + 7, 34.4),
+              right: makeSquareButton(surface, x + 9.8, 34.4),
             },
             directions: {
-              left: makeSquareButton(surface, x + 6.25, 34),
-              right: makeSquareButton(surface, x + 9.75, 34),
-              up: makeSquareButton(surface, x + 8, 32.25),
-              center: makeSquareButton(surface, x + 8, 34),
-              down: makeSquareButton(surface, x + 8, 35.75),
+              left: makeSquareButton(surface, x + 6.2, 39.6),
+              right: makeSquareButton(surface, x + 10.6, 39.6),
+              up: makeSquareButton(surface, x + 8.4, 37.3),
+              center: makeSquareButton(surface, x + 8.4, 39.6),
+              down: makeSquareButton(surface, x + 8.4, 41.8),
             },
           },
         },
 
         displayLeds: {
-          smpte: surface.makeDecoratedLamp(x + 21.25, 6.5, 0.75, 0.5),
-          beats: surface.makeDecoratedLamp(x + 21.25, 9, 0.75, 0.5),
-          solo: surface.makeDecoratedLamp(x + 7.75, 7.75, 0.75, 0.5),
+          smpte: surface.makeDecoratedLamp(x + 23.25, 6.9, 0.75, 0.5),
+          beats: surface.makeDecoratedLamp(x + 23.25, 9.9, 0.75, 0.5),
+          solo: surface.makeDecoratedLamp(x + 8, 8.4, 0.75, 0.5),
         },
 
-        expressionPedal: surface.makeKnob(x + 18, 3.5, 1.5, 1.9),
+        expressionPedal: surface.makeKnob(x + 20.1, 3.5, 1.5, 1.9),
         footSwitches: createElements(2, (index) =>
-          surface.makeButton(x + 20 + index * 2, 3.5, 1.5, 1.5).setShapeCircle()
+          surface.makeButton(x + 22.1 + index * 2, 3.5, 1.5, 1.5).setShapeCircle()
         ),
       },
     };

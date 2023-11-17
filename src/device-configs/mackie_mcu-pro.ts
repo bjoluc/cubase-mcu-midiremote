@@ -29,12 +29,12 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
     const currentChannelXPosition = x + index * channelWidth;
 
     const encoder = surface.makeLedPushEncoder(currentChannelXPosition, 16.25, 4, 4);
+    surface.makeLabelField(currentChannelXPosition, 7, 4, 2).relateTo(encoder);
 
     return {
       index,
       encoder,
       scribbleStrip: {
-        encoderLabel: surface.makeLabelField(currentChannelXPosition, 7, 4, 2).relateTo(encoder),
         trackTitle: surface.makeCustomValueVariable("scribbleStripTrackTitle"),
       },
       vuMeter: surface.makeCustomValueVariable("vuMeter"),

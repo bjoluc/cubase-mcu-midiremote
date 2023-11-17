@@ -21,15 +21,14 @@ function makeSquareButton(surface: DecoratedDeviceSurface, x: number, y: number)
 function makeChannelElements(surface: DecoratedDeviceSurface, x: number): ChannelSurfaceElements[] {
   return createElements(8, (index) => {
     const currentChannelXPosition = x + index * channelWidth;
+
     const encoder = surface.makeLedPushEncoder(3.1 + currentChannelXPosition, 8.8, 3.6, 3.6);
+    surface.makeLabelField(3.1 + currentChannelXPosition, 3, 3.75, 2).relateTo(encoder);
 
     return {
       index,
       encoder,
       scribbleStrip: {
-        encoderLabel: surface
-          .makeLabelField(3.1 + currentChannelXPosition, 3, 3.75, 2)
-          .relateTo(encoder),
         trackTitle: surface.makeCustomValueVariable("scribbleStripTrackTitle"),
       },
       vuMeter: surface.makeCustomValueVariable("vuMeter"),

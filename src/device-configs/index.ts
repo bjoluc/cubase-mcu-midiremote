@@ -17,7 +17,6 @@ export interface ChannelSurfaceElements {
   index: number;
   encoder: LedPushEncoder;
   scribbleStrip: {
-    encoderLabel: MR_SurfaceLabelField;
     trackTitle: MR_SurfaceCustomValueVariable;
   };
   vuMeter: MR_SurfaceCustomValueVariable;
