@@ -1,12 +1,12 @@
 // Polyfills
-import "core-js/es/array/iterator";
-import "core-js/es/array/from";
-import "core-js/es/array/reverse";
-import "core-js/es/array/flat-map";
-import "core-js/es/string/pad-start";
-import "core-js/es/string/replace-all";
-import "core-js/es/object/entries";
-import "core-js/es/reflect/construct";
+import "core-js/actual/array/iterator";
+import "core-js/actual/array/from";
+import "core-js/actual/array/reverse";
+import "core-js/actual/array/flat-map";
+import "core-js/actual/string/pad-start";
+import "core-js/actual/string/replace-all";
+import "core-js/actual/object/entries";
+import "core-js/actual/reflect/construct";
 
 // @ts-ignore Workaround because the core-js polyfill doesn't play nice with SWC:
 Reflect.get = undefined;
