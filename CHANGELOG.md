@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.0](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.7.0...v1.8.0) (2023-11-17)
+
+
+### Features
+
+* Add a `channelVisibility` config option to simplify channel type visibility control ([812fe2f](https://github.com/bjoluc/cubase-mcu-midiremote/commit/812fe2fa7a93179a7d98f2cdb6b0fc7dce031efe))
+* **Cubase 13 only:** Add proper fader touch support for automation writing ([e79ccab](https://github.com/bjoluc/cubase-mcu-midiremote/commit/e79ccab3a1df81d7e56b02b84a153a61c88ec1d3))
+* Make the jog wheel zoom in and out when zoom mode is active ([ff6c0ff](https://github.com/bjoluc/cubase-mcu-midiremote/commit/ff6c0ff5fe804d12abc1fc385b6c94bfa50ada9f))
+* **X-Touch:** Enhance device surface layout to match the CGI product image ([1e8c74d](https://github.com/bjoluc/cubase-mcu-midiremote/commit/1e8c74d1c23531dda5a1b3f334135440f5af7abf))
+* **X-Touch:** Replace the `useEncoderColors` config flag with a more advanced `displayColorMode` option, also making it possible to disable display color management altogether ([d8d5eec](https://github.com/bjoluc/cubase-mcu-midiremote/commit/d8d5eec996291e13ba485cf5451a0d455b5f42c1))
+
+
+### Bug Fixes
+
+* **Cubase 13 only:** Avoid occasional lags while modifying parameters ([454a4dd](https://github.com/bjoluc/cubase-mcu-midiremote/commit/454a4dd15f0397ae6cc4be1fbb92f1280ff88e31))
+* **X-Touch:** Fall back to white displays for assigned encoders on unassigned channels when the script is configured to use channel colors only ([07e4592](https://github.com/bjoluc/cubase-mcu-midiremote/commit/07e4592e876f94611c3400b2a34280ffdfa934e3))
+
 ## [1.7.0](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.6.0...v1.7.0) (2023-09-21)
 
 
