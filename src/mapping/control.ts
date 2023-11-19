@@ -383,7 +383,7 @@ export function bindControlSection(
     .makeCommandBinding(directions.right.mSurfaceValue, "Zoom", "Zoom In")
     .setSubPage(zoomSubPage);
 
-  // Use the zoom subpage to make the jog zoom too
+  // Use the zoom subpage to make the jog wheel zoom too
   page.makeCommandBinding(jogLeft, "Zoom", "Zoom Out").setSubPage(zoomSubPage);
   page.makeCommandBinding(jogRight, "Zoom", "Zoom In").setSubPage(zoomSubPage);
 
