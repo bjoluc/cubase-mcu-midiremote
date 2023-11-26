@@ -32,11 +32,11 @@ var CONFIGURATION = {
    * extender is on the right side).
    *
    * You can also specify an arbitrary combination of "main" and "extender" devices here, including
-   * multiple X-Touch ("main") and multiple X-Touch Extender ("extender") devices. The order of the
-   * list below should match the order of the devices on your desk from left to right. The port
-   * setup in the "Add MIDI Controller Surface" dialog reflects this order for input and output
-   * ports, i.e., the first input and the first output port belong to the leftmost device while the
-   * last input and the last output port belong to the rightmost device.
+   * multiple main and multiple extender devices. The order of the list below should match the order
+   * of the devices on your desk from left to right. The port setup in the "Add MIDI Controller
+   * Surface" dialog reflects this order for input and output ports, i.e., the first input and the
+   * first output port belong to the leftmost device while the last input and the last output port
+   * belong to the rightmost device.
    */
   devices: ["main"],
 
