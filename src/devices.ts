@@ -81,10 +81,20 @@ export function createDevices(driver: MR_DeviceDriver, surface: DecoratedDeviceS
     return device;
   });
 
-  if (devices.length === 1) {
-    deviceConfig.configureMainDeviceDetectionPortPair(
-      driver.makeDetectionUnit().detectPortPair(devices[0].ports.input, devices[0].ports.output)
-    );
+  if (
+    devices.length === 1 ||
+    (devices.length === 2 && devices[0].constructor.name !== devices[1].constructor.name)
+  ) {
+    for (const detectionUnitConfig of deviceConfig.detectionUnits) {
+      const detectionUnit = driver.makeDetectionUnit();
+      for (const device of devices) {
+        const detectionUnitConfigurator =
+          detectionUnitConfig[device instanceof MainDevice ? "main" : "extender"];
+        detectionUnitConfigurator(
+          detectionUnit.detectPortPair(device.ports.input, device.ports.output)
+        );
+      }
+    }
   }
 
   return devices;

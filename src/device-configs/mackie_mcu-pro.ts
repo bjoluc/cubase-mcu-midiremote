@@ -51,11 +51,18 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
 }
 
 export const deviceConfig: DeviceConfig = {
-  configureMainDeviceDetectionPortPair(detectionPortPair) {
-    detectionPortPair
-      .expectInputNameStartsWith("MCU Pro USB v")
-      .expectOutputNameStartsWith("MCU Pro USB v");
-  },
+  detectionUnits: [
+    {
+      main: (detectionPortPair) =>
+        detectionPortPair
+          .expectInputNameStartsWith("MCU Pro USB v")
+          .expectOutputNameStartsWith("MCU Pro USB v"),
+      extender: (detectionPortPair) =>
+        detectionPortPair
+          .expectInputNameStartsWith("MIDIIN2 (MCU Pro USB v")
+          .expectOutputNameStartsWith("MIDIOUT2 (MCU Pro USB v"),
+    },
+  ],
 
   createExtenderSurface(surface, x) {
     const surfaceWidth = 3 + channelElementsWidth + 3;

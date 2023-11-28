@@ -51,13 +51,26 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
 }
 
 export const deviceConfig: DeviceConfig = {
-  configureMainDeviceDetectionPortPair(detectionPortPair) {
-    detectionPortPair
-      .expectInputNameEquals("X-Touch")
-      .expectOutputNameEquals("X-Touch")
-      .expectInputNameEquals("X-Touch INT")
-      .expectOutputNameEquals("X-Touch INT");
-  },
+  detectionUnits: [
+    {
+      main: (detectionPortPair) =>
+        detectionPortPair.expectInputNameEquals("X-Touch").expectOutputNameEquals("X-Touch"),
+      extender: (detectionPortPair) =>
+        detectionPortPair
+          .expectInputNameEquals("X-Touch-Ext")
+          .expectOutputNameEquals("X-Touch-Ext"),
+    },
+    {
+      main: (detectionPortPair) =>
+        detectionPortPair
+          .expectInputNameEquals("X-Touch INT")
+          .expectOutputNameEquals("X-Touch INT"),
+      extender: (detectionPortPair) =>
+        detectionPortPair
+          .expectInputNameStartsWith("X-Touch-Ext")
+          .expectOutputNameStartsWith("X-Touch-Ext"),
+    },
+  ],
 
   createExtenderSurface(surface, x) {
     const surfaceWidth = channelElementsWidth + 1;

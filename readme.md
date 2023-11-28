@@ -108,12 +108,16 @@ The table below summarizes all available encoder assignments:
 Cubase should automatically detect your device and enable it as a MIDI Remote.
 If it doesn't, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
 
-## Setup with an extender unit
+## Setup with multiple devices
 
-To use your device with an extender unit, follow the same steps as above, but edit the script file before restarting Cubase:
-In the configuration options at the top of the file, replace `devices: ["main"]` with `devices: ["extender", "main"]` (or `devices: ["main", "extender"]` if you have your extender on the right side of the main device).
+To use a combination of standalone and extender devices, follow the same steps as above, but edit the script file before restarting Cubase:
+For instance, to use a main unit and an extender unit, open the script file with a text editor and in the configuration options at the top of the file, replace `devices: ["main"]` with `devices: ["extender", "main"]` (or `devices: ["main", "extender"]` if you have your extender on the right side of the main device).
 
-Then restart Cubase and configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
+Then restart Cubase.
+If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically detect your devices' MIDI ports.
+Otherwise, manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
+
+> **Note** Cubase does not expect scripts to change their port definitions over time – which is what happens when you edit the `devices` config option. If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive. In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
 
 ## Configuration Options
 

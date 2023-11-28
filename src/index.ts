@@ -38,8 +38,6 @@ activationCallbacks.addCallback(() => {
 const globalBooleanVariables = createGlobalBooleanVariables();
 
 activationCallbacks.addCallback((context) => {
-  // Setting `runCallbacksInstantly` to `true` below is a workaround for
-  // https://forums.steinberg.net/t/831123.
   globalBooleanVariables.areMotorsActive.set(context, true);
 });
 
