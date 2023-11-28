@@ -14,7 +14,7 @@
   "dependencies": {
     "abbreviate": "0.0.3",
     "color-diff": "1.4.0",
-    "core-js": "3.33.2"
+    "core-js": "3.33.3"
   },
   "devDependencies": {
     "@bjoluc/semantic-release-config-npm": "^5.0.0",
