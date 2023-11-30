@@ -29,43 +29,45 @@ export interface ChannelSurfaceElements {
   fader: TouchSensitiveFader;
 }
 
+export interface ControlSectionButtons {
+  display: LedButton;
+  timeMode: LedButton;
+  edit: LedButton;
+  flip: LedButton;
+  scrub: LedButton;
+
+  encoderAssign: LedButton[];
+  number: LedButton[];
+  function: LedButton[];
+  modify: LedButton[];
+  automation: LedButton[];
+  utility: LedButton[];
+
+  transport: LedButton[];
+
+  navigation: {
+    bank: {
+      left: LedButton;
+      right: LedButton;
+    };
+    channel: {
+      left: LedButton;
+      right: LedButton;
+    };
+    directions: {
+      left: LedButton;
+      right: LedButton;
+      up: LedButton;
+      center: LedButton;
+      down: LedButton;
+    };
+  };
+}
+
 export interface ControlSectionSurfaceElements {
   mainFader: TouchSensitiveFader;
   jogWheel: JogWheel;
-  buttons: {
-    display: LedButton;
-    timeMode: LedButton;
-    edit: LedButton;
-    flip: LedButton;
-    scrub: LedButton;
-
-    encoderAssign: LedButton[];
-    number: LedButton[];
-    function: LedButton[];
-    modify: LedButton[];
-    automation: LedButton[];
-    utility: LedButton[];
-
-    transport: LedButton[];
-
-    navigation: {
-      bank: {
-        left: LedButton;
-        right: LedButton;
-      };
-      channel: {
-        left: LedButton;
-        right: LedButton;
-      };
-      directions: {
-        left: LedButton;
-        right: LedButton;
-        up: LedButton;
-        center: LedButton;
-        down: LedButton;
-      };
-    };
-  };
+  buttons: ControlSectionButtons;
 
   displayLeds: {
     smpte: DecoratedLamp;
