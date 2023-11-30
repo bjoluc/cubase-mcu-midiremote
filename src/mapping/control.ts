@@ -81,6 +81,11 @@ export function bindControlSection(
   const regularSubPage = buttonsSubPageArea.makeSubPage("Regular");
   const shiftSubPage = buttonsSubPageArea.makeSubPage("Shift");
 
+  globalBooleanVariables.isShiftModeActive.addOnChangeCallback((context, value, mapping) => {
+    (value ? shiftSubPage : regularSubPage).mAction.mActivate.trigger(mapping!);
+    setShiftableButtonsLedValues(controlSectionElements, context, +value);
+  });
+
   // Display mode button
   page
     .makeValueBinding(
@@ -261,8 +266,7 @@ export function bindControlSection(
     buttons.utility[3].mSurfaceValue,
     shiftSubPage.mAction.mActivate
   ).mOnValueChange = (context, mapping, value) => {
-    (value ? shiftSubPage : regularSubPage).mAction.mActivate.trigger(mapping);
-    setShiftableButtonsLedValues(controlSectionElements, context, value);
+    globalBooleanVariables.isShiftModeActive.set(context, Boolean(value), mapping);
   };
 
   // Transport buttons

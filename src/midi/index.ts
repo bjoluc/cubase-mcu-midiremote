@@ -27,6 +27,7 @@ export const createGlobalBooleanVariables = () => ({
   areDisplayRowsFlipped: new BooleanContextStateVariable(),
   isEncoderAssignmentActive: createElements(6, () => new BooleanContextStateVariable()),
   isFlipModeActive: new BooleanContextStateVariable(),
+  isShiftModeActive: new BooleanContextStateVariable<[MR_ActiveMapping]>(),
   areChannelMetersEnabled: new BooleanContextStateVariable(),
   isGlobalLcdMeterModeVertical: new BooleanContextStateVariable(),
   shouldMeterOverloadsBeCleared: new BooleanContextStateVariable(true),

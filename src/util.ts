@@ -156,32 +156,53 @@ export class ContextStateVariable<ValueType> {
   }
 }
 
-export class ObservableContextStateVariable<ValueType> extends ContextStateVariable<ValueType> {
-  private onChangeCallbacks: Array<(context: MR_ActiveDevice, newValue: ValueType) => void> = [];
+export class ObservableContextStateVariable<
+  ValueType,
+  AdditionalCallbackParameterType extends any[] = []
+> {
+  private variable: ContextStateVariable<ValueType>;
+  private onChangeCallbacks: Array<
+    (
+      context: MR_ActiveDevice,
+      newValue: ValueType,
+      ...parameters: AdditionalCallbackParameterType
+    ) => void
+  > = [];
 
   constructor(initialValue: ValueType) {
-    super(initialValue);
+    this.variable = new ContextStateVariable<ValueType>(initialValue);
+    this.get = this.variable.get.bind(this.variable);
   }
 
-  addOnChangeCallback(callback: (context: MR_ActiveDevice, newValue: ValueType) => void) {
+  addOnChangeCallback(
+    callback: (
+      context: MR_ActiveDevice,
+      newValue: ValueType,
+      ...parameters: AdditionalCallbackParameterType
+    ) => void
+  ) {
     this.onChangeCallbacks.push(callback);
   }
 
-  set(context: MR_ActiveDevice, value: ValueType) {
-    super.set(context, value);
+  set(context: MR_ActiveDevice, value: ValueType, ...parameters: AdditionalCallbackParameterType) {
+    this.variable.set(context, value);
 
     for (const callback of this.onChangeCallbacks) {
-      callback(context, value);
+      callback(context, value, ...parameters);
     }
   }
+
+  get: ContextStateVariable<ValueType>["get"];
 }
 
-export class BooleanContextStateVariable extends ObservableContextStateVariable<boolean> {
+export class BooleanContextStateVariable<
+  AdditionalCallbackParameterType extends any[]
+> extends ObservableContextStateVariable<boolean, AdditionalCallbackParameterType> {
   constructor(initialValue = false) {
     super(initialValue);
   }
 
-  toggle(context: MR_ActiveDevice) {
-    this.set(context, !this.get(context));
+  toggle(context: MR_ActiveDevice, ...parameters: AdditionalCallbackParameterType) {
+    this.set(context, !this.get(context), ...parameters);
   }
 }
