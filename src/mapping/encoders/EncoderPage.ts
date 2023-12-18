@@ -1,3 +1,4 @@
+import { LedPushEncoder } from "src/decorators/surface";
 import { config } from "../../config";
 import { DecoratedFactoryMappingPage } from "../../decorators/page";
 import { ChannelSurfaceElements, ControlSectionButtons } from "../../device-configs";
@@ -8,6 +9,16 @@ export interface EncoderAssignmentConfig {
   encoderValue: MR_HostValue;
   displayMode: EncoderDisplayMode;
   pushToggleValue?: MR_HostValue;
+
+  /**
+   * If specified, shift-pushing the encoder will set the encoder value to the provided number.
+   */
+  encoderValueDefault?: number;
+
+  /**
+   * A function that will be invoked when the encoder is shift-pushed.
+   */
+  onShiftPush?: (context: MR_ActiveDevice, encoder: LedPushEncoder) => void;
 }
 
 export type EncoderAssignmentConfigs =
@@ -23,6 +34,8 @@ export interface EncoderPageConfig {
 interface SubPages {
   default: MR_SubPage;
   flip: MR_SubPage;
+  noShift: MR_SubPage;
+  shift: MR_SubPage;
 }
 
 export class EncoderPage implements EncoderPageConfig {
@@ -30,6 +43,9 @@ export class EncoderPage implements EncoderPageConfig {
   public readonly name: string;
   public readonly assignments: EncoderAssignmentConfig[];
   public readonly areAssignmentsChannelRelated: boolean;
+
+  private isActive = false;
+  private areShiftEncoderValuesReset = false;
 
   constructor(
     pageConfig: EncoderPageConfig,
@@ -39,6 +55,7 @@ export class EncoderPage implements EncoderPageConfig {
 
     private readonly page: DecoratedFactoryMappingPage,
     private readonly subPageArea: MR_SubPageArea,
+    private readonly shiftSubPageArea: MR_SubPageArea,
     private readonly deviceButtons: ControlSectionButtons[],
     private readonly channelElements: ChannelSurfaceElements[],
     private readonly mixerBankChannels: MR_MixerBankChannel[],
@@ -61,13 +78,38 @@ export class EncoderPage implements EncoderPageConfig {
   private createSubPages(): SubPages {
     const subPageName = `${this.name} ${this.index + 1}`;
 
-    const defaultSubPage = this.subPageArea.makeSubPage(subPageName);
-    const flipSubPage = this.subPageArea.makeSubPage(`${subPageName} Flip`);
+    const subPages: SubPages = {
+      default: this.subPageArea.makeSubPage(subPageName),
+      flip: this.subPageArea.makeSubPage(`${subPageName} Flip`),
+      noShift: this.shiftSubPageArea.makeSubPage(`${subPageName} No Shift`),
+      shift: this.shiftSubPageArea.makeSubPage(`${subPageName} Shift`),
+    };
 
-    defaultSubPage.mOnActivate = this.onDefaultSubPageActivated.bind(this);
-    flipSubPage.mOnActivate = this.onFlipSubPageActivated.bind(this);
+    const onDeactivate = () => {
+      this.isActive = false;
+    };
 
-    return { default: defaultSubPage, flip: flipSubPage };
+    subPages.default.mOnActivate = this.onDefaultSubPageActivated.bind(this);
+    subPages.default.mOnDeactivate = onDeactivate;
+
+    subPages.flip.mOnActivate = this.onFlipSubPageActivated.bind(this);
+    subPages.flip.mOnDeactivate = onDeactivate;
+
+    subPages.shift.mOnActivate = (context) => {
+      // The encoder values keep whatever state they had in the previous binding, hence
+      // resetting them here to reliably detect pushes via mOnProcessValueChange:
+      for (const { encoder } of this.channelElements) {
+        encoder.mPushValue.setProcessValue(context, 0);
+      }
+
+      this.areShiftEncoderValuesReset = true;
+    };
+
+    subPages.shift.mOnDeactivate = (context) => {
+      this.areShiftEncoderValuesReset = false;
+    };
+
+    return subPages;
   }
 
   private bindSubPages() {
@@ -80,12 +122,25 @@ export class EncoderPage implements EncoderPageConfig {
         .setSubPage(this.subPages.flip);
     }
 
+    this.globalBooleanVariables.isShiftModeActive.addOnChangeCallback(
+      (_context, isShiftModeActive, mapping) => {
+        if (this.isActive) {
+          (isShiftModeActive
+            ? this.subPages.shift
+            : this.subPages.noShift
+          ).mAction.mActivate.trigger(mapping);
+        }
+      }
+    );
+
     for (const [channelIndex, { encoder, fader }] of this.channelElements.entries()) {
       const mSelected = this.mixerBankChannels[channelIndex].mValue.mSelected;
 
       const {
         encoderValue = this.page.mCustom.makeHostValueVariable("unassignedEncoderValue"),
         pushToggleValue = this.page.mCustom.makeHostValueVariable("unassignedEncoderPushValue"),
+        encoderValueDefault,
+        onShiftPush: shiftPushAction,
       } = this.assignments[channelIndex] ?? {};
 
       // Default bindings
@@ -104,6 +159,10 @@ export class EncoderPage implements EncoderPageConfig {
           .makeValueBinding(encoder.mPushValue, pushToggleValue)
           .setTypeToggle()
           .setSubPage(this.subPages.default);
+        this.page
+          .makeValueBinding(encoder.mPushValue, pushToggleValue)
+          .setTypeToggle()
+          .setSubPage(this.subPages.flip);
       }
 
       // Flip bindings
@@ -116,21 +175,43 @@ export class EncoderPage implements EncoderPageConfig {
           .filterByValue(+this.areAssignmentsChannelRelated)
           .setSubPage(this.subPages.flip);
       }
+
+      // Shift bindings
+      const shiftBinding = this.page
+        .makeValueBinding(
+          encoder.mPushValue,
+          this.page.mCustom.makeHostValueVariable("shiftEncoderPushValue")
+        )
+        .setSubPage(this.subPages.shift);
+
+      if (shiftPushAction || typeof encoderValueDefault !== "undefined") {
+        shiftBinding.mOnValueChange = (context, _mapping, value) => {
+          if (this.areShiftEncoderValuesReset && value) {
+            if (typeof encoderValueDefault !== "undefined") {
+              encoder.mEncoderValue.setProcessValue(context, encoderValueDefault);
+            }
+            if (shiftPushAction) {
+              shiftPushAction(context, encoder);
+            }
+          }
+        };
+      }
     }
   }
 
   private onDefaultSubPageActivated(context: MR_ActiveDevice) {
-    const encoderPage = this;
+    this.isActive = true;
+
     this.segmentDisplayManager.setAssignment(
       context,
-      encoderPage.pagesCount === 1 ? "  " : `${encoderPage.index + 1}.${encoderPage.pagesCount}`
+      this.pagesCount === 1 ? "  " : `${this.index + 1}.${this.pagesCount}`
     );
 
     for (const [
       assignmentId,
       isActive,
     ] of this.globalBooleanVariables.isEncoderAssignmentActive.entries()) {
-      isActive.set(context, encoderPage.assignmentButtonIndex === assignmentId);
+      isActive.set(context, this.assignmentButtonIndex === assignmentId);
     }
     this.globalBooleanVariables.isFlipModeActive.set(context, false);
     this.globalBooleanVariables.isValueDisplayModeActive.set(context, false);
@@ -144,6 +225,8 @@ export class EncoderPage implements EncoderPageConfig {
   }
 
   private onFlipSubPageActivated(context: MR_ActiveDevice) {
+    this.isActive = true;
+
     this.globalBooleanVariables.isFlipModeActive.set(context, true);
   }
 }

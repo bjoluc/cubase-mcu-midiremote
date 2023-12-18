@@ -5,6 +5,7 @@ import { EncoderDisplayMode, GlobalBooleanVariables } from "../../midi";
 import { SegmentDisplayManager } from "../../midi/managers/SegmentDisplayManager";
 import { createElements } from "../../util";
 import { EncoderMapper } from "./EncoderMapper";
+import { EncoderAssignmentConfig } from "./EncoderPage";
 
 export function bindEncoders(
   page: DecoratedFactoryMappingPage,
@@ -28,6 +29,7 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.BoostOrCut,
         encoderValue: mixerBankChannel.mValue.mPan,
+        encoderValueDefault: 0.5,
         pushToggleValue: mixerBankChannel.mValue.mMonitorEnable,
         shiftPushToggleValue: mixerBankChannel.mValue.mSolo,
       }),
@@ -42,6 +44,7 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.Wrap,
         encoderValue: mixerBankChannel.mValue.mMonitorEnable,
+        encoderValueDefault: 0,
         pushToggleValue: mixerBankChannel.mValue.mMonitorEnable,
       }),
       areAssignmentsChannelRelated: true,
@@ -51,6 +54,7 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.BoostOrCut,
         encoderValue: mixerBankChannel.mPreFilter.mGain,
+        encoderValueDefault: 0.5,
       }),
       areAssignmentsChannelRelated: true,
     },
@@ -59,6 +63,7 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.Wrap,
         encoderValue: mixerBankChannel.mPreFilter.mPhaseSwitch,
+        encoderValueDefault: 0,
       }),
       areAssignmentsChannelRelated: true,
     },
@@ -67,6 +72,7 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.Wrap,
         encoderValue: mixerBankChannel.mPreFilter.mLowCutFreq,
+        encoderValueDefault: 0,
         pushToggleValue: mixerBankChannel.mPreFilter.mLowCutOn,
       }),
       areAssignmentsChannelRelated: true,
@@ -76,6 +82,7 @@ export function bindEncoders(
       assignments: (mixerBankChannel) => ({
         displayMode: EncoderDisplayMode.Wrap,
         encoderValue: mixerBankChannel.mPreFilter.mHighCutFreq,
+        encoderValueDefault: 1,
         pushToggleValue: mixerBankChannel.mPreFilter.mHighCutOn,
       }),
       areAssignmentsChannelRelated: true,
@@ -101,26 +108,32 @@ export function bindEncoders(
         mChannelEQ.mBand2,
         mChannelEQ.mBand3,
         mChannelEQ.mBand4,
-      ].flatMap((band) => [
+      ].flatMap<EncoderAssignmentConfig>((band, bandIndex) => [
         {
           displayMode: EncoderDisplayMode.SingleDot,
           encoderValue: band.mFreq,
+          encoderValueDefault: [
+            0.2810622751712799, 0.47443774342536926, 0.5877489447593689, 0.889056384563446,
+          ][bandIndex],
           pushToggleValue: band.mOn,
         },
         {
           displayMode: EncoderDisplayMode.BoostOrCut,
           encoderValue: band.mGain,
           pushToggleValue: band.mOn,
+          encoderValueDefault: 0.5,
         },
         {
           displayMode: EncoderDisplayMode.SingleDot,
           encoderValue: band.mQ,
           pushToggleValue: band.mOn,
+          encoderValueDefault: 0.0833333358168602,
         },
         {
           displayMode: EncoderDisplayMode.SingleDot,
           encoderValue: band.mFilterType,
           pushToggleValue: band.mOn,
+          encoderValueDefault: [0.7142857313156128, 1, 1, 0.7142857313156128][bandIndex],
         },
       ]),
       areAssignmentsChannelRelated: false,
@@ -133,19 +146,21 @@ export function bindEncoders(
     {
       name: "Sends",
       assignments: [
-        ...createElements(sendSlotsCount, (slotIndex) => {
+        ...createElements<EncoderAssignmentConfig>(sendSlotsCount, (slotIndex) => {
           const sendSlot = mSends.getByIndex(slotIndex);
           return {
             encoderValue: sendSlot.mLevel,
             displayMode: EncoderDisplayMode.SingleDot,
+            encoderValueDefault: 0.7890865802764893,
             pushToggleValue: sendSlot.mOn,
           };
         }),
-        ...createElements(sendSlotsCount, (slotIndex) => {
+        ...createElements<EncoderAssignmentConfig>(sendSlotsCount, (slotIndex) => {
           const sendSlot = mSends.getByIndex(slotIndex);
           return {
             encoderValue: sendSlot.mPrePost,
             displayMode: EncoderDisplayMode.Wrap,
+            encoderValueDefault: 0,
             pushToggleValue: sendSlot.mPrePost,
           };
         }),

@@ -13,6 +13,7 @@ export class EncoderMapper {
   private readonly deviceButtons: ControlSectionSurfaceElements["buttons"][];
 
   private readonly subPageArea: MR_SubPageArea;
+  private readonly shiftSubPageArea: MR_SubPageArea;
 
   constructor(
     private readonly page: DecoratedFactoryMappingPage,
@@ -26,6 +27,7 @@ export class EncoderMapper {
       .filter((device) => device instanceof MainDevice)
       .map((device) => (device as MainDevice).controlSectionElements.buttons);
     this.subPageArea = page.makeSubPageArea("Encoders");
+    this.shiftSubPageArea = page.makeSubPageArea("Encoders Shift");
   }
 
   /**
@@ -62,6 +64,7 @@ export class EncoderMapper {
         pageConfigs.length,
         this.page,
         this.subPageArea,
+        this.shiftSubPageArea,
         this.deviceButtons,
         this.channelElements,
         this.mixerBankChannels,
