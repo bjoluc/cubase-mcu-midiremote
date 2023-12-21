@@ -22,7 +22,9 @@ export interface TouchSensitiveFader extends MR_Fader {
 export interface JogWheel extends MR_Fader {
   mKnobModeEnabledValue: MR_SurfaceCustomValueVariable;
   mJogRightValue: MR_SurfaceCustomValueVariable;
+  mFastJogRightValue: MR_SurfaceCustomValueVariable;
   mJogLeftValue: MR_SurfaceCustomValueVariable;
+  mFastJogLeftValue: MR_SurfaceCustomValueVariable;
   bindToControlChange: (input: MR_DeviceMidiInput, controlChangeNumber: number) => void;
 }
 
@@ -91,7 +93,9 @@ export function decorateSurface(surface: MR_DeviceSurface) {
     const mProxyValue = surface.makeCustomValueVariable("jogWheelProxy");
     jogWheel.mKnobModeEnabledValue = surface.makeCustomValueVariable("jogWheelKnobModeEnabled");
     jogWheel.mJogRightValue = surface.makeCustomValueVariable("jogWheelJogRight");
+    jogWheel.mFastJogRightValue = surface.makeCustomValueVariable("jogWheelFastJogRight");
     jogWheel.mJogLeftValue = surface.makeCustomValueVariable("jogWheelJogLeft");
+    jogWheel.mFastJogLeftValue = surface.makeCustomValueVariable("jogWheelFastJogLeft");
 
     jogWheel.bindToControlChange = (input, controlChangeNumber) => {
       mProxyValue.mMidiBinding
@@ -126,9 +130,17 @@ export function decorateSurface(surface: MR_DeviceSurface) {
           // Handle jog events
           if (difference !== 0) {
             if (difference < 0) {
-              jogWheel.mJogLeftValue.setProcessValue(context, 1);
+              if (difference < -0.014) {
+                jogWheel.mFastJogLeftValue.setProcessValue(context, 1);
+              } else {
+                jogWheel.mJogLeftValue.setProcessValue(context, 1);
+              }
             } else {
-              jogWheel.mJogRightValue.setProcessValue(context, 1);
+              if (difference > 0.014) {
+                jogWheel.mFastJogRightValue.setProcessValue(context, 1);
+              } else {
+                jogWheel.mJogRightValue.setProcessValue(context, 1);
+              }
             }
           }
         }
