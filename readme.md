@@ -59,7 +59,7 @@ The mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 **Encoder Assignments**
 
 - The lower scribble strip row always shows track names since they are vital to using each channel's buttons and fader, regardless of the encoder assignment. Parameter page numbers are displayed on the otherwise unused two-digit Assignment display instead. If an encoder assignment only has one parameter page, the Assignment display remains blank.
-- Shift-pushing an encoder resets its parameter to the default value, if a static default value is known.
+- Shift-pushing an encoder resets its parameter to the default value, if a static default value is known. An exception are EQ gains which are not reset but inverted when shift-pressing their encoder.
 - The "Track" encoder assignment has additional parameter pages for Low Cut, High Cut, and the Track Quick Controls of the selected track.
 - Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages now. The "Level" and "On" pages have been combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses.
 - The "Plug-In" encoder assignment always follows the currently focused plugin window to avoid tedious plugin selection via push encoders.

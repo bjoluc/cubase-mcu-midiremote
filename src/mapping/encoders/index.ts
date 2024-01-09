@@ -121,7 +121,12 @@ export function bindEncoders(
           displayMode: EncoderDisplayMode.BoostOrCut,
           encoderValue: band.mGain,
           pushToggleValue: band.mOn,
-          encoderValueDefault: 0.5,
+          onShiftPush: (context, encoder) => {
+            encoder.mEncoderValue.setProcessValue(
+              context,
+              1 - encoder.mEncoderValue.getProcessValue(context)
+            );
+          },
         },
         {
           displayMode: EncoderDisplayMode.SingleDot,
