@@ -54,6 +54,16 @@ var CONFIGURATION = {
   mapMainFaderToControlRoom: true,
 
   /**
+   * In old Cubase versions, pushing an encoder in the PAN encoder assignment used to reset the
+   * panner to "center" instead of toggling "Monitor Active". By default, this script restores this
+   * behavior, i.e. pressing push encoders resets channel panners.
+   *
+   * Set this config option to `false` to make encoder pushes in PAN mode toggle a channel's monitor
+   * mode. In that case, you can still shift-press encoders to reset panners.
+   */
+  resetPanOnEncoderPush: true,
+
+  /**
    * The flags below control which channel types will be visible (i.e. mapped) on your device(s).
    * For each channel type,
    *

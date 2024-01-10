@@ -1,4 +1,5 @@
 import { mDefaults } from "midiremote_api_v1";
+import { config } from "../../config";
 import { DecoratedFactoryMappingPage } from "../../decorators/page";
 import { Device, MainDevice } from "../../devices";
 import { EncoderDisplayMode, GlobalBooleanVariables } from "../../midi";
@@ -31,7 +32,11 @@ export function bindEncoders(
         encoderValue: mixerBankChannel.mValue.mPan,
         encoderValueDefault: 0.5,
         pushToggleValue: mixerBankChannel.mValue.mMonitorEnable,
-        shiftPushToggleValue: mixerBankChannel.mValue.mSolo,
+        onPush: config.resetPanOnEncoderPush
+          ? (context, encoder) => {
+              encoder.mEncoderValue.setProcessValue(context, 0.5);
+            }
+          : undefined,
       }),
       areAssignmentsChannelRelated: true,
     },
