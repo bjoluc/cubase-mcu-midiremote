@@ -253,6 +253,13 @@ export class EncoderPage implements EncoderPageConfig {
       isActive.set(context, this.assignmentButtonIndex === assignmentId);
     }
 
+    for (const [encoderIndex, { encoder }] of this.channelElements.entries()) {
+      encoder.mDisplayModeValue.setProcessValue(
+        context,
+        this.assignments[encoderIndex]?.displayMode ?? EncoderDisplayMode.SingleDot
+      );
+    }
+
     this.globalBooleanVariables.isValueDisplayModeActive.set(context, false);
   }
 
@@ -261,22 +268,15 @@ export class EncoderPage implements EncoderPageConfig {
   }
 
   private onSubPageActivated(flip: boolean, shift: boolean, context: MR_ActiveDevice) {
+    this.lastSubPageActivationTime = performance.now();
+
     if (!this.isActive()) {
       this.encoderMapper.activeEncoderPage = this;
       this.onActivated(context);
     }
 
-    this.lastSubPageActivationTime = performance.now();
-
-    this.globalBooleanVariables.isFlipModeActive.set(context, flip);
-
-    if (!flip) {
-      for (const [encoderIndex, { encoder }] of this.channelElements.entries()) {
-        encoder.mDisplayModeValue.setProcessValue(
-          context,
-          this.assignments[encoderIndex]?.displayMode ?? EncoderDisplayMode.SingleDot
-        );
-      }
+    if (this.globalBooleanVariables.isFlipModeActive.get(context) !== flip) {
+      this.globalBooleanVariables.isFlipModeActive.set(context, flip);
     }
 
     if (shift) {
@@ -289,7 +289,10 @@ export class EncoderPage implements EncoderPageConfig {
     } else {
       // If some encoder push values are bound to "undefined host values", reset them too:
       for (const [channelIndex, { encoder }] of this.channelElements.entries()) {
-        if (!this.assignments[channelIndex].pushToggleValue) {
+        if (
+          channelIndex < this.assignments.length &&
+          !this.assignments[channelIndex].pushToggleValue
+        ) {
           encoder.mPushValue.setProcessValue(context, 0);
         }
       }
