@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.9.0](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.8.0...v1.9.0) (2024-01-10)
+
+
+### Features
+
+* Allow inverting EQ gain by shift-pressing EQ gain encoders ([370ed12](https://github.com/bjoluc/cubase-mcu-midiremote/commit/370ed12b8ef41b5831b4b22f7411ef7c711eb95f)), closes [#17](https://github.com/bjoluc/cubase-mcu-midiremote/issues/17) [#17](https://github.com/bjoluc/cubase-mcu-midiremote/issues/17)
+* Implement port auto detection for all setups with one main and one extender device ([e08fb09](https://github.com/bjoluc/cubase-mcu-midiremote/commit/e08fb09a457911cffe33cbddbaf44069bb047eb6))
+* Make encoder values with known defaults resettable by shift-pushing encoders ([57f4898](https://github.com/bjoluc/cubase-mcu-midiremote/commit/57f4898a001d278bdd7b7e135a7324043550fdd4))
+* Reset channel panners on encoder push, unless `resetPanOnEncoderPush` is set to `false` ([bbd4368](https://github.com/bjoluc/cubase-mcu-midiremote/commit/bbd4368ebbe4627cbdc8b360ef0ed46d0b1749e3))
+
 ## [1.8.0](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.7.0...v1.8.0) (2023-11-17)
 
 
