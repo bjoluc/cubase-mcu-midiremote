@@ -142,3 +142,23 @@ Current limitations of the MIDI Remote API:
 - Channel visibility presets do not yet affect channel assignments since the `MixerBankZone` of the MIDI Remote API doesn't respect channel visibility presets (["`.setFollowVisibility()` is a teaser for future updates"](https://forums.steinberg.net/t/820531/2)).
 - The function buttons F1-F8 can only have one assignment per button, no matter whether "Shift" is held or not ("Shift" activates a sub page and the Mapping Assistant doesn't consider sub pages)
 - When controlling under-the-cursor values, the encoder's LED ring is not updated to single-dot mode but remains in whatever mode the currently active encoder assignment demands (blocked by https://forums.steinberg.net/t/831123).
+
+## Troubleshooting
+
+Having issues with the scripts? Here are some common problems and potential solutions you should try before reporting an issue:
+
+### Some buttons do not work as expected
+
+You can re-map most surface elements (buttons, faders, encoders) using the MIDI Remote Mapping Assistant in Cubase.
+Those mappings are stored as JSON files in a `User Settings` folder at `Documents/Steinberg/Cubase/MIDI Remote/User Settings`, next to the MIDI Remote `Driver Scripts` folder.
+If some button/fader/encoder isn't working as expected – especially after an update to the script – it is always worth a try to remove the user setting files (those starting with your script's name) to make sure they don't interfere with the script's default functionality.
+Afterwards, restart Cubase to reload the MIDI Remote scripts and settings.
+
+### The SMPTE/Beats button doesn't change the time format
+
+The SMPTE/Beats button is mapped to the "Exchange Time Formats" command which switches between the primary and secondary time format.
+The button has no effect when both time formats are identical, so make sure you have selected different primary and secondary time formats.
+
+### One or multiple devices are unresponsive
+
+Try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase re-detect the script's MIDI ports.
