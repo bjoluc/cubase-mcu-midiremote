@@ -66,15 +66,19 @@ export class ExtenderDevice extends Device {
   }
 }
 
-export function createDevices(driver: MR_DeviceDriver, surface: DecoratedDeviceSurface) {
-  const deviceClasses = config.devices.map((deviceType) =>
-    deviceType === "main" ? MainDevice : ExtenderDevice
-  );
-
+export function createDevices(
+  driver: MR_DeviceDriver,
+  surface: DecoratedDeviceSurface
+): Array<MainDevice | ExtenderDevice> {
   let nextDeviceXPosition = 0;
 
-  const devices = deviceClasses.map((deviceClass, deviceIndex) => {
-    const device = new deviceClass(driver, surface, deviceIndex * 8, nextDeviceXPosition);
+  const devices = config.devices.map((deviceType, deviceIndex) => {
+    const device = new (deviceType === "main" ? MainDevice : ExtenderDevice)(
+      driver,
+      surface,
+      deviceIndex * 8,
+      nextDeviceXPosition
+    ) as MainDevice | ExtenderDevice;
 
     nextDeviceXPosition += device.surfaceWidth;
 
