@@ -32,7 +32,7 @@ export type GlobalBooleanVariables = ReturnType<typeof createGlobalBooleanVariab
 export function bindDeviceToMidi(
   device: Device,
   globalBooleanVariables: GlobalBooleanVariables,
-  activationCallbacks: ActivationCallbacks
+  activationCallbacks: ActivationCallbacks,
 ) {
   const ports = device.ports;
 
@@ -192,7 +192,7 @@ export function bindDeviceToMidi(
 
         // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
         const meterLevel = Math.ceil(
-          (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) * 0xe - 0.25
+          (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) * 0xe - 0.25,
         );
 
         sendMeterLevel(context, ports.output, channelIndex, meterLevel);
@@ -204,7 +204,7 @@ export function bindDeviceToMidi(
         (context, areMetersEnabled) => {
           sendChannelMeterMode(context, ports.output, channelIndex, areMetersEnabled);
         },
-        0 // priority = 0: Disable channel meters *before* updating the lower display row
+        0, // priority = 0: Disable channel meters *before* updating the lower display row
       );
     }
 
@@ -218,7 +218,7 @@ export function bindDeviceToMidi(
         if (shouldOverloadsBeCleared) {
           clearOverload(context);
         }
-      }
+      },
     );
 
     // Channel Buttons
@@ -241,7 +241,7 @@ export function bindDeviceToMidi(
     globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
       (context, isMeterModeVertical) => {
         sendGlobalMeterModeOrientation(context, ports.output, isMeterModeVertical);
-      }
+      },
     );
   }
 

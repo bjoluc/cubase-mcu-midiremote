@@ -26,7 +26,7 @@ export interface CallbackCollection<A extends any[]> {
 export function makeCallbackCollection<
   O extends Record<string, any>,
   C extends keyof O,
-  A extends Parameters<O[C]>
+  A extends Parameters<O[C]>,
 >(object: O, callbackName: C) {
   const callbacks: Array<(...args: A) => void> = [];
 
@@ -53,7 +53,7 @@ export function makeCallbackCollection<
 const setupLegacyTimer = (
   page: MR_FactoryMappingPage,
   surface: MR_DeviceSurface,
-  onTick: (context: MR_ActiveDevice) => void
+  onTick: (context: MR_ActiveDevice) => void,
 ) => {
   let isLegacyTimerTicking = false;
 
@@ -81,7 +81,7 @@ export type TimerUtils = ReturnType<typeof makeTimerUtils>;
 export function makeTimerUtils(
   driver: MR_DeviceDriver,
   page: MR_FactoryMappingPage,
-  surface: MR_DeviceSurface
+  surface: MR_DeviceSurface,
 ) {
   const timeouts: Record<
     string,
@@ -116,7 +116,7 @@ export function makeTimerUtils(
   const { isLegacyTimerTicking, startLegacyTimer, stopLegacyTimer } = setupLegacyTimer(
     page,
     surface,
-    tick
+    tick,
   );
 
   /**
@@ -128,7 +128,7 @@ export function makeTimerUtils(
     context: MR_ActiveDevice,
     timeoutId: string,
     callback: (context: MR_ActiveDevice) => void,
-    timeout: number
+    timeout: number,
   ) => {
     if (!isIdleCallbackSupported && !isLegacyTimerTicking()) {
       startLegacyTimer(context);
@@ -158,7 +158,7 @@ export class ContextStateVariable<ValueType> {
 
 export class ObservableContextStateVariable<
   ValueType,
-  AdditionalCallbackParameterType extends any[] = []
+  AdditionalCallbackParameterType extends any[] = [],
 > {
   private variable: ContextStateVariable<ValueType>;
   private onChangeCallbacks: Array<{
@@ -182,7 +182,7 @@ export class ObservableContextStateVariable<
       newValue: ValueType,
       ...parameters: AdditionalCallbackParameterType
     ) => void,
-    priority = 1
+    priority = 1,
   ) {
     this.onChangeCallbacks.push({ callback, priority });
     if (priority !== 1) {
@@ -207,7 +207,7 @@ export class ObservableContextStateVariable<
 }
 
 export class BooleanContextStateVariable<
-  AdditionalCallbackParameterType extends any[]
+  AdditionalCallbackParameterType extends any[],
 > extends ObservableContextStateVariable<boolean, AdditionalCallbackParameterType> {
   constructor(initialValue = false) {
     super(initialValue);

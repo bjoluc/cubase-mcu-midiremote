@@ -3,10 +3,10 @@
  * @device MCU Pro
  */
 
-import { createElements, getArrayElements } from "../util";
 import { ChannelSurfaceElements, DeviceConfig } from ".";
+import { LedButton } from "../decorators/button";
 import { DecoratedDeviceSurface, DecoratedLamp } from "../decorators/surface";
-import { LedButton } from "src/decorators/button";
+import { createElements, getArrayElements } from "../util";
 
 const channelWidth = 4;
 const channelElementsWidth = 8 * channelWidth;
@@ -107,8 +107,8 @@ export const deviceConfig: DeviceConfig = {
       makeControlButton(
         surface,
         x + 7 + (index % 7) * 3,
-        31.25 + Math.floor(index / 7) * 3.5 + (index < 14 ? 0 : 1.5)
-      )
+        31.25 + Math.floor(index / 7) * 3.5 + (index < 14 ? 0 : 1.5),
+      ),
     );
 
     return {
@@ -127,13 +127,13 @@ export const deviceConfig: DeviceConfig = {
           scrub: surface.makeLedButton(x + 24.25, 50.25, 2.5, 2.5).setShapeCircle() as LedButton,
 
           encoderAssign: createElements(6, (index) =>
-            makeControlButton(surface, x + 0.75 + (index < 3 ? 0 : 2.5), 16.25 + (index % 3) * 2.5)
+            makeControlButton(surface, x + 0.75 + (index < 3 ? 0 : 2.5), 16.25 + (index % 3) * 2.5),
           ),
           number: createElements(8, (index) =>
-            makeSmallButton(surface, x + 7 + index * 2.575, 26.25)
+            makeSmallButton(surface, x + 7 + index * 2.575, 26.25),
           ),
           function: createElements(8, (index) =>
-            makeSmallButton(surface, x + 7 + index * 2.575, 21.25)
+            makeSmallButton(surface, x + 7 + index * 2.575, 21.25),
           ),
           modify: getArrayElements(miscControlButtons, [0, 1, 7, 8]),
           automation: getArrayElements(miscControlButtons, [2, 3, 4, 9, 10, 11]),
@@ -145,8 +145,8 @@ export const deviceConfig: DeviceConfig = {
                 x + 7.75 + index * 3.65 + (index === 4 ? 0.35 : 0),
                 44.6,
                 3.75,
-                3
-              )
+                3,
+              ),
             ),
           ],
 
@@ -181,7 +181,7 @@ export const deviceConfig: DeviceConfig = {
         footSwitches: createElements(2, (index) =>
           surface
             .makeButton(x - channelElementsWidth + 17 + (1 - index) * 3, 2, 2, 2)
-            .setShapeCircle()
+            .setShapeCircle(),
         ),
       },
     };

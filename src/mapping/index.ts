@@ -13,7 +13,7 @@ export function makeHostMapping(
   devices: Device[],
   segmentDisplayManager: SegmentDisplayManager,
   globalBooleanVariables: GlobalBooleanVariables,
-  activationCallbacks: ActivationCallbacks
+  activationCallbacks: ActivationCallbacks,
 ) {
   // Mixer channels
   const mixerBankZone = page.mHostAccess.mMixConsole.makeMixerBankZone();
@@ -82,7 +82,7 @@ export function makeHostMapping(
           : page.mHostAccess.mMixConsole
               .makeMixerBankZone()
               .includeOutputChannels()
-              .makeMixerBankChannel().mValue.mVolume
+              .makeMixerBankChannel().mValue.mVolume,
       );
 
       // Display buttons, 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation, Jog wheel
@@ -91,7 +91,7 @@ export function makeHostMapping(
         controlSectionElements,
         device.channelElements,
         mixerBankZone,
-        globalBooleanVariables
+        globalBooleanVariables,
       );
 
       // Foot Control
@@ -129,7 +129,7 @@ export function makeHostMapping(
     context,
     mapping,
     time,
-    timeFormat
+    timeFormat,
   ) => {
     if (!isDriverActivated.get(context)) {
       initialTransportLocatorPosition.set(context, { time, timeFormat });

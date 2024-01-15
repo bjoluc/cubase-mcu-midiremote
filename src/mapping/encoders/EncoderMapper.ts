@@ -21,7 +21,7 @@ export class EncoderMapper {
     devices: Device[],
     private readonly mixerBankChannels: MR_MixerBankChannel[],
     private readonly segmentDisplayManager: SegmentDisplayManager,
-    private readonly globalBooleanVariables: GlobalBooleanVariables
+    private readonly globalBooleanVariables: GlobalBooleanVariables,
   ) {
     this.channelElements = devices.flatMap((device) => device.channelElements);
     this.deviceButtons = devices
@@ -69,7 +69,7 @@ export class EncoderMapper {
         this.channelElements,
         this.mixerBankChannels,
         this.segmentDisplayManager,
-        this.globalBooleanVariables
+        this.globalBooleanVariables,
       );
     });
 
@@ -78,7 +78,7 @@ export class EncoderMapper {
       const encoderAssignButtonValue = buttons.encoderAssign[assignmentButtonIndex].mSurfaceValue;
       this.page.makeActionBinding(
         encoderAssignButtonValue,
-        pages[0].subPages.default.mAction.mActivate
+        pages[0].subPages.default.mAction.mActivate,
       );
 
       let previousSubPages = pages[0].subPages;

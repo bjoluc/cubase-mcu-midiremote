@@ -1,6 +1,6 @@
-import { LedPushEncoder } from "src/decorators/surface";
 import { config } from "../../config";
 import { DecoratedFactoryMappingPage } from "../../decorators/page";
+import { LedPushEncoder } from "../../decorators/surface";
 import { ChannelSurfaceElements, ControlSectionButtons } from "../../device-configs";
 import { EncoderDisplayMode, GlobalBooleanVariables } from "../../midi";
 import { SegmentDisplayManager } from "../../midi/managers/SegmentDisplayManager";
@@ -66,7 +66,7 @@ export class EncoderPage implements EncoderPageConfig {
     private readonly channelElements: ChannelSurfaceElements[],
     private readonly mixerBankChannels: MR_MixerBankChannel[],
     private readonly segmentDisplayManager: SegmentDisplayManager,
-    private readonly globalBooleanVariables: GlobalBooleanVariables
+    private readonly globalBooleanVariables: GlobalBooleanVariables,
   ) {
     this.name = pageConfig.name;
     this.areAssignmentsChannelRelated = pageConfig.areAssignmentsChannelRelated;
@@ -109,10 +109,10 @@ export class EncoderPage implements EncoderPageConfig {
     surfaceValue: MR_SurfaceValue,
     hostValue: MR_HostValue,
     subPages: MR_SubPage[],
-    enhancer?: (binding: MR_ValueBinding) => void
+    enhancer?: (binding: MR_ValueBinding) => void,
   ): MR_ValueBinding[] {
     const bindings = subPages.map((subPage) =>
-      this.page.makeValueBinding(surfaceValue, hostValue).setSubPage(subPage)
+      this.page.makeValueBinding(surfaceValue, hostValue).setSubPage(subPage),
     );
     if (enhancer) {
       bindings.map(enhancer);
@@ -150,7 +150,7 @@ export class EncoderPage implements EncoderPageConfig {
 
           nextSubPage.mAction.mActivate.trigger(mapping);
         }
-      }
+      },
     );
 
     for (const [channelIndex, { encoder, fader }] of this.channelElements.entries()) {
@@ -175,7 +175,7 @@ export class EncoderPage implements EncoderPageConfig {
           fader.mTouchedValue,
           mSelected,
           [this.subPages.default, this.subPages.defaultShift],
-          (binding) => binding.filterByValue(1)
+          (binding) => binding.filterByValue(1),
         );
       }
 
@@ -196,7 +196,7 @@ export class EncoderPage implements EncoderPageConfig {
           } else {
             binding.setTypeToggle();
           }
-        }
+        },
       );
 
       // Flip bindings
@@ -213,7 +213,7 @@ export class EncoderPage implements EncoderPageConfig {
             // Don't select mixer channels on touch when a fader's value does not belong to its
             // mixer channel
             binding.filterByValue(+this.areAssignmentsChannelRelated);
-          }
+          },
         );
       }
 
@@ -235,7 +235,7 @@ export class EncoderPage implements EncoderPageConfig {
               }
             };
           }
-        }
+        },
       );
     }
   }
@@ -243,7 +243,7 @@ export class EncoderPage implements EncoderPageConfig {
   private onActivated(context: MR_ActiveDevice) {
     this.segmentDisplayManager.setAssignment(
       context,
-      this.pagesCount === 1 ? "  " : `${this.index + 1}.${this.pagesCount}`
+      this.pagesCount === 1 ? "  " : `${this.index + 1}.${this.pagesCount}`,
     );
 
     for (const [
@@ -256,7 +256,7 @@ export class EncoderPage implements EncoderPageConfig {
     for (const [encoderIndex, { encoder }] of this.channelElements.entries()) {
       encoder.mDisplayModeValue.setProcessValue(
         context,
-        this.assignments[encoderIndex]?.displayMode ?? EncoderDisplayMode.SingleDot
+        this.assignments[encoderIndex]?.displayMode ?? EncoderDisplayMode.SingleDot,
       );
     }
 

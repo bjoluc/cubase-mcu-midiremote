@@ -4,7 +4,7 @@ export function sendChannelMeterMode(
   context: MR_ActiveDevice,
   outputPort: EnhancedMidiOutput,
   channelId: number,
-  enableLcdLevelMeter: boolean
+  enableLcdLevelMeter: boolean,
 ) {
   outputPort.sendSysex(context, [0x20, channelId, 2 * +enableLcdLevelMeter + 1]);
 }
@@ -12,7 +12,7 @@ export function sendChannelMeterMode(
 export function sendGlobalMeterModeOrientation(
   context: MR_ActiveDevice,
   outputPort: EnhancedMidiOutput,
-  isVertical: boolean
+  isVertical: boolean,
 ) {
   outputPort.sendSysex(context, [0x21, +isVertical]);
 }
@@ -32,7 +32,7 @@ export function sendMeterLevel(
   context: MR_ActiveDevice,
   outputPort: EnhancedMidiOutput,
   channelIndex: number,
-  meterLevel: number
+  meterLevel: number,
 ) {
   outputPort.sendMidi(context, [0xd0, (channelIndex << 4) + meterLevel]);
 }

@@ -3,9 +3,9 @@
  * @device QCon Pro G2
  */
 
-import { createElements, getArrayElements } from "../util";
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { DecoratedDeviceSurface } from "../decorators/surface";
+import { createElements, getArrayElements } from "../util";
 
 const channelWidth = 3.75;
 const channelElementsWidth = 4 + 8 * channelWidth;
@@ -88,15 +88,15 @@ export const deviceConfig: DeviceConfig = {
     surface.makeBlindPanel(x + 6, 3, 12, 2); // Time display
 
     const upperControlButtons = createElements(5, (index) =>
-      makeSquareButton(surface, x + 3.5 + (index + 1) * buttonDistance, 13 - buttonRowHeight * 2)
+      makeSquareButton(surface, x + 3.5 + (index + 1) * buttonDistance, 13 - buttonRowHeight * 2),
     );
 
     const lowerControlButtons = createElements(12, (index) =>
       makeSquareButton(
         surface,
         x + 3.5 + (index % 6) * buttonDistance,
-        23.5 + buttonRowHeight * Math.floor(index / 6)
-      )
+        23.5 + buttonRowHeight * Math.floor(index / 6),
+      ),
     );
 
     const layer2FunctionButtons = createElements(8, (index) =>
@@ -104,8 +104,8 @@ export const deviceConfig: DeviceConfig = {
         x + 3.5 + ((index % 4) + 2) * buttonDistance,
         13 + buttonRowHeight * (Math.floor(index / 4) + 0.5) - 0.9,
         1.8,
-        0.75
-      )
+        0.75,
+      ),
     );
 
     return {
@@ -124,19 +124,19 @@ export const deviceConfig: DeviceConfig = {
           scrub: makeSquareButton(surface, x + 11.2, 28.75),
 
           encoderAssign: createElements(6, (index) =>
-            makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 2)
+            makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 2),
           ),
           number: [...layer2FunctionButtons.slice(0, 7), surface.makeHiddenLedButton()],
           function: createElements(8, (index) =>
             makeSquareButton(
               surface,
               x + 3.5 + ((index % 4) + 2) * buttonDistance,
-              13 + buttonRowHeight * (Math.floor(index / 4) - 0.5)
-            )
+              13 + buttonRowHeight * (Math.floor(index / 4) - 0.5),
+            ),
           ),
           modify: [...upperControlButtons.slice(2, 5), surface.makeHiddenLedButton()],
           automation: createElements(6, (index) =>
-            makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 3)
+            makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 3),
           ),
           utility: [
             ...lowerControlButtons.slice(0, 2),
@@ -151,8 +151,8 @@ export const deviceConfig: DeviceConfig = {
                 x + 3.5 + index * buttonDistance,
                 23.5 + buttonRowHeight * 2 - 0.5,
                 1.8,
-                0.75
-              )
+                0.75,
+              ),
             ),
             ...getArrayElements(lowerControlButtons, [3, 5, 11, 10, 9]),
           ],
@@ -187,7 +187,7 @@ export const deviceConfig: DeviceConfig = {
           mSurfaceValue: surface.makeCustomValueVariable("ExpressionPedal"),
         } as MR_Knob,
         footSwitches: createElements(2, (index) =>
-          surface.makeButton(x + 6 + index * 2, 0.875, 1.5, 1.5).setShapeCircle()
+          surface.makeButton(x + 6 + index * 2, 0.875, 1.5, 1.5).setShapeCircle(),
         ),
       },
     };

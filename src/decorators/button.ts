@@ -14,7 +14,7 @@ export function enhanceButtonToLedButton(originalButton: MR_Button, surface: MR_
 
   button.onSurfaceValueChange = makeCallbackCollection(
     button.mSurfaceValue,
-    "mOnProcessValueChange"
+    "mOnProcessValueChange",
   );
   button.mLedValue = surface.makeCustomValueVariable("LedButtonLed");
 
@@ -42,7 +42,7 @@ export function enhanceButtonToLedButton(originalButton: MR_Button, surface: MR_
       ports.output.sendNoteOn(
         context,
         note,
-        newValue || currentSurfaceValue.get(context) || currentLedValue.get(context)
+        newValue || currentSurfaceValue.get(context) || currentLedValue.get(context),
       );
     };
 

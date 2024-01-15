@@ -1,7 +1,7 @@
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
-import { ContextStateVariable, TimerUtils } from "src/util";
 import { GlobalBooleanVariables } from "../..";
+import { ContextStateVariable, TimerUtils } from "../../../util";
 import { LcdManager } from "./LcdManager";
 
 /**
@@ -118,16 +118,16 @@ export class ChannelTextManager {
   constructor(
     private globalBooleanVariables: GlobalBooleanVariables,
     private timerUtils: TimerUtils,
-    private sendText: (context: MR_ActiveDevice, row: number, text: string) => void
+    private sendText: (context: MR_ActiveDevice, row: number, text: string) => void,
   ) {
     globalBooleanVariables.isValueDisplayModeActive.addOnChangeCallback(
-      this.updateNameValueDisplay.bind(this)
+      this.updateNameValueDisplay.bind(this),
     );
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(
-      this.updateNameValueDisplay.bind(this)
+      this.updateNameValueDisplay.bind(this),
     );
     globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(
-      this.updateTrackTitleDisplay.bind(this)
+      this.updateTrackTitleDisplay.bind(this),
     );
 
     if (DEVICE_NAME === "MCU Pro") {
@@ -140,7 +140,7 @@ export class ChannelTextManager {
               ? this.updateTrackTitleDisplay.bind(this)
               : this.updateNameValueDisplay.bind(this))(context);
           }
-        }
+        },
       );
 
       globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
@@ -151,7 +151,7 @@ export class ChannelTextManager {
               ? this.updateNameValueDisplay.bind(this)
               : this.updateTrackTitleDisplay.bind(this))(context);
           }
-        }
+        },
       );
     }
   }
@@ -175,7 +175,7 @@ export class ChannelTextManager {
       this.isLocalValueModeActive.get(context) ||
         this.globalBooleanVariables.isValueDisplayModeActive.get(context)
         ? this.parameterValue.get(context)
-        : this.parameterName.get(context)
+        : this.parameterName.get(context),
     );
   }
 
@@ -206,10 +206,10 @@ export class ChannelTextManager {
       ChannelTextManager.centerString(
         ChannelTextManager.abbreviateString(
           ChannelTextManager.stripNonAsciiCharacters(
-            ChannelTextManager.translateParameterName(name)
-          )
-        )
-      )
+            ChannelTextManager.translateParameterName(name),
+          ),
+        ),
+      ),
     );
 
     this.updateNameValueDisplay(context);
@@ -221,8 +221,8 @@ export class ChannelTextManager {
     this.parameterValue.set(
       context,
       ChannelTextManager.centerString(
-        ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(value))
-      )
+        ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(value)),
+      ),
     );
     this.isLocalValueModeActive.set(context, true);
     this.updateNameValueDisplay(context);
@@ -234,14 +234,14 @@ export class ChannelTextManager {
         this.isLocalValueModeActive.set(context, false);
         this.updateNameValueDisplay(context);
       },
-      1
+      1,
     );
   }
 
   setChannelName(context: MR_ActiveDevice, name: string) {
     this.channelName.set(
       context,
-      ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(name))
+      ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(name)),
     );
     this.updateTrackTitleDisplay(context);
   }

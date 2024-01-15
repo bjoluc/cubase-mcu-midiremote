@@ -13,14 +13,14 @@ export function bindEncoders(
   devices: Device[],
   mixerBankChannels: MR_MixerBankChannel[],
   segmentDisplayManager: SegmentDisplayManager,
-  globalBooleanVariables: GlobalBooleanVariables
+  globalBooleanVariables: GlobalBooleanVariables,
 ) {
   const encoderMapper = new EncoderMapper(
     page,
     devices,
     mixerBankChannels,
     segmentDisplayManager,
-    globalBooleanVariables
+    globalBooleanVariables,
   );
 
   // Defining Pan first so it is activated by default
@@ -129,7 +129,7 @@ export function bindEncoders(
           onShiftPush: (context, encoder) => {
             encoder.mEncoderValue.setProcessValue(
               context,
-              1 - encoder.mEncoderValue.getProcessValue(context)
+              1 - encoder.mEncoderValue.getProcessValue(context),
             );
           },
         },
@@ -206,7 +206,7 @@ export function bindEncoders(
       page
         .makeActionBinding(
           buttons.encoderAssign[4].mSurfaceValue,
-          parameterBankZone.mAction.mNextBank
+          parameterBankZone.mAction.mNextBank,
         )
         .setSubPage(subPage);
     }

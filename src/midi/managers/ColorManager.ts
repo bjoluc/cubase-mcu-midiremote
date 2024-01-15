@@ -33,7 +33,7 @@ export class ColorManager {
     return (
       determineClosestColor(
         { R: r * 0xff, G: g * 0xff, B: b * 0xff },
-        scribbleStripColorsRGB
+        scribbleStripColorsRGB,
       ) as DeviceColorDefinition
     ).code;
   }

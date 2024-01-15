@@ -57,7 +57,7 @@ export function decorateSurface(surface: MR_DeviceSurface) {
   decoratedSurface.makeHiddenLedButton = () =>
     enhanceButtonToLedButton(
       { mSurfaceValue: surface.makeCustomValueVariable("HiddenLedButton") } as MR_Button,
-      surface
+      surface,
     );
 
   decoratedSurface.makeHiddenLedButtons = (numberOfButtons) =>
@@ -120,7 +120,7 @@ export function decorateSurface(surface: MR_DeviceSurface) {
         if (jogWheel.mKnobModeEnabledValue.getProcessValue(context)) {
           jogWheel.mSurfaceValue.setProcessValue(
             context,
-            Math.max(0, Math.min(1, jogWheel.mSurfaceValue.getProcessValue(context) + difference))
+            Math.max(0, Math.min(1, jogWheel.mSurfaceValue.getProcessValue(context) + difference)),
           );
         } else {
           // Handle jog events

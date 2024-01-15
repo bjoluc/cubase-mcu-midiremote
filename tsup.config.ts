@@ -3,10 +3,10 @@ import { execaCommand } from "execa";
 import { extract, parse } from "jest-docblock";
 import { readFileSync, readdirSync } from "node:fs";
 
+import slugify from "@sindresorhus/slugify";
 import { resolve } from "node:path";
 import prependFile from "prepend-file";
 import { defineConfig } from "tsup";
-import slugify from "@sindresorhus/slugify";
 
 dotenv.config();
 const copyCommand = process.env.COPY_COMMAND;
@@ -62,12 +62,12 @@ export default defineConfig(
         /(?:\r?\n|\r)\s*\/\*\*\s*(?:\r?\n|\r)(?:[^\*]|(?:\*(?!\/)))*@device ([\S ]+)(?:\r?\n|\r)\s+\*\/(?:\r?\n|\r)[\S ]+/gm,
         (match, devicePragma) => {
           return devicePragma === device.device ? match : "";
-        }
+        },
       );
 
       await prependFile(
         `${device.targetPath}/${device.targetFilename}.js`,
-        deviceSpecificScriptConfig
+        deviceSpecificScriptConfig,
       );
 
       if (copyCommand) {
@@ -90,5 +90,5 @@ export default defineConfig(
         },
       },
     ],
-  }))
+  })),
 );

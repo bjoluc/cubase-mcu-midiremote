@@ -28,7 +28,7 @@ export abstract class Device {
     deviceSurface: DeviceSurface,
     globalBooleanVariables: GlobalBooleanVariables,
     timerUtils: TimerUtils,
-    isExtender: boolean
+    isExtender: boolean,
   ) {
     this.surfaceWidth = deviceSurface.width;
     this.channelElements = deviceSurface.channelElements;
@@ -51,7 +51,7 @@ export class MainDevice extends Device {
     globalBooleanVariables: GlobalBooleanVariables,
     timerUtils: TimerUtils,
     firstChannelIndex: number,
-    surfaceXPosition: number
+    surfaceXPosition: number,
   ) {
     const deviceSurface = deviceConfig.createMainSurface(surface, surfaceXPosition);
     super(driver, firstChannelIndex, deviceSurface, globalBooleanVariables, timerUtils, false);
@@ -67,7 +67,7 @@ export class ExtenderDevice extends Device {
     globalBooleanVariables: GlobalBooleanVariables,
     timerUtils: TimerUtils,
     firstChannelIndex: number,
-    surfaceXPosition: number
+    surfaceXPosition: number,
   ) {
     const deviceSurface = deviceConfig.createExtenderSurface(surface, surfaceXPosition);
     super(driver, firstChannelIndex, deviceSurface, globalBooleanVariables, timerUtils, true);
@@ -78,7 +78,7 @@ export function createDevices(
   driver: MR_DeviceDriver,
   surface: DecoratedDeviceSurface,
   globalBooleanVariables: GlobalBooleanVariables,
-  timerUtils: TimerUtils
+  timerUtils: TimerUtils,
 ): Array<MainDevice | ExtenderDevice> {
   let nextDeviceXPosition = 0;
 
@@ -89,7 +89,7 @@ export function createDevices(
       globalBooleanVariables,
       timerUtils,
       deviceIndex * 8,
-      nextDeviceXPosition
+      nextDeviceXPosition,
     ) as MainDevice | ExtenderDevice;
 
     nextDeviceXPosition += device.surfaceWidth;
@@ -107,7 +107,7 @@ export function createDevices(
         const detectionUnitConfigurator =
           detectionUnitConfig[device instanceof MainDevice ? "main" : "extender"];
         detectionUnitConfigurator(
-          detectionUnit.detectPortPair(device.ports.input, device.ports.output)
+          detectionUnit.detectPortPair(device.ports.input, device.ports.output),
         );
       }
     }

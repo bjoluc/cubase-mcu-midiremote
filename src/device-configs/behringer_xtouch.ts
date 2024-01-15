@@ -3,9 +3,9 @@
  * @device X-Touch
  */
 
-import { createElements, getArrayElements } from "../util";
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { DecoratedDeviceSurface } from "../decorators/surface";
+import { createElements, getArrayElements } from "../util";
 
 const channelWidth = 5;
 const channelElementsWidth = 8 * channelWidth;
@@ -99,8 +99,8 @@ export const deviceConfig: DeviceConfig = {
       makeSquareButton(
         surface,
         x + 6 + (index % 7) * 2.975,
-        19.25 + Math.floor(index / 7) * 2.5 + (index < 14 ? 0 : 1.25)
-      )
+        19.25 + Math.floor(index / 7) * 2.5 + (index < 14 ? 0 : 1.25),
+      ),
     );
 
     return {
@@ -119,13 +119,13 @@ export const deviceConfig: DeviceConfig = {
           scrub: makeSquareButton(surface, x + 23.85, 31.75),
 
           encoderAssign: createElements(6, (index) =>
-            makeSquareButton(surface, x + 2 + index * 2.55, 3.5)
+            makeSquareButton(surface, x + 2 + index * 2.55, 3.5),
           ),
           number: createElements(8, (index) =>
-            makeSquareButton(surface, x + 6 + index * 2.55, 11.75)
+            makeSquareButton(surface, x + 6 + index * 2.55, 11.75),
           ),
           function: createElements(8, (index) =>
-            makeSquareButton(surface, x + 6 + index * 2.55, 15.75)
+            makeSquareButton(surface, x + 6 + index * 2.55, 15.75),
           ),
           modify: getArrayElements(miscControlButtons, [0, 1, 7, 8]),
           automation: getArrayElements(miscControlButtons, [2, 3, 4, 9, 10, 11]),
@@ -133,7 +133,7 @@ export const deviceConfig: DeviceConfig = {
           transport: [
             ...miscControlButtons.slice(14),
             ...createElements(5, (index) =>
-              surface.makeLedButton(x + 6.25 + index * 4.0625, 28.5, 3.1, 2.1)
+              surface.makeLedButton(x + 6.25 + index * 4.0625, 28.5, 3.1, 2.1),
             ),
           ],
 
@@ -164,7 +164,7 @@ export const deviceConfig: DeviceConfig = {
 
         expressionPedal: surface.makeKnob(x + 20.1, 3.5, 1.5, 1.9),
         footSwitches: createElements(2, (index) =>
-          surface.makeButton(x + 22.1 + index * 2, 3.5, 1.5, 1.5).setShapeCircle()
+          surface.makeButton(x + 22.1 + index * 2, 3.5, 1.5, 1.5).setShapeCircle(),
         ),
       },
     };

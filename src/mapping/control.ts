@@ -1,13 +1,13 @@
+import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { JogWheel, LedButton, LedPushEncoder } from "../decorators/surface";
-import { EncoderDisplayMode, GlobalBooleanVariables } from "../midi";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../device-configs";
-import { config } from "src/config";
+import { EncoderDisplayMode, GlobalBooleanVariables } from "../midi";
 
 function setShiftableButtonsLedValues(
   controlSectionElements: ControlSectionSurfaceElements,
   context: MR_ActiveDevice,
-  value: number
+  value: number,
 ) {
   const buttons = controlSectionElements.buttons;
 
@@ -28,14 +28,14 @@ function bindCursorValueControlButton(
   page: DecoratedFactoryMappingPage,
   button: LedButton,
   encoder: LedPushEncoder,
-  jogWheel: JogWheel
+  jogWheel: JogWheel,
 ) {
   const subPageArea = page.makeSubPageArea("Cursor Value Control");
   const inactiveSubpage = subPageArea.makeSubPage("Cursor Value Control Inactive");
   const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
 
   const encoderDisplayMode = page.mCustom.makeSettableHostValueVariable(
-    `cursorValueControlEncoderDisplayMode`
+    `cursorValueControlEncoderDisplayMode`,
   );
 
   activeSubpage.mOnActivate = (context) => {
@@ -72,7 +72,7 @@ export function bindControlSection(
   controlSectionElements: ControlSectionSurfaceElements,
   channelElements: ChannelSurfaceElements[],
   mixerBankZone: MR_MixerBankZone,
-  globalBooleanVariables: GlobalBooleanVariables
+  globalBooleanVariables: GlobalBooleanVariables,
 ) {
   const host = page.mHostAccess;
   const buttons = controlSectionElements.buttons;
@@ -90,7 +90,7 @@ export function bindControlSection(
   page
     .makeValueBinding(
       buttons.display.mSurfaceValue,
-      page.mCustom.makeHostValueVariable("Display Name/Value")
+      page.mCustom.makeHostValueVariable("Display Name/Value"),
     )
     .setSubPage(regularSubPage).mOnValueChange = (context, mapping, value) => {
     if (value) {
@@ -101,7 +101,7 @@ export function bindControlSection(
   page
     .makeValueBinding(
       buttons.display.mSurfaceValue,
-      page.mCustom.makeHostValueVariable("Flip Display Rows")
+      page.mCustom.makeHostValueVariable("Flip Display Rows"),
     )
     .setSubPage(shiftSubPage).mOnValueChange = (context, mapping, value) => {
     if (value) {
@@ -114,7 +114,7 @@ export function bindControlSection(
     .makeCommandBinding(
       controlSectionElements.buttons.timeMode.mSurfaceValue,
       "Transport",
-      "Exchange Time Formats"
+      "Exchange Time Formats",
     )
     .setSubPage(config.toggleMeteringModeWithoutShift ? shiftSubPage : regularSubPage);
 
@@ -123,10 +123,10 @@ export function bindControlSection(
     page
       .makeValueBinding(
         controlSectionElements.buttons.timeMode.mSurfaceValue,
-        page.mCustom.makeHostValueVariable("Metering Mode")
+        page.mCustom.makeHostValueVariable("Metering Mode"),
       )
       .setSubPage(
-        config.toggleMeteringModeWithoutShift ? regularSubPage : shiftSubPage
+        config.toggleMeteringModeWithoutShift ? regularSubPage : shiftSubPage,
       ).mOnValueChange = (context, mapping, value) => {
       if (value === 1) {
         const areMetersEnabled = globalBooleanVariables.areChannelMetersEnabled;
@@ -153,7 +153,7 @@ export function bindControlSection(
     page.makeCommandBinding(
       button.mSurfaceValue,
       "Channel & Track Visibility",
-      `Channel and Rack Configuration ${buttonIndex + 1}`
+      `Channel and Rack Configuration ${buttonIndex + 1}`,
     );
   }
 
@@ -162,7 +162,7 @@ export function bindControlSection(
     page.makeCommandBinding(
       button.mSurfaceValue,
       "MIDI Remote",
-      "Open MIDI Remote Mapping Assistant"
+      "Open MIDI Remote Mapping Assistant",
     );
   }
 
@@ -200,7 +200,7 @@ export function bindControlSection(
   page
     .makeValueBinding(
       buttons.automation[0].mSurfaceValue,
-      host.mTrackSelection.mMixerChannel.mValue.mAutomationRead
+      host.mTrackSelection.mMixerChannel.mValue.mAutomationRead,
     )
     .setTypeToggle();
 
@@ -208,7 +208,7 @@ export function bindControlSection(
   page
     .makeValueBinding(
       buttons.automation[1].mSurfaceValue,
-      host.mTrackSelection.mMixerChannel.mValue.mAutomationWrite
+      host.mTrackSelection.mMixerChannel.mValue.mAutomationWrite,
     )
     .setTypeToggle();
 
@@ -217,7 +217,7 @@ export function bindControlSection(
     page,
     buttons.automation[2],
     channelElements[7].encoder,
-    controlSectionElements.jogWheel
+    controlSectionElements.jogWheel,
   );
 
   // Project
@@ -229,7 +229,7 @@ export function bindControlSection(
   // Motor
   page.makeValueBinding(
     buttons.automation[5].mSurfaceValue,
-    page.mCustom.makeHostValueVariable("Disable/Enable Fader Motors")
+    page.mCustom.makeHostValueVariable("Disable/Enable Fader Motors"),
   ).mOnValueChange = (context, mapping, value) => {
     if (value) {
       globalBooleanVariables.areMotorsActive.toggle(context);
@@ -243,14 +243,14 @@ export function bindControlSection(
   page.makeCommandBinding(
     buttons.utility[0].mSurfaceValue,
     "MixConsole History",
-    "Undo MixConsole Step"
+    "Undo MixConsole Step",
   );
 
   // Main
   page.makeCommandBinding(
     buttons.utility[1].mSurfaceValue,
     "MixConsole History",
-    "Redo MixConsole Step"
+    "Redo MixConsole Step",
   );
 
   // Solo Defeat
@@ -264,7 +264,7 @@ export function bindControlSection(
   // Shift button
   page.makeActionBinding(
     buttons.utility[3].mSurfaceValue,
-    shiftSubPage.mAction.mActivate
+    shiftSubPage.mAction.mActivate,
   ).mOnValueChange = (context, mapping, value) => {
     globalBooleanVariables.isShiftModeActive.set(context, Boolean(value), mapping);
   };
@@ -294,7 +294,7 @@ export function bindControlSection(
   page.makeCommandBinding(
     buttons.transport[4].mSurfaceValue,
     "Transport",
-    "Locate Previous Marker"
+    "Locate Previous Marker",
   );
   page.makeCommandBinding(buttons.transport[5].mSurfaceValue, "Transport", "Insert Marker");
   page.makeCommandBinding(buttons.transport[6].mSurfaceValue, "Transport", "Locate Next Marker");
@@ -396,13 +396,13 @@ export function bindControlSection(
 
 export function bindFootControl(
   page: DecoratedFactoryMappingPage,
-  controlSectionElements: ControlSectionSurfaceElements
+  controlSectionElements: ControlSectionSurfaceElements,
 ) {
   for (const footSwitch of controlSectionElements.footSwitches) {
     page.makeCommandBinding(
       footSwitch.mSurfaceValue,
       "MIDI Remote",
-      "Open MIDI Remote Mapping Assistant"
+      "Open MIDI Remote Mapping Assistant",
     );
   }
 }

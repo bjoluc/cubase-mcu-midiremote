@@ -9,7 +9,7 @@ export class SegmentDisplayManager {
     context: MR_ActiveDevice,
     segmentId: number,
     digit: number | null,
-    hasDot = false
+    hasDot = false,
   ) {
     let value = 0x30 + (digit ?? -0x10);
     if (hasDot) {
@@ -35,7 +35,7 @@ export class SegmentDisplayManager {
           context,
           currentSegmentId,
           char === " " ? null : parseInt(char, 10),
-          hasCurrentSegmentDot
+          hasCurrentSegmentDot,
         );
         currentSegmentId++;
         hasCurrentSegmentDot = false;
@@ -81,7 +81,7 @@ export class SegmentDisplayManager {
     this.updateSegmentsByString(
       context,
       0,
-      time.padStart(10 + time.replaceAll(/[^\.\:]/g, "").length, " ")
+      time.padStart(10 + time.replaceAll(/[^\.\:]/g, "").length, " "),
     );
   }
 

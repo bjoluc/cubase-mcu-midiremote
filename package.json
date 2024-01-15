@@ -26,6 +26,7 @@
     "jest-docblock": "^29.7.0",
     "patch-package": "^8.0.0",
     "prepend-file": "^2.0.1",
+    "prettier-plugin-organize-imports": "^3.2.4",
     "tsup": "^8.0.1",
     "type-fest": "^4.9.0",
     "typescript": "^5.3.3"
@@ -36,6 +37,9 @@
     ]
   },
   "prettier": {
-    "printWidth": 100
+    "printWidth": 100,
+    "plugins": [
+      "prettier-plugin-organize-imports"
+    ]
   }
 }

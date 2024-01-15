@@ -15,7 +15,7 @@ export function makePortPair(driver: MR_DeviceDriver, isExtender: boolean): Port
   const portPairIndex = nextPortPairIndex++;
   const input = driver.mPorts.makeMidiInput(`Input ${portPairIndex} - ${name}`);
   const output = driver.mPorts.makeMidiOutput(
-    `Output ${portPairIndex} - ${name}`
+    `Output ${portPairIndex} - ${name}`,
   ) as EnhancedMidiOutput;
 
   output.sendSysex = (context, messageBody) => {

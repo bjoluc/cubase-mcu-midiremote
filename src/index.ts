@@ -1,4 +1,5 @@
 // Polyfills
+// organize-imports-ignore
 import "core-js/actual/array/iterator";
 import "core-js/actual/array/from";
 import "core-js/actual/array/reverse";
@@ -35,7 +36,7 @@ const { activationCallbacks, segmentDisplayManager } = setupDeviceConnection(dri
 activationCallbacks.addCallback(() => {
   console.log("Activating cubase-mcu-midiremote v" + SCRIPT_VERSION);
   console.log(
-    "A newer version may be available at https://github.com/bjoluc/cubase-mcu-midiremote/releases"
+    "A newer version may be available at https://github.com/bjoluc/cubase-mcu-midiremote/releases",
   );
 });
 
