@@ -5,9 +5,11 @@ import {
   ControlSectionSurfaceElements,
   DeviceSurface,
 } from "./device-configs";
+import { GlobalBooleanVariables } from "./midi";
 import { ColorManager } from "./midi/managers/ColorManager";
-import { LcdManager } from "./midi/managers/LcdManager";
+import { LcdManager } from "./midi/managers/lcd";
 import { makePortPair, PortPair } from "./midi/PortPair";
+import { TimerUtils } from "./util";
 
 /**
  * A `Device` represents a physical device and manages its MIDI ports and surface elements
@@ -24,13 +26,15 @@ export abstract class Device {
     driver: MR_DeviceDriver,
     public firstChannelIndex: number,
     deviceSurface: DeviceSurface,
+    globalBooleanVariables: GlobalBooleanVariables,
+    timerUtils: TimerUtils,
     isExtender: boolean
   ) {
     this.surfaceWidth = deviceSurface.width;
     this.channelElements = deviceSurface.channelElements;
 
     this.ports = makePortPair(driver, isExtender);
-    this.lcdManager = new LcdManager(this);
+    this.lcdManager = new LcdManager(this, globalBooleanVariables, timerUtils);
 
     if (DEVICE_NAME === "X-Touch") {
       this.colorManager = new ColorManager(this);
@@ -44,11 +48,13 @@ export class MainDevice extends Device {
   constructor(
     driver: MR_DeviceDriver,
     surface: DecoratedDeviceSurface,
+    globalBooleanVariables: GlobalBooleanVariables,
+    timerUtils: TimerUtils,
     firstChannelIndex: number,
     surfaceXPosition: number
   ) {
     const deviceSurface = deviceConfig.createMainSurface(surface, surfaceXPosition);
-    super(driver, firstChannelIndex, deviceSurface, false);
+    super(driver, firstChannelIndex, deviceSurface, globalBooleanVariables, timerUtils, false);
 
     this.controlSectionElements = deviceSurface.controlSectionElements!;
   }
@@ -58,17 +64,21 @@ export class ExtenderDevice extends Device {
   constructor(
     driver: MR_DeviceDriver,
     surface: DecoratedDeviceSurface,
+    globalBooleanVariables: GlobalBooleanVariables,
+    timerUtils: TimerUtils,
     firstChannelIndex: number,
     surfaceXPosition: number
   ) {
     const deviceSurface = deviceConfig.createExtenderSurface(surface, surfaceXPosition);
-    super(driver, firstChannelIndex, deviceSurface, true);
+    super(driver, firstChannelIndex, deviceSurface, globalBooleanVariables, timerUtils, true);
   }
 }
 
 export function createDevices(
   driver: MR_DeviceDriver,
-  surface: DecoratedDeviceSurface
+  surface: DecoratedDeviceSurface,
+  globalBooleanVariables: GlobalBooleanVariables,
+  timerUtils: TimerUtils
 ): Array<MainDevice | ExtenderDevice> {
   let nextDeviceXPosition = 0;
 
@@ -76,6 +86,8 @@ export function createDevices(
     const device = new (deviceType === "main" ? MainDevice : ExtenderDevice)(
       driver,
       surface,
+      globalBooleanVariables,
+      timerUtils,
       deviceIndex * 8,
       nextDeviceXPosition
     ) as MainDevice | ExtenderDevice;

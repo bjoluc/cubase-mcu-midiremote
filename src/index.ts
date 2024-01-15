@@ -24,8 +24,12 @@ const driver = midiremoteApi.makeDeviceDriver(VENDOR_NAME, DEVICE_NAME, "github.
 
 const surface = decorateSurface(driver.mSurface);
 
-// Create devices, i.e., midi ports and surface elements for each physical device
-const devices = createDevices(driver, surface);
+const globalBooleanVariables = createGlobalBooleanVariables();
+const page = decoratePage(driver.mMapping.makePage("Mixer"), surface);
+const timerUtils = makeTimerUtils(driver, page, surface);
+
+// Create devices, i.e., midi ports, managers, and surface elements for each physical device
+const devices = createDevices(driver, surface, globalBooleanVariables, timerUtils);
 
 const { activationCallbacks, segmentDisplayManager } = setupDeviceConnection(driver, devices);
 activationCallbacks.addCallback(() => {
@@ -35,18 +39,13 @@ activationCallbacks.addCallback(() => {
   );
 });
 
-const globalBooleanVariables = createGlobalBooleanVariables();
-
 activationCallbacks.addCallback((context) => {
   globalBooleanVariables.areMotorsActive.set(context, true);
 });
 
-const page = decoratePage(driver.mMapping.makePage("Mixer"), surface);
-const timerUtils = makeTimerUtils(driver, page, surface);
-
 // Bind elements to MIDI
 for (const device of devices) {
-  bindDeviceToMidi(device, globalBooleanVariables, activationCallbacks, timerUtils);
+  bindDeviceToMidi(device, globalBooleanVariables, activationCallbacks);
 }
 
 // Map elements to host functions

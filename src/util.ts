@@ -161,13 +161,15 @@ export class ObservableContextStateVariable<
   AdditionalCallbackParameterType extends any[] = []
 > {
   private variable: ContextStateVariable<ValueType>;
-  private onChangeCallbacks: Array<
-    (
+  private onChangeCallbacks: Array<{
+    callback: (
       context: MR_ActiveDevice,
       newValue: ValueType,
       ...parameters: AdditionalCallbackParameterType
-    ) => void
-  > = [];
+    ) => void;
+    priority: number;
+  }> = [];
+  private areCallbacksSorted = true;
 
   constructor(initialValue: ValueType) {
     this.variable = new ContextStateVariable<ValueType>(initialValue);
@@ -179,15 +181,24 @@ export class ObservableContextStateVariable<
       context: MR_ActiveDevice,
       newValue: ValueType,
       ...parameters: AdditionalCallbackParameterType
-    ) => void
+    ) => void,
+    priority = 1
   ) {
-    this.onChangeCallbacks.push(callback);
+    this.onChangeCallbacks.push({ callback, priority });
+    if (priority !== 1) {
+      this.areCallbacksSorted = false;
+    }
   }
 
   set(context: MR_ActiveDevice, value: ValueType, ...parameters: AdditionalCallbackParameterType) {
     this.variable.set(context, value);
 
-    for (const callback of this.onChangeCallbacks) {
+    if (!this.areCallbacksSorted) {
+      this.onChangeCallbacks.sort((a, b) => a.priority - b.priority);
+      this.areCallbacksSorted = true;
+    }
+
+    for (const { callback } of this.onChangeCallbacks) {
       callback(context, value, ...parameters);
     }
   }
