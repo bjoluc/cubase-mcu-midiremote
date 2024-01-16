@@ -1,5 +1,5 @@
 import { Device } from "../../../devices";
-import { GlobalBooleanVariables } from "../../../midi";
+import { GlobalState } from "../../../state";
 import { TimerUtils, createElements } from "../../../util";
 import { ChannelTextManager } from "./ChannelTextManager";
 
@@ -22,14 +22,14 @@ export class LcdManager {
 
   constructor(
     private device: Device,
-    globalBooleanVariables: GlobalBooleanVariables,
+    globalState: GlobalState,
     timerUtils: TimerUtils,
   ) {
     this.channels = createElements(
       8,
       (channelIndex) =>
         new ChannelTextManager(
-          globalBooleanVariables,
+          globalState,
           timerUtils,
           this.sendChannelText.bind(this, channelIndex),
         ),

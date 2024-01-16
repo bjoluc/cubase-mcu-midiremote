@@ -2,8 +2,9 @@ import { mDefaults } from "midiremote_api_v1";
 import { config } from "../../config";
 import { DecoratedFactoryMappingPage } from "../../decorators/page";
 import { Device, MainDevice } from "../../devices";
-import { EncoderDisplayMode, GlobalBooleanVariables } from "../../midi";
+import { EncoderDisplayMode } from "../../midi";
 import { SegmentDisplayManager } from "../../midi/managers/SegmentDisplayManager";
+import { GlobalState } from "../../state";
 import { createElements } from "../../util";
 import { EncoderMapper } from "./EncoderMapper";
 import { EncoderAssignmentConfig } from "./EncoderPage";
@@ -13,14 +14,14 @@ export function bindEncoders(
   devices: Device[],
   mixerBankChannels: MR_MixerBankChannel[],
   segmentDisplayManager: SegmentDisplayManager,
-  globalBooleanVariables: GlobalBooleanVariables,
+  globalState: GlobalState,
 ) {
   const encoderMapper = new EncoderMapper(
     page,
     devices,
     mixerBankChannels,
     segmentDisplayManager,
-    globalBooleanVariables,
+    globalState,
   );
 
   // Defining Pan first so it is activated by default

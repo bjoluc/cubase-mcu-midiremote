@@ -2,8 +2,9 @@ import { config } from "../../config";
 import { DecoratedFactoryMappingPage } from "../../decorators/page";
 import { LedPushEncoder } from "../../decorators/surface";
 import { ChannelSurfaceElements, ControlSectionButtons } from "../../device-configs";
-import { EncoderDisplayMode, GlobalBooleanVariables } from "../../midi";
+import { EncoderDisplayMode } from "../../midi";
 import { SegmentDisplayManager } from "../../midi/managers/SegmentDisplayManager";
+import { GlobalState } from "../../state";
 import type { EncoderMapper } from "./EncoderMapper";
 
 export interface EncoderAssignmentConfig {
@@ -66,7 +67,7 @@ export class EncoderPage implements EncoderPageConfig {
     private readonly channelElements: ChannelSurfaceElements[],
     private readonly mixerBankChannels: MR_MixerBankChannel[],
     private readonly segmentDisplayManager: SegmentDisplayManager,
-    private readonly globalBooleanVariables: GlobalBooleanVariables,
+    private readonly globalState: GlobalState,
   ) {
     this.name = pageConfig.name;
     this.areAssignmentsChannelRelated = pageConfig.areAssignmentsChannelRelated;
@@ -130,10 +131,10 @@ export class EncoderPage implements EncoderPageConfig {
         .setSubPage(this.subPages.flip);
     }
 
-    this.globalBooleanVariables.isShiftModeActive.addOnChangeCallback(
+    this.globalState.isShiftModeActive.addOnChangeCallback(
       (context, isShiftModeActive, mapping) => {
         if (this.isActive()) {
-          const isFlipModeActive = this.globalBooleanVariables.isFlipModeActive.get(context);
+          const isFlipModeActive = this.globalState.isFlipModeActive.get(context);
 
           const nextSubPage = [
             // Flip mode inactive
@@ -246,10 +247,7 @@ export class EncoderPage implements EncoderPageConfig {
       this.pagesCount === 1 ? "  " : `${this.index + 1}.${this.pagesCount}`,
     );
 
-    for (const [
-      assignmentId,
-      isActive,
-    ] of this.globalBooleanVariables.isEncoderAssignmentActive.entries()) {
+    for (const [assignmentId, isActive] of this.globalState.isEncoderAssignmentActive.entries()) {
       isActive.set(context, this.assignmentButtonIndex === assignmentId);
     }
 
@@ -260,7 +258,7 @@ export class EncoderPage implements EncoderPageConfig {
       );
     }
 
-    this.globalBooleanVariables.isValueDisplayModeActive.set(context, false);
+    this.globalState.isValueDisplayModeActive.set(context, false);
   }
 
   private isActive() {
@@ -275,8 +273,8 @@ export class EncoderPage implements EncoderPageConfig {
       this.onActivated(context);
     }
 
-    if (this.globalBooleanVariables.isFlipModeActive.get(context) !== flip) {
-      this.globalBooleanVariables.isFlipModeActive.set(context, flip);
+    if (this.globalState.isFlipModeActive.get(context) !== flip) {
+      this.globalState.isFlipModeActive.set(context, flip);
     }
 
     if (shift) {

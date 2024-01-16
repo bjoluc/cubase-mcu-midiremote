@@ -2,7 +2,8 @@ import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { JogWheel, LedButton, LedPushEncoder } from "../decorators/surface";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../device-configs";
-import { EncoderDisplayMode, GlobalBooleanVariables } from "../midi";
+import { EncoderDisplayMode } from "../midi";
+import { GlobalState } from "../state";
 
 function setShiftableButtonsLedValues(
   controlSectionElements: ControlSectionSurfaceElements,
@@ -72,7 +73,7 @@ export function bindControlSection(
   controlSectionElements: ControlSectionSurfaceElements,
   channelElements: ChannelSurfaceElements[],
   mixerBankZone: MR_MixerBankZone,
-  globalBooleanVariables: GlobalBooleanVariables,
+  globalState: GlobalState,
 ) {
   const host = page.mHostAccess;
   const buttons = controlSectionElements.buttons;
@@ -81,7 +82,7 @@ export function bindControlSection(
   const regularSubPage = buttonsSubPageArea.makeSubPage("Regular");
   const shiftSubPage = buttonsSubPageArea.makeSubPage("Shift");
 
-  globalBooleanVariables.isShiftModeActive.addOnChangeCallback((context, value, mapping) => {
+  globalState.isShiftModeActive.addOnChangeCallback((context, value, mapping) => {
     (value ? shiftSubPage : regularSubPage).mAction.mActivate.trigger(mapping!);
     setShiftableButtonsLedValues(controlSectionElements, context, +value);
   });
@@ -94,7 +95,7 @@ export function bindControlSection(
     )
     .setSubPage(regularSubPage).mOnValueChange = (context, mapping, value) => {
     if (value) {
-      globalBooleanVariables.isValueDisplayModeActive.toggle(context);
+      globalState.isValueDisplayModeActive.toggle(context);
     }
   };
 
@@ -105,7 +106,7 @@ export function bindControlSection(
     )
     .setSubPage(shiftSubPage).mOnValueChange = (context, mapping, value) => {
     if (value) {
-      globalBooleanVariables.areDisplayRowsFlipped.toggle(context);
+      globalState.areDisplayRowsFlipped.toggle(context);
     }
   };
 
@@ -129,8 +130,8 @@ export function bindControlSection(
         config.toggleMeteringModeWithoutShift ? regularSubPage : shiftSubPage,
       ).mOnValueChange = (context, mapping, value) => {
       if (value === 1) {
-        const areMetersEnabled = globalBooleanVariables.areChannelMetersEnabled;
-        const isMeterModeVertical = globalBooleanVariables.isGlobalLcdMeterModeVertical;
+        const areMetersEnabled = globalState.areChannelMetersEnabled;
+        const isMeterModeVertical = globalState.isGlobalLcdMeterModeVertical;
 
         // Toggle between no LCD metering, vertical, and horizontal mode
         if (!areMetersEnabled.get(context)) {
@@ -232,10 +233,10 @@ export function bindControlSection(
     page.mCustom.makeHostValueVariable("Disable/Enable Fader Motors"),
   ).mOnValueChange = (context, mapping, value) => {
     if (value) {
-      globalBooleanVariables.areMotorsActive.toggle(context);
+      globalState.areMotorsActive.toggle(context);
     }
   };
-  globalBooleanVariables.areMotorsActive.addOnChangeCallback((context, value) => {
+  globalState.areMotorsActive.addOnChangeCallback((context, value) => {
     buttons.automation[5].mLedValue.setProcessValue(context, +value);
   });
 
@@ -266,7 +267,7 @@ export function bindControlSection(
     buttons.utility[3].mSurfaceValue,
     shiftSubPage.mAction.mActivate,
   ).mOnValueChange = (context, mapping, value) => {
-    globalBooleanVariables.isShiftModeActive.set(context, Boolean(value), mapping);
+    globalState.isShiftModeActive.set(context, Boolean(value), mapping);
   };
 
   // Transport buttons

@@ -1,9 +1,9 @@
 import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
 import { Device, MainDevice } from "../devices";
-import { GlobalBooleanVariables } from "../midi";
 import { ActivationCallbacks } from "../midi/connection";
 import { SegmentDisplayManager } from "../midi/managers/SegmentDisplayManager";
+import { GlobalState } from "../state";
 import { ContextStateVariable } from "../util";
 import { bindControlSection, bindFootControl } from "./control";
 import { bindEncoders } from "./encoders";
@@ -12,7 +12,7 @@ export function makeHostMapping(
   page: DecoratedFactoryMappingPage,
   devices: Device[],
   segmentDisplayManager: SegmentDisplayManager,
-  globalBooleanVariables: GlobalBooleanVariables,
+  globalState: GlobalState,
   activationCallbacks: ActivationCallbacks,
 ) {
   // Mixer channels
@@ -68,7 +68,7 @@ export function makeHostMapping(
       return channel;
     });
 
-  bindEncoders(page, devices, mixerBankChannels, segmentDisplayManager, globalBooleanVariables);
+  bindEncoders(page, devices, mixerBankChannels, segmentDisplayManager, globalState);
 
   for (const device of devices) {
     if (device instanceof MainDevice) {
@@ -91,7 +91,7 @@ export function makeHostMapping(
         controlSectionElements,
         device.channelElements,
         mixerBankZone,
-        globalBooleanVariables,
+        globalState,
       );
 
       // Foot Control

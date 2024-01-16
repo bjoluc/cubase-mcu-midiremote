@@ -1,6 +1,6 @@
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
-import { GlobalBooleanVariables } from "../..";
+import { GlobalState } from "../../../state";
 import { ContextStateVariable, TimerUtils } from "../../../util";
 import { LcdManager } from "./LcdManager";
 
@@ -116,55 +116,49 @@ export class ChannelTextManager {
   private isLocalValueModeActive = new ContextStateVariable(false);
 
   constructor(
-    private globalBooleanVariables: GlobalBooleanVariables,
+    private globalState: GlobalState,
     private timerUtils: TimerUtils,
     private sendText: (context: MR_ActiveDevice, row: number, text: string) => void,
   ) {
-    globalBooleanVariables.isValueDisplayModeActive.addOnChangeCallback(
+    globalState.isValueDisplayModeActive.addOnChangeCallback(
       this.updateNameValueDisplay.bind(this),
     );
-    globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(
-      this.updateNameValueDisplay.bind(this),
-    );
-    globalBooleanVariables.areDisplayRowsFlipped.addOnChangeCallback(
-      this.updateTrackTitleDisplay.bind(this),
-    );
+    globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateNameValueDisplay.bind(this));
+    globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateTrackTitleDisplay.bind(this));
 
     if (DEVICE_NAME === "MCU Pro") {
       // Handle metering mode changes
-      globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
+      globalState.isGlobalLcdMeterModeVertical.addOnChangeCallback(
         (context, isMeterModeVertical) => {
           // Update the upper display row before leaving vertical metering mode
           if (!isMeterModeVertical) {
-            (globalBooleanVariables.areDisplayRowsFlipped.get(context)
+            (globalState.areDisplayRowsFlipped.get(context)
               ? this.updateTrackTitleDisplay.bind(this)
               : this.updateNameValueDisplay.bind(this))(context);
           }
         },
       );
 
-      globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
-        (context, areMetersEnabled) => {
-          // Update the lower display row after disabling channel meters
-          if (!areMetersEnabled) {
-            (globalBooleanVariables.areDisplayRowsFlipped.get(context)
-              ? this.updateNameValueDisplay.bind(this)
-              : this.updateTrackTitleDisplay.bind(this))(context);
-          }
-        },
-      );
+      globalState.areChannelMetersEnabled.addOnChangeCallback((context, areMetersEnabled) => {
+        // Update the lower display row after disabling channel meters
+        if (!areMetersEnabled) {
+          (globalState.areDisplayRowsFlipped.get(context)
+            ? this.updateNameValueDisplay.bind(this)
+            : this.updateTrackTitleDisplay.bind(this))(context);
+        }
+      });
     }
   }
 
   private updateNameValueDisplay(context: MR_ActiveDevice) {
-    const row = +this.globalBooleanVariables.areDisplayRowsFlipped.get(context);
+    const row = +this.globalState.areDisplayRowsFlipped.get(context);
 
     // Skip updating the lower display row on MCU Pro when horizontal metering mode is enabled
     if (
       DEVICE_NAME === "MCU Pro" &&
       row === 1 &&
-      this.globalBooleanVariables.areChannelMetersEnabled.get(context) &&
-      !this.globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
+      this.globalState.areChannelMetersEnabled.get(context) &&
+      !this.globalState.isGlobalLcdMeterModeVertical.get(context)
     ) {
       return;
     }
@@ -173,21 +167,21 @@ export class ChannelTextManager {
       context,
       row,
       this.isLocalValueModeActive.get(context) ||
-        this.globalBooleanVariables.isValueDisplayModeActive.get(context)
+        this.globalState.isValueDisplayModeActive.get(context)
         ? this.parameterValue.get(context)
         : this.parameterName.get(context),
     );
   }
 
   private updateTrackTitleDisplay(context: MR_ActiveDevice) {
-    const row = 1 - +this.globalBooleanVariables.areDisplayRowsFlipped.get(context);
+    const row = 1 - +this.globalState.areDisplayRowsFlipped.get(context);
 
     // Skip updating the lower display row on MCU Pro when horizontal metering mode is enabled
     if (
       DEVICE_NAME === "MCU Pro" &&
       row === 1 &&
-      this.globalBooleanVariables.areChannelMetersEnabled.get(context) &&
-      !this.globalBooleanVariables.isGlobalLcdMeterModeVertical.get(context)
+      this.globalState.areChannelMetersEnabled.get(context) &&
+      !this.globalState.isGlobalLcdMeterModeVertical.get(context)
     ) {
       return;
     }

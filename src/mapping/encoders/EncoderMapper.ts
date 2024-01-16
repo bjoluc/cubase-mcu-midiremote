@@ -3,7 +3,7 @@ import { SegmentDisplayManager } from "../../midi/managers/SegmentDisplayManager
 
 import { DecoratedFactoryMappingPage } from "../../decorators/page";
 import { Device, MainDevice } from "../../devices";
-import { GlobalBooleanVariables } from "../../midi";
+import { GlobalState } from "../../state";
 import { EncoderPage, EncoderPageConfig } from "./EncoderPage";
 
 export class EncoderMapper {
@@ -21,7 +21,7 @@ export class EncoderMapper {
     devices: Device[],
     private readonly mixerBankChannels: MR_MixerBankChannel[],
     private readonly segmentDisplayManager: SegmentDisplayManager,
-    private readonly globalBooleanVariables: GlobalBooleanVariables,
+    private readonly globalState: GlobalState,
   ) {
     this.channelElements = devices.flatMap((device) => device.channelElements);
     this.deviceButtons = devices
@@ -69,7 +69,7 @@ export class EncoderMapper {
         this.channelElements,
         this.mixerBankChannels,
         this.segmentDisplayManager,
-        this.globalBooleanVariables,
+        this.globalState,
       );
     });
 

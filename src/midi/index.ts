@@ -1,7 +1,8 @@
 import { config } from "../config";
 import { TouchSensitiveFader } from "../decorators/surface";
 import { Device, MainDevice } from "../devices";
-import { BooleanContextStateVariable, ContextStateVariable, createElements } from "../util";
+import { GlobalState } from "../state";
+import { ContextStateVariable } from "../util";
 import { PortPair } from "./PortPair";
 import { ActivationCallbacks } from "./connection";
 import { RgbColor } from "./managers/ColorManager";
@@ -14,24 +15,9 @@ export enum EncoderDisplayMode {
   Spread = 3,
 }
 
-/** Declares some global context-dependent variables that (may) affect multiple devices */
-export const createGlobalBooleanVariables = () => ({
-  areMotorsActive: new BooleanContextStateVariable(),
-  isValueDisplayModeActive: new BooleanContextStateVariable(),
-  areDisplayRowsFlipped: new BooleanContextStateVariable(),
-  isEncoderAssignmentActive: createElements(6, () => new BooleanContextStateVariable()),
-  isFlipModeActive: new BooleanContextStateVariable(),
-  isShiftModeActive: new BooleanContextStateVariable<[MR_ActiveMapping]>(),
-  areChannelMetersEnabled: new BooleanContextStateVariable(),
-  isGlobalLcdMeterModeVertical: new BooleanContextStateVariable(),
-  shouldMeterOverloadsBeCleared: new BooleanContextStateVariable(true),
-});
-
-export type GlobalBooleanVariables = ReturnType<typeof createGlobalBooleanVariables>;
-
 export function bindDeviceToMidi(
   device: Device,
-  globalBooleanVariables: GlobalBooleanVariables,
+  globalState: GlobalState,
   activationCallbacks: ActivationCallbacks,
 ) {
   const ports = device.ports;
@@ -62,7 +48,7 @@ export function bindDeviceToMidi(
     fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
       // Prevent identical messages to reduce fader noise
       if (
-        globalBooleanVariables.areMotorsActive.get(context) &&
+        globalState.areMotorsActive.get(context) &&
         !isFaderTouched.get(context) &&
         (difference !== 0 || lastFaderValue.get(context) === 0 || forceUpdate.get(context))
       ) {
@@ -80,14 +66,14 @@ export function bindDeviceToMidi(
         fader.mSurfaceValue.setProcessValue(context, 0);
         // `mOnProcessValueChange` somehow isn't run here on `setProcessValue()`, hence:
         lastFaderValue.set(context, 0);
-        if (globalBooleanVariables.areMotorsActive.get(context)) {
+        if (globalState.areMotorsActive.get(context)) {
           forceUpdate.set(context, false);
           sendValue(context, 0);
         }
       }
     };
 
-    globalBooleanVariables.areMotorsActive.addOnChangeCallback((context, areMotorsActive) => {
+    globalState.areMotorsActive.addOnChangeCallback((context, areMotorsActive) => {
       if (areMotorsActive) {
         sendValue(context, lastFaderValue.get(context));
       }
@@ -200,7 +186,7 @@ export function bindDeviceToMidi(
     };
 
     if (DEVICE_NAME === "MCU Pro") {
-      globalBooleanVariables.areChannelMetersEnabled.addOnChangeCallback(
+      globalState.areChannelMetersEnabled.addOnChangeCallback(
         (context, areMetersEnabled) => {
           sendChannelMeterMode(context, ports.output, channelIndex, areMetersEnabled);
         },
@@ -213,7 +199,7 @@ export function bindDeviceToMidi(
       sendMeterLevel(context, ports.output, channelIndex, 0xf);
     };
 
-    globalBooleanVariables.shouldMeterOverloadsBeCleared.addOnChangeCallback(
+    globalState.shouldMeterOverloadsBeCleared.addOnChangeCallback(
       (context, shouldOverloadsBeCleared) => {
         if (shouldOverloadsBeCleared) {
           clearOverload(context);
@@ -238,11 +224,9 @@ export function bindDeviceToMidi(
 
   if (DEVICE_NAME === "MCU Pro") {
     // Handle metering mode changes (globally)
-    globalBooleanVariables.isGlobalLcdMeterModeVertical.addOnChangeCallback(
-      (context, isMeterModeVertical) => {
-        sendGlobalMeterModeOrientation(context, ports.output, isMeterModeVertical);
-      },
-    );
+    globalState.isGlobalLcdMeterModeVertical.addOnChangeCallback((context, isMeterModeVertical) => {
+      sendGlobalMeterModeOrientation(context, ports.output, isMeterModeVertical);
+    });
   }
 
   if (DEVICE_NAME === "X-Touch") {
@@ -273,14 +257,11 @@ export function bindDeviceToMidi(
 
     bindFader(ports, elements.mainFader, 8);
 
-    globalBooleanVariables.isFlipModeActive.addOnChangeCallback((context, value) => {
+    globalState.isFlipModeActive.addOnChangeCallback((context, value) => {
       buttons.flip.mLedValue.setProcessValue(context, +value);
     });
 
-    for (const [
-      buttonIndex,
-      isActive,
-    ] of globalBooleanVariables.isEncoderAssignmentActive.entries()) {
+    for (const [buttonIndex, isActive] of globalState.isEncoderAssignmentActive.entries()) {
       isActive.addOnChangeCallback((context, value) => {
         buttons.encoderAssign[buttonIndex].mLedValue.setProcessValue(context, +value);
       });
