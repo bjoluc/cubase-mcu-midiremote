@@ -111,7 +111,7 @@ export function makeHostMapping(
     const { time, timeFormat } = initialTransportLocatorPosition.get(context);
     segmentDisplayManager.updateTime(context, time, timeFormat);
 
-    // TODO: This is a workaround forcing the Beats/SMPTE LEDs to be set. It is required since
+    // This is a workaround forcing the Beats/SMPTE LEDs to be set. It is required since
     // calling `myHostValue.setProcessValue()` doesn't trigger `mOnProcessValueChange` when called
     // on device driver activation.
     for (const device of devices) {

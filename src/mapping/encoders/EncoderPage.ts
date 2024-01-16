@@ -247,9 +247,7 @@ export class EncoderPage implements EncoderPageConfig {
       this.pagesCount === 1 ? "  " : `${this.index + 1}.${this.pagesCount}`,
     );
 
-    for (const [assignmentId, isActive] of this.globalState.isEncoderAssignmentActive.entries()) {
-      isActive.set(context, this.assignmentButtonIndex === assignmentId);
-    }
+    this.globalState.activeEncoderAssignmentId.set(context, this.assignmentButtonIndex);
 
     for (const [encoderIndex, { encoder }] of this.channelElements.entries()) {
       encoder.mDisplayModeValue.setProcessValue(

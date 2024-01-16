@@ -87,6 +87,17 @@ export function bindControlSection(
     setShiftableButtonsLedValues(controlSectionElements, context, +value);
   });
 
+  // Encoder assignment buttons
+  globalState.activeEncoderAssignmentId.addOnChangeCallback((context, activeAssignmentId) => {
+    for (const [buttonIndex, button] of buttons.encoderAssign.entries()) {
+      button.mLedValue.setProcessValue(context, +(buttonIndex === activeAssignmentId));
+    }
+  });
+
+  globalState.isFlipModeActive.addOnChangeCallback((context, value) => {
+    buttons.flip.mLedValue.setProcessValue(context, +value);
+  });
+
   // Display mode button
   page
     .makeValueBinding(

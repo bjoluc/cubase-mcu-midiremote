@@ -257,16 +257,6 @@ export function bindDeviceToMidi(
 
     bindFader(ports, elements.mainFader, 8);
 
-    globalState.isFlipModeActive.addOnChangeCallback((context, value) => {
-      buttons.flip.mLedValue.setProcessValue(context, +value);
-    });
-
-    for (const [buttonIndex, isActive] of globalState.isEncoderAssignmentActive.entries()) {
-      isActive.addOnChangeCallback((context, value) => {
-        buttons.encoderAssign[buttonIndex].mLedValue.setProcessValue(context, +value);
-      });
-    }
-
     for (const [index, button] of [
       ...[0, 3, 1, 4, 2, 5].map((index) => buttons.encoderAssign[index]),
       buttons.navigation.bank.left,
