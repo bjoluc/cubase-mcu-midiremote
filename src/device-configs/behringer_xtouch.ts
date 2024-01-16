@@ -5,21 +5,30 @@
 
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { DecoratedDeviceSurface } from "../decorators/surface";
+import { LedButton } from "../decorators/surface-elements/LedButton";
 import { createElements, getArrayElements } from "../util";
 
 const channelWidth = 5;
 const channelElementsWidth = 8 * channelWidth;
 const surfaceHeight = 45;
 
-function makeSquareButton(surface: DecoratedDeviceSurface, x: number, y: number) {
-  return surface.makeLedButton(x + 0.25, y, 1.5, 1.5);
+function makeSquareButton(
+  surface: DecoratedDeviceSurface,
+  x: number,
+  y: number,
+  isChannelButton = false,
+) {
+  return new LedButton(surface, { position: [x + 0.25, y, 1.5, 1.5], isChannelButton });
 }
 
 function makeChannelElements(surface: DecoratedDeviceSurface, x: number): ChannelSurfaceElements[] {
   return createElements(8, (index) => {
     const currentChannelXPosition = x + index * channelWidth;
     const encoder = surface.makeLedPushEncoder(currentChannelXPosition + 1, 3, 4, 4);
-    const selectButton = surface.makeLedButton(2 + currentChannelXPosition + 0.8, 18, 2, 1.5);
+    const selectButton = new LedButton(surface, {
+      position: [2 + currentChannelXPosition + 0.8, 18, 2, 1.5],
+      isChannelButton: true,
+    });
 
     // Channel meter
     surface.makeBlindPanel(currentChannelXPosition + 1.2, 11.5, 0.65, 8);
@@ -39,9 +48,12 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
       },
       vuMeter: surface.makeCustomValueVariable("vuMeter"),
       buttons: {
-        record: surface.makeLedButton(currentChannelXPosition + 2.25 + 0.8, 11.5, 1.5, 1.25),
-        solo: makeSquareButton(surface, 2 + currentChannelXPosition + 0.8, 13.5),
-        mute: makeSquareButton(surface, 2 + currentChannelXPosition + 0.8, 15.75),
+        record: new LedButton(surface, {
+          position: [currentChannelXPosition + 2.25 + 0.8, 11.5, 1.5, 1.25],
+          isChannelButton: true,
+        }),
+        solo: makeSquareButton(surface, 2 + currentChannelXPosition + 0.8, 13.5, true),
+        mute: makeSquareButton(surface, 2 + currentChannelXPosition + 0.8, 15.75, true),
         select: selectButton,
       },
 
@@ -114,8 +126,8 @@ export const deviceConfig: DeviceConfig = {
         buttons: {
           display: makeSquareButton(surface, x + 2, 7.9),
           timeMode: makeSquareButton(surface, x + 23.85, 7.9),
-          edit: surface.makeLedButton(x + 2, 11.75, 2, 1.5),
-          flip: surface.makeLedButton(x + 2, 18, 2, 1.5),
+          edit: new LedButton(surface, { position: [x + 2, 11.75, 2, 1.5] }),
+          flip: new LedButton(surface, { position: [x + 2, 18, 2, 1.5] }),
           scrub: makeSquareButton(surface, x + 23.85, 31.75),
 
           encoderAssign: createElements(6, (index) =>
@@ -132,8 +144,10 @@ export const deviceConfig: DeviceConfig = {
           utility: getArrayElements(miscControlButtons, [5, 6, 12, 13]),
           transport: [
             ...miscControlButtons.slice(14),
-            ...createElements(5, (index) =>
-              surface.makeLedButton(x + 6.25 + index * 4.0625, 28.5, 3.1, 2.1),
+            ...createElements(
+              5,
+              (index) =>
+                new LedButton(surface, { position: [x + 6.25 + index * 4.0625, 28.5, 3.1, 2.1] }),
             ),
           ],
 

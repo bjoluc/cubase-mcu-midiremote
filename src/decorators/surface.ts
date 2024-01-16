@@ -1,14 +1,4 @@
-import { EnhancedMidiOutput, PortPair } from "../midi/PortPair";
-import { CallbackCollection, createElements } from "../util";
-import { enhanceButtonToLedButton } from "./button";
-
-export interface LedButton extends MR_Button {
-  mLedValue: MR_SurfaceCustomValueVariable;
-  onSurfaceValueChange: CallbackCollection<
-    Parameters<MR_Button["mSurfaceValue"]["mOnProcessValueChange"]>
-  >;
-  bindToNote: (ports: PortPair, note: number, isChannelButton?: boolean) => void;
-}
+import { EnhancedMidiOutput } from "../midi/PortPair";
 
 export interface LedPushEncoder extends MR_PushEncoder {
   mDisplayModeValue: MR_SurfaceCustomValueVariable;
@@ -31,15 +21,6 @@ export interface DecoratedLamp extends MR_Lamp {
 }
 
 export interface DecoratedDeviceSurface extends MR_DeviceSurface {
-  makeLedButton: (...args: Parameters<MR_DeviceSurface["makeButton"]>) => LedButton;
-
-  /**
-   * Creates a mock LedButton that doesn't have a surface element, but uses a `customValueVariable`
-   * internally. While it's typed as a button for convenience, it doesn't implement all the button
-   * methods, like `setTypeToggle()` and friends.
-   */
-  makeHiddenLedButton: () => LedButton;
-  makeHiddenLedButtons: (numberOfButtons: number) => LedButton[];
   makeLedPushEncoder: (...args: Parameters<MR_DeviceSurface["makePushEncoder"]>) => LedPushEncoder;
   makeTouchSensitiveFader: (
     ...args: Parameters<MR_DeviceSurface["makeFader"]>
@@ -50,18 +31,6 @@ export interface DecoratedDeviceSurface extends MR_DeviceSurface {
 
 export function decorateSurface(surface: MR_DeviceSurface) {
   const decoratedSurface = surface as DecoratedDeviceSurface;
-
-  decoratedSurface.makeLedButton = (...args) =>
-    enhanceButtonToLedButton(surface.makeButton(...args), surface);
-
-  decoratedSurface.makeHiddenLedButton = () =>
-    enhanceButtonToLedButton(
-      { mSurfaceValue: surface.makeCustomValueVariable("HiddenLedButton") } as MR_Button,
-      surface,
-    );
-
-  decoratedSurface.makeHiddenLedButtons = (numberOfButtons) =>
-    createElements(numberOfButtons, () => decoratedSurface.makeHiddenLedButton());
 
   decoratedSurface.makeLedPushEncoder = (...args) => {
     const encoder = surface.makePushEncoder(...args) as LedPushEncoder;

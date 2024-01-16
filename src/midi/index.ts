@@ -215,7 +215,7 @@ export function bindDeviceToMidi(
       buttons.mute,
       buttons.select,
     ].entries()) {
-      button.bindToNote(ports, row * 8 + channelIndex, true);
+      button.bindToNote(ports, row * 8 + channelIndex);
     }
 
     // Fader

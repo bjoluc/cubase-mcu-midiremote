@@ -3,6 +3,7 @@
  * @device QCon Pro G2
  */
 
+import { LedButton } from "src/decorators/surface-elements/LedButton";
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { DecoratedDeviceSurface } from "../decorators/surface";
 import { createElements, getArrayElements } from "../util";
@@ -14,8 +15,13 @@ const surfaceHeight = 39.5;
 const buttonRowHeight = 2.35;
 const buttonDistance = 2.55;
 
-function makeSquareButton(surface: DecoratedDeviceSurface, x: number, y: number) {
-  return surface.makeLedButton(x, y, 1.8, 1.5);
+function makeSquareButton(
+  surface: DecoratedDeviceSurface,
+  x: number,
+  y: number,
+  isChannelButton = false,
+) {
+  return new LedButton(surface, { position: [x, y, 1.8, 1.5], isChannelButton });
 }
 
 function makeChannelElements(surface: DecoratedDeviceSurface, x: number): ChannelSurfaceElements[] {
@@ -33,10 +39,20 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
       },
       vuMeter: surface.makeCustomValueVariable("vuMeter"),
       buttons: {
-        record: makeSquareButton(surface, 4 + currentChannelXPosition, 13),
-        solo: makeSquareButton(surface, 4 + currentChannelXPosition, 13 + buttonRowHeight),
-        mute: makeSquareButton(surface, 4 + currentChannelXPosition, 13 + buttonRowHeight * 2),
-        select: makeSquareButton(surface, 4 + currentChannelXPosition, 13 + buttonRowHeight * 3),
+        record: makeSquareButton(surface, 4 + currentChannelXPosition, 13, true),
+        solo: makeSquareButton(surface, 4 + currentChannelXPosition, 13 + buttonRowHeight, true),
+        mute: makeSquareButton(
+          surface,
+          4 + currentChannelXPosition,
+          13 + buttonRowHeight * 2,
+          true,
+        ),
+        select: makeSquareButton(
+          surface,
+          4 + currentChannelXPosition,
+          13 + buttonRowHeight * 3,
+          true,
+        ),
       },
 
       fader: surface.makeTouchSensitiveFader(4 + currentChannelXPosition, 24.4, 1.8, 12),
@@ -99,13 +115,17 @@ export const deviceConfig: DeviceConfig = {
       ),
     );
 
-    const layer2FunctionButtons = createElements(8, (index) =>
-      surface.makeLedButton(
-        x + 3.5 + ((index % 4) + 2) * buttonDistance,
-        13 + buttonRowHeight * (Math.floor(index / 4) + 0.5) - 0.9,
-        1.8,
-        0.75,
-      ),
+    const layer2FunctionButtons = createElements(
+      8,
+      (index) =>
+        new LedButton(surface, {
+          position: [
+            x + 3.5 + ((index % 4) + 2) * buttonDistance,
+            13 + buttonRowHeight * (Math.floor(index / 4) + 0.5) - 0.9,
+            1.8,
+            0.75,
+          ],
+        }),
     );
 
     return {
@@ -126,7 +146,7 @@ export const deviceConfig: DeviceConfig = {
           encoderAssign: createElements(6, (index) =>
             makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 2),
           ),
-          number: [...layer2FunctionButtons.slice(0, 7), surface.makeHiddenLedButton()],
+          number: [...layer2FunctionButtons.slice(0, 7), new LedButton(surface)],
           function: createElements(8, (index) =>
             makeSquareButton(
               surface,
@@ -134,7 +154,7 @@ export const deviceConfig: DeviceConfig = {
               13 + buttonRowHeight * (Math.floor(index / 4) - 0.5),
             ),
           ),
-          modify: [...upperControlButtons.slice(2, 5), surface.makeHiddenLedButton()],
+          modify: [...upperControlButtons.slice(2, 5), new LedButton(surface)],
           automation: createElements(6, (index) =>
             makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 3),
           ),
@@ -145,14 +165,18 @@ export const deviceConfig: DeviceConfig = {
           ],
           transport: [
             ...getArrayElements(lowerControlButtons, [6, 7, 4]),
-            surface.makeHiddenLedButton(), //Cycle
-            ...createElements(3, (index) =>
-              surface.makeLedButton(
-                x + 3.5 + index * buttonDistance,
-                23.5 + buttonRowHeight * 2 - 0.5,
-                1.8,
-                0.75,
-              ),
+            new LedButton(surface), //Cycle
+            ...createElements(
+              3,
+              (index) =>
+                new LedButton(surface, {
+                  position: [
+                    x + 3.5 + index * buttonDistance,
+                    23.5 + buttonRowHeight * 2 - 0.5,
+                    1.8,
+                    0.75,
+                  ],
+                }),
             ),
             ...getArrayElements(lowerControlButtons, [3, 5, 11, 10, 9]),
           ],

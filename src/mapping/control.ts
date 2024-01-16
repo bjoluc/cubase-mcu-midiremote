@@ -1,6 +1,7 @@
+import { LedButton } from "src/decorators/surface-elements/LedButton";
 import { config } from "../config";
 import { DecoratedFactoryMappingPage } from "../decorators/page";
-import { JogWheel, LedButton, LedPushEncoder } from "../decorators/surface";
+import { JogWheel, LedPushEncoder } from "../decorators/surface";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../device-configs";
 import { EncoderDisplayMode } from "../midi";
 import { GlobalState } from "../state";

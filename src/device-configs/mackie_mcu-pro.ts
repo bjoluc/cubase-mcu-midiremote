@@ -4,8 +4,8 @@
  */
 
 import { ChannelSurfaceElements, DeviceConfig } from ".";
-import { LedButton } from "../decorators/button";
 import { DecoratedDeviceSurface, DecoratedLamp } from "../decorators/surface";
+import { LedButton } from "../decorators/surface-elements/LedButton";
 import { createElements, getArrayElements } from "../util";
 
 const channelWidth = 4;
@@ -13,15 +13,18 @@ const channelElementsWidth = 8 * channelWidth;
 const surfaceHeight = 64;
 
 function makeChannelButton(surface: DecoratedDeviceSurface, channelX: number, buttonY: number) {
-  return surface.makeLedButton(0.75 + channelX, buttonY, 2.5, 1.8);
+  return new LedButton(surface, {
+    position: [0.75 + channelX, buttonY, 2.5, 1.8],
+    isChannelButton: true,
+  });
 }
 
 function makeControlButton(surface: DecoratedDeviceSurface, x: number, y: number) {
-  return surface.makeLedButton(x, y, 2.25, 1.75);
+  return new LedButton(surface, { position: [x, y, 2.25, 1.75] });
 }
 
 function makeSmallButton(surface: DecoratedDeviceSurface, x: number, y: number) {
-  return surface.makeLedButton(x + 0.25, y, 1.5, 1.25);
+  return new LedButton(surface, { position: [x + 0.25, y, 1.5, 1.25] });
 }
 
 function makeChannelElements(surface: DecoratedDeviceSurface, x: number): ChannelSurfaceElements[] {
@@ -39,7 +42,10 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
       },
       vuMeter: surface.makeCustomValueVariable("vuMeter"),
       buttons: {
-        record: surface.makeLedButton(currentChannelXPosition + 1, 20.25, 2, 1.8),
+        record: new LedButton(surface, {
+          position: [currentChannelXPosition + 1, 20.25, 2, 1.8],
+          isChannelButton: true,
+        }),
         solo: makeChannelButton(surface, currentChannelXPosition, 25),
         mute: makeChannelButton(surface, currentChannelXPosition, 27.5),
         select: makeChannelButton(surface, currentChannelXPosition, 30),
@@ -124,7 +130,9 @@ export const deviceConfig: DeviceConfig = {
           timeMode: makeSmallButton(surface, x + 9.575, 16.5),
           edit: makeControlButton(surface, x + 3.25, 30.25),
           flip: makeControlButton(surface, x + 0.75, 30.25),
-          scrub: surface.makeLedButton(x + 24.25, 50.25, 2.5, 2.5).setShapeCircle() as LedButton,
+          scrub: new LedButton(surface, {
+            position: [x + 24.25, 50.25, 2.5, 2.5],
+          }).setShapeCircle(),
 
           encoderAssign: createElements(6, (index) =>
             makeControlButton(surface, x + 0.75 + (index < 3 ? 0 : 2.5), 16.25 + (index % 3) * 2.5),
@@ -140,13 +148,12 @@ export const deviceConfig: DeviceConfig = {
           utility: getArrayElements(miscControlButtons, [5, 6, 12, 13]),
           transport: [
             ...miscControlButtons.slice(14),
-            ...createElements(5, (index) =>
-              surface.makeLedButton(
-                x + 7.75 + index * 3.65 + (index === 4 ? 0.35 : 0),
-                44.6,
-                3.75,
-                3,
-              ),
+            ...createElements(
+              5,
+              (index) =>
+                new LedButton(surface, {
+                  position: [x + 7.75 + index * 3.65 + (index === 4 ? 0.35 : 0), 44.6, 3.75, 3],
+                }),
             ),
           ],
 
@@ -160,11 +167,21 @@ export const deviceConfig: DeviceConfig = {
               right: makeControlButton(surface, x + 3.25, 27.5),
             },
             directions: {
-              left: surface.makeLedButton(x + 7, 51.5, 2.5, 2.5).setShapeCircle() as LedButton,
-              right: surface.makeLedButton(x + 13, 51.5, 2.5, 2.5).setShapeCircle() as LedButton,
-              up: surface.makeLedButton(x + 10, 49, 2.5, 2.5).setShapeCircle() as LedButton,
-              center: surface.makeLedButton(x + 10, 51.5, 2.5, 2.5).setShapeCircle() as LedButton,
-              down: surface.makeLedButton(x + 10, 54, 2.5, 2.5).setShapeCircle() as LedButton,
+              left: new LedButton(surface, {
+                position: [x + 7, 51.5, 2.5, 2.5],
+              }).setShapeCircle(),
+              right: new LedButton(surface, {
+                position: [x + 13, 51.5, 2.5, 2.5],
+              }).setShapeCircle(),
+              up: new LedButton(surface, {
+                position: [x + 10, 49, 2.5, 2.5],
+              }).setShapeCircle(),
+              center: new LedButton(surface, {
+                position: [x + 10, 51.5, 2.5, 2.5],
+              }).setShapeCircle(),
+              down: new LedButton(surface, {
+                position: [x + 10, 54, 2.5, 2.5],
+              }).setShapeCircle(),
             },
           },
         },
