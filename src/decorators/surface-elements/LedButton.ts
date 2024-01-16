@@ -1,14 +1,5 @@
 import { PortPair } from "/midi/PortPair";
-import { CallbackCollection, makeCallbackCollection } from "/util";
-
-// TS merges this declaration with the `LedButton` class below
-export interface LedButton extends MR_Button {
-  setControlLayer: (controlLayer: MR_ControlLayer) => LedButton;
-  setShapeCircle: () => LedButton;
-  setShapeRectangle: () => LedButton;
-  setTypePush: () => LedButton;
-  setTypeToggle: () => LedButton;
-}
+import { makeCallbackCollection } from "/util";
 
 interface LedButtonOptions {
   /**
@@ -22,15 +13,7 @@ interface LedButtonOptions {
   isChannelButton?: boolean;
 }
 
-/**
- * An extension to MR_Button that
- *
- *  * provides an `mLedValue` property which can be used to enable or disable the button's LED
- *    independently of the button's `mSurfaceValue`.
- *  * always lights up the button's LED while the button is being held down
- *  * can be configured to be invisible
- */
-export class LedButton {
+class LedButtonDecorator {
   /**
    * Binding the button's `mSurfaceValue` to a host function may alter it to not change when the
    * button is pressed. In order to reliably detect when the button is pressed, we create a
@@ -38,32 +21,13 @@ export class LedButton {
    */
   private shadowValue = this.surface.makeCustomValueVariable("LedButtonProxy");
 
-  private button: MR_Button;
-
   constructor(
-    private readonly surface: MR_DeviceSurface,
-    private readonly options: LedButtonOptions = {},
-  ) {
-    this.button = options.position
-      ? surface.makeButton(...options.position)
-      : ({
-          mSurfaceValue: surface.makeCustomValueVariable("HiddenLedButton"),
-          setControlLayer: () => this.button,
-          setShapeCircle: () => this.button,
-          setShapeRectangle: () => this.button,
-          setTypePush: () => this.button,
-          setTypeToggle: () => this.button,
-        } as MR_Button);
+    private surface: MR_DeviceSurface,
+    private button: MR_Button,
+    private readonly options: LedButtonOptions,
+  ) {}
 
-    this.onSurfaceValueChange = makeCallbackCollection(
-      this.button.mSurfaceValue,
-      "mOnProcessValueChange",
-    );
-
-    return Object.assign(this.button, this) as LedButton;
-  }
-
-  onSurfaceValueChange: CallbackCollection<[MR_ActiveDevice, number, number]>;
+  onSurfaceValueChange = makeCallbackCollection(this.button.mSurfaceValue, "mOnProcessValueChange");
 
   mLedValue = this.surface.makeCustomValueVariable("LedButtonLed");
 
@@ -100,4 +64,40 @@ export class LedButton {
       };
     }
   };
+}
+
+/**
+ * An extension to MR_Button that
+ *
+ *  * provides an `mLedValue` property which can be used to enable or disable the button's LED
+ *    independently of the button's `mSurfaceValue`.
+ *  * always lights up the button's LED while the button is being held down
+ *  * can be configured to be invisible
+ */
+export class LedButton extends LedButtonDecorator {
+  constructor(surface: MR_DeviceSurface, options: LedButtonOptions = {}) {
+    const button: MR_Button = options.position
+      ? surface.makeButton(...options.position)
+      : {
+          mSurfaceValue: surface.makeCustomValueVariable("HiddenLedButton"),
+          setControlLayer: () => button,
+          setShapeCircle: () => button,
+          setShapeRectangle: () => button,
+          setTypePush: () => button,
+          setTypeToggle: () => button,
+        };
+
+    super(surface, button, options);
+
+    return Object.assign(button, this);
+  }
+}
+
+// TS merges this declaration with the `LedButton` class above
+export interface LedButton extends MR_Button {
+  setControlLayer: (controlLayer: MR_ControlLayer) => LedButton;
+  setShapeCircle: () => LedButton;
+  setShapeRectangle: () => LedButton;
+  setTypePush: () => LedButton;
+  setTypeToggle: () => LedButton;
 }
