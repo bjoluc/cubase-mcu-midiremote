@@ -3,10 +3,10 @@
  * @device QCon Pro G2
  */
 
-import { LedButton } from "src/decorators/surface-elements/LedButton";
 import { ChannelSurfaceElements, DeviceConfig } from ".";
-import { DecoratedDeviceSurface } from "../decorators/surface";
-import { createElements, getArrayElements } from "../util";
+import { DecoratedDeviceSurface } from "/decorators/surface";
+import { LedButton } from "/decorators/surface-elements/LedButton";
+import { createElements, getArrayElements } from "/util";
 
 const channelWidth = 3.75;
 const channelElementsWidth = 4 + 8 * channelWidth;

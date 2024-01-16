@@ -1,5 +1,5 @@
-import { Device, MainDevice } from "../../devices";
-import { ContextStateVariable, createElements } from "../../util";
+import { Device, MainDevice } from "/devices";
+import { ContextStateVariable, createElements } from "/util";
 
 export class SegmentDisplayManager {
   private devices: MainDevice[];

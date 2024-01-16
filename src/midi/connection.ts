@@ -1,6 +1,6 @@
-import { Device } from "../devices";
-import { makeCallbackCollection } from "../util";
 import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
+import { Device } from "/devices";
+import { makeCallbackCollection } from "/util";
 
 export type ActivationCallbacks = ReturnType<typeof setupDeviceConnection>["activationCallbacks"];
 

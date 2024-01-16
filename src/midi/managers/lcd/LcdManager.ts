@@ -1,7 +1,7 @@
-import { Device } from "../../../devices";
-import { GlobalState } from "../../../state";
-import { TimerUtils, createElements } from "../../../util";
 import { ChannelTextManager } from "./ChannelTextManager";
+import { Device } from "/devices";
+import { GlobalState } from "/state";
+import { TimerUtils, createElements } from "/util";
 
 export class LcdManager {
   static readonly channelWidth = DEVICE_NAME === "X-Touch" ? 7 : 6;

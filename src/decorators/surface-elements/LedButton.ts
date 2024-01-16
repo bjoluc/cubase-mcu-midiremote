@@ -1,5 +1,5 @@
-import { PortPair } from "../../midi/PortPair";
-import { CallbackCollection, makeCallbackCollection } from "../../util";
+import { PortPair } from "/midi/PortPair";
+import { CallbackCollection, makeCallbackCollection } from "/util";
 
 // TS merges this declaration with the `LedButton` class below
 export interface LedButton extends MR_Button {

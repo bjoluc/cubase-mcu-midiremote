@@ -4,9 +4,9 @@
  */
 
 import { ChannelSurfaceElements, DeviceConfig } from ".";
-import { DecoratedDeviceSurface } from "../decorators/surface";
-import { LedButton } from "../decorators/surface-elements/LedButton";
-import { createElements, getArrayElements } from "../util";
+import { DecoratedDeviceSurface } from "/decorators/surface";
+import { LedButton } from "/decorators/surface-elements/LedButton";
+import { createElements, getArrayElements } from "/util";
 
 const channelWidth = 5;
 const channelElementsWidth = 8 * channelWidth;

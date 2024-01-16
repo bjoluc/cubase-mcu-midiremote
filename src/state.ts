@@ -1,4 +1,4 @@
-import { BooleanContextStateVariable, ObservableContextStateVariable } from "./util";
+import { BooleanContextStateVariable, ObservableContextStateVariable } from "/util";
 
 /** Declares some global context-dependent variables that (may) affect multiple devices */
 export const createGlobalState = () => ({

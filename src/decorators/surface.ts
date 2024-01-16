@@ -1,4 +1,4 @@
-import { EnhancedMidiOutput } from "../midi/PortPair";
+import { EnhancedMidiOutput } from "/midi/PortPair";
 
 export interface LedPushEncoder extends MR_PushEncoder {
   mDisplayModeValue: MR_SurfaceCustomValueVariable;

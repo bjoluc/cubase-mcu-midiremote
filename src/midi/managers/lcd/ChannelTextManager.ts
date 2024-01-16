@@ -1,8 +1,8 @@
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
-import { GlobalState } from "../../../state";
-import { ContextStateVariable, TimerUtils } from "../../../util";
 import { LcdManager } from "./LcdManager";
+import { GlobalState } from "/state";
+import { ContextStateVariable, TimerUtils } from "/util";
 
 /**
  * Handles the LCD display text of a single channel

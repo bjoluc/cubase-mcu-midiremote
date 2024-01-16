@@ -1,15 +1,15 @@
-import { config, deviceConfig } from "./config";
-import { DecoratedDeviceSurface } from "./decorators/surface";
 import {
   ChannelSurfaceElements,
   ControlSectionSurfaceElements,
   DeviceSurface,
 } from "./device-configs";
-import { PortPair, makePortPair } from "./midi/PortPair";
-import { ColorManager } from "./midi/managers/ColorManager";
-import { LcdManager } from "./midi/managers/lcd";
-import { GlobalState } from "./state";
-import { TimerUtils } from "./util";
+import { config, deviceConfig } from "/config";
+import { DecoratedDeviceSurface } from "/decorators/surface";
+import { PortPair, makePortPair } from "/midi/PortPair";
+import { ColorManager } from "/midi/managers/ColorManager";
+import { LcdManager } from "/midi/managers/lcd";
+import { GlobalState } from "/state";
+import { TimerUtils } from "/util";
 
 /**
  * A `Device` represents a physical device and manages its MIDI ports and surface elements

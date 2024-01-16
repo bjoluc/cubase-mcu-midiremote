@@ -1,10 +1,10 @@
-import { LedButton } from "src/decorators/surface-elements/LedButton";
-import { config } from "../config";
-import { DecoratedFactoryMappingPage } from "../decorators/page";
-import { JogWheel, LedPushEncoder } from "../decorators/surface";
-import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../device-configs";
-import { EncoderDisplayMode } from "../midi";
-import { GlobalState } from "../state";
+import { config } from "/config";
+import { DecoratedFactoryMappingPage } from "/decorators/page";
+import { JogWheel, LedPushEncoder } from "/decorators/surface";
+import { LedButton } from "/decorators/surface-elements/LedButton";
+import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "/device-configs";
+import { EncoderDisplayMode } from "/midi";
+import { GlobalState } from "/state";
 
 function setShiftableButtonsLedValues(
   controlSectionElements: ControlSectionSurfaceElements,

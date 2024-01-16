@@ -1,12 +1,12 @@
-import { config } from "../config";
-import { TouchSensitiveFader } from "../decorators/surface";
-import { Device, MainDevice } from "../devices";
-import { GlobalState } from "../state";
-import { ContextStateVariable } from "../util";
 import { PortPair } from "./PortPair";
 import { ActivationCallbacks } from "./connection";
 import { RgbColor } from "./managers/ColorManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
+import { config } from "/config";
+import { TouchSensitiveFader } from "/decorators/surface";
+import { Device, MainDevice } from "/devices";
+import { GlobalState } from "/state";
+import { ContextStateVariable } from "/util";
 
 export enum EncoderDisplayMode {
   SingleDot = 0,

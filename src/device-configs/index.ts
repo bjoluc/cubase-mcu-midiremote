@@ -4,8 +4,8 @@ import {
   JogWheel,
   LedPushEncoder,
   TouchSensitiveFader,
-} from "../decorators/surface";
-import { LedButton } from "../decorators/surface-elements/LedButton";
+} from "/decorators/surface";
+import { LedButton } from "/decorators/surface-elements/LedButton";
 
 export interface DeviceSurface {
   width: number;

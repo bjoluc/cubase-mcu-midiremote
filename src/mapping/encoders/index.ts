@@ -1,13 +1,13 @@
 import { mDefaults } from "midiremote_api_v1";
-import { config } from "../../config";
-import { DecoratedFactoryMappingPage } from "../../decorators/page";
-import { Device, MainDevice } from "../../devices";
-import { EncoderDisplayMode } from "../../midi";
-import { SegmentDisplayManager } from "../../midi/managers/SegmentDisplayManager";
-import { GlobalState } from "../../state";
-import { createElements } from "../../util";
 import { EncoderMapper } from "./EncoderMapper";
 import { EncoderAssignmentConfig } from "./EncoderPage";
+import { config } from "/config";
+import { DecoratedFactoryMappingPage } from "/decorators/page";
+import { Device, MainDevice } from "/devices";
+import { EncoderDisplayMode } from "/midi";
+import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
+import { GlobalState } from "/state";
+import { createElements } from "/util";
 
 export function bindEncoders(
   page: DecoratedFactoryMappingPage,

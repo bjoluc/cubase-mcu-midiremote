@@ -1,11 +1,11 @@
-import { config } from "../../config";
-import { DecoratedFactoryMappingPage } from "../../decorators/page";
-import { LedPushEncoder } from "../../decorators/surface";
-import { ChannelSurfaceElements, ControlSectionButtons } from "../../device-configs";
-import { EncoderDisplayMode } from "../../midi";
-import { SegmentDisplayManager } from "../../midi/managers/SegmentDisplayManager";
-import { GlobalState } from "../../state";
 import type { EncoderMapper } from "./EncoderMapper";
+import { config } from "/config";
+import { DecoratedFactoryMappingPage } from "/decorators/page";
+import { LedPushEncoder } from "/decorators/surface";
+import { ChannelSurfaceElements, ControlSectionButtons } from "/device-configs";
+import { EncoderDisplayMode } from "/midi";
+import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
+import { GlobalState } from "/state";
 
 export interface EncoderAssignmentConfig {
   encoderValue?: MR_HostValue;

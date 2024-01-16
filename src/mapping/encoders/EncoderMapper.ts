@@ -1,10 +1,10 @@
-import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "../../device-configs";
-import { SegmentDisplayManager } from "../../midi/managers/SegmentDisplayManager";
+import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "/device-configs";
+import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 
-import { DecoratedFactoryMappingPage } from "../../decorators/page";
-import { Device, MainDevice } from "../../devices";
-import { GlobalState } from "../../state";
 import { EncoderPage, EncoderPageConfig } from "./EncoderPage";
+import { DecoratedFactoryMappingPage } from "/decorators/page";
+import { Device, MainDevice } from "/devices";
+import { GlobalState } from "/state";
 
 export class EncoderMapper {
   private readonly channelElements: ChannelSurfaceElements[];
