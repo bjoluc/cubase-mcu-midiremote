@@ -1,9 +1,5 @@
 import { EnhancedMidiOutput } from "/midi/PortPair";
 
-export interface LedPushEncoder extends MR_PushEncoder {
-  mDisplayModeValue: MR_SurfaceCustomValueVariable;
-}
-
 export interface TouchSensitiveFader extends MR_Fader {
   mTouchedValue: MR_SurfaceCustomValueVariable;
   mTouchedValueInternal: MR_SurfaceCustomValueVariable;
@@ -21,7 +17,6 @@ export interface DecoratedLamp extends MR_Lamp {
 }
 
 export interface DecoratedDeviceSurface extends MR_DeviceSurface {
-  makeLedPushEncoder: (...args: Parameters<MR_DeviceSurface["makePushEncoder"]>) => LedPushEncoder;
   makeTouchSensitiveFader: (
     ...args: Parameters<MR_DeviceSurface["makeFader"]>
   ) => TouchSensitiveFader;
@@ -31,12 +26,6 @@ export interface DecoratedDeviceSurface extends MR_DeviceSurface {
 
 export function decorateSurface(surface: MR_DeviceSurface) {
   const decoratedSurface = surface as DecoratedDeviceSurface;
-
-  decoratedSurface.makeLedPushEncoder = (...args) => {
-    const encoder = surface.makePushEncoder(...args) as LedPushEncoder;
-    encoder.mDisplayModeValue = surface.makeCustomValueVariable("encoderDisplayMode");
-    return encoder;
-  };
 
   decoratedSurface.makeTouchSensitiveFader = (...args) => {
     const fader = surface.makeFader(...args) as TouchSensitiveFader;

@@ -4,16 +4,10 @@ import { RgbColor } from "./managers/ColorManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 import { config } from "/config";
 import { TouchSensitiveFader } from "/decorators/surface";
+import { EncoderDisplayMode } from "/decorators/surface-elements/LedPushEncoder";
 import { Device, MainDevice } from "/devices";
 import { GlobalState } from "/state";
 import { ContextStateVariable } from "/util";
-
-export enum EncoderDisplayMode {
-  SingleDot = 0,
-  BoostOrCut = 1,
-  Wrap = 2,
-  Spread = 3,
-}
 
 export function bindDeviceToMidi(
   device: Device,
@@ -82,26 +76,7 @@ export function bindDeviceToMidi(
 
   for (const [channelIndex, channel] of device.channelElements.entries()) {
     // Push Encoder
-    channel.encoder.mEncoderValue.mMidiBinding
-      .setInputPort(ports.input)
-      .bindToControlChange(0, 16 + channelIndex)
-      .setTypeRelativeSignedBit();
-    channel.encoder.mPushValue.mMidiBinding
-      .setInputPort(ports.input)
-      .bindToNote(0, 32 + channelIndex);
-    channel.encoder.mEncoderValue.mOnProcessValueChange = (context, newValue) => {
-      const displayMode = channel.encoder.mDisplayModeValue.getProcessValue(context);
-
-      const isCenterLedOn = newValue === (displayMode === EncoderDisplayMode.Spread ? 0 : 0.5);
-      const position =
-        1 + Math.round(newValue * (displayMode === EncoderDisplayMode.Spread ? 5 : 10));
-
-      ports.output.sendMidi(context, [
-        0xb0,
-        0x30 + channelIndex,
-        (+isCenterLedOn << 6) + (displayMode << 4) + position,
-      ]);
-    };
+    channel.encoder.bindToMidi(ports, channelIndex);
 
     // Display colors – only supported by the X-Touch
     if (DEVICE_NAME === "X-Touch") {
@@ -147,14 +122,9 @@ export function bindDeviceToMidi(
     // Scribble Strip
     const channelTextManager = device.lcdManager.getChannelTextManager(channelIndex);
 
-    channel.encoder.mEncoderValue.mOnTitleChange = (context, title1, title2) => {
-      // Reset encoder LED ring when channel becomes unassigned
-      if (title1 === "") {
-        ports.output.sendMidi(context, [0xb0, 0x30 + channelIndex, 0]);
-      }
-
+    channel.encoder.mOnEncoderValueTitleChange.addCallback((context, _title1, title2) => {
       channelTextManager.setParameterName(context, title2);
-    };
+    });
 
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
       channelTextManager.setParameterValue(context, value);

@@ -6,6 +6,7 @@
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { DecoratedDeviceSurface, DecoratedLamp } from "/decorators/surface";
 import { LedButton } from "/decorators/surface-elements/LedButton";
+import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { createElements, getArrayElements } from "/util";
 
 const channelWidth = 4;
@@ -31,7 +32,7 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
   return createElements(8, (index) => {
     const currentChannelXPosition = x + index * channelWidth;
 
-    const encoder = surface.makeLedPushEncoder(currentChannelXPosition, 16.25, 4, 4);
+    const encoder = new LedPushEncoder(surface, currentChannelXPosition, 16.25, 4, 4);
     surface.makeLabelField(currentChannelXPosition, 7, 4, 2).relateTo(encoder);
 
     return {
