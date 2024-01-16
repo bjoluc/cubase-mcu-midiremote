@@ -154,6 +154,11 @@ Those mappings are stored as JSON files in a `User Settings` folder at `Document
 If some button/fader/encoder isn't working as expected – especially after an update to the script – it is always worth a try to remove the user setting files (those starting with your script's name) to make sure they don't interfere with the script's default functionality.
 Afterwards, restart Cubase to reload the MIDI Remote scripts and settings.
 
+### Some displays are lagging or faders are stuttering heavily when reading automation
+
+This might be caused by another source sending MIDI data to your device, for instance Cubase's default Mackie Control remote device integration.
+Make sure you have removed all Mackie Control remote devices in the studio setup window, or that you have selected "Not Connected" for their ports.
+
 ### The SMPTE/Beats button doesn't change the time format
 
 The SMPTE/Beats button is mapped to the "Exchange Time Formats" command which switches between the primary and secondary time format.
