@@ -94,6 +94,7 @@ export function bindControlSection(
     }
   });
 
+  // Flip button
   globalState.isFlipModeActive.addOnChangeCallback((context, value) => {
     buttons.flip.mLedValue.setProcessValue(context, +value);
   });
