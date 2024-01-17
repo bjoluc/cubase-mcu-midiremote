@@ -1,4 +1,4 @@
-import { PortPair } from "/midi/PortPair";
+import { MidiPortPair } from "/midi/MidiPortPair";
 import { GlobalState } from "/state";
 import { ContextStateVariable } from "/util";
 
@@ -19,7 +19,7 @@ class TouchSensitiveFaderDecorator {
 
   mTouchedValue = this.surface.makeCustomValueVariable("faderTouched");
 
-  bindToMidi = (ports: PortPair, channelIndex: number, { areMotorsActive }: GlobalState) => {
+  bindToMidi = (ports: MidiPortPair, channelIndex: number, { areMotorsActive }: GlobalState) => {
     const surfaceValue = this.fader.mSurfaceValue;
 
     surfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(channelIndex);

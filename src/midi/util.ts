@@ -1,8 +1,8 @@
-import { EnhancedMidiOutput } from "./PortPair";
+import { MidiOutputPort } from "/decorators/MidiOutputPort";
 
 export function sendChannelMeterMode(
   context: MR_ActiveDevice,
-  outputPort: EnhancedMidiOutput,
+  outputPort: MidiOutputPort,
   channelId: number,
   enableLcdLevelMeter: boolean,
 ) {
@@ -11,7 +11,7 @@ export function sendChannelMeterMode(
 
 export function sendGlobalMeterModeOrientation(
   context: MR_ActiveDevice,
-  outputPort: EnhancedMidiOutput,
+  outputPort: MidiOutputPort,
   isVertical: boolean,
 ) {
   outputPort.sendSysex(context, [0x21, +isVertical]);
@@ -30,7 +30,7 @@ export function sendGlobalMeterModeOrientation(
  */
 export function sendMeterLevel(
   context: MR_ActiveDevice,
-  outputPort: EnhancedMidiOutput,
+  outputPort: MidiOutputPort,
   channelIndex: number,
   meterLevel: number,
 ) {

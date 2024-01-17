@@ -1,9 +1,9 @@
-import { EnhancedMidiOutput } from "/midi/PortPair";
+import { MidiOutputPort } from "../MidiOutputPort";
 
 class LampDecorator {
   constructor(private lamp: MR_Lamp) {}
 
-  bindToNote = (output: EnhancedMidiOutput, note: number) => {
+  bindToNote = (output: MidiOutputPort, note: number) => {
     this.lamp.mSurfaceValue.mOnProcessValueChange = (context, value) => {
       output.sendNoteOn(context, note, value);
     };

@@ -1,4 +1,4 @@
-import { PortPair } from "/midi/PortPair";
+import { MidiPortPair } from "/midi/MidiPortPair";
 import { ObservableContextStateVariable, makeCallbackCollection } from "/util";
 
 export enum EncoderDisplayMode {
@@ -18,7 +18,7 @@ class LedPushEncoderDecorator {
 
   mOnEncoderValueTitleChange = makeCallbackCollection(this.encoder.mEncoderValue, "mOnTitleChange");
 
-  bindToMidi = (ports: PortPair, channelIndex: number) => {
+  bindToMidi = (ports: MidiPortPair, channelIndex: number) => {
     this.encoder.mEncoderValue.mMidiBinding
       .setInputPort(ports.input)
       .bindToControlChange(0, 16 + channelIndex)

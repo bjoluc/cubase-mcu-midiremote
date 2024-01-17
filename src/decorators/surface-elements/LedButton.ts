@@ -1,4 +1,4 @@
-import { PortPair } from "/midi/PortPair";
+import { MidiPortPair } from "/midi/MidiPortPair";
 import { makeCallbackCollection } from "/util";
 
 interface LedButtonOptions {
@@ -31,7 +31,7 @@ class LedButtonDecorator {
 
   mLedValue = this.surface.makeCustomValueVariable("LedButtonLed");
 
-  bindToNote = (ports: PortPair, note: number) => {
+  bindToNote = (ports: MidiPortPair, note: number) => {
     this.button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
     this.onSurfaceValueChange.addCallback((context, newValue) => {
       ports.output.sendNoteOn(context, note, newValue || this.mLedValue.getProcessValue(context));
