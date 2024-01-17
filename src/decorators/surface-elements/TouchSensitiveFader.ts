@@ -20,7 +20,9 @@ class TouchSensitiveFaderDecorator {
   mTouchedValue = this.surface.makeCustomValueVariable("faderTouched");
 
   bindToMidi = (ports: PortPair, channelIndex: number, { areMotorsActive }: GlobalState) => {
-    this.fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(channelIndex);
+    const surfaceValue = this.fader.mSurfaceValue;
+
+    surfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(channelIndex);
     this.mTouchedValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 104 + channelIndex);
     this.mTouchedShadowValue.mMidiBinding
       .setInputPort(ports.input)
@@ -33,45 +35,49 @@ class TouchSensitiveFaderDecorator {
 
     this.mTouchedShadowValue.mOnProcessValueChange = (context, isFaderTouched) => {
       if (!isFaderTouched) {
-        sendValue(context, lastFaderValue.get(context));
-      }
-    };
-
-    const forceUpdate = new ContextStateVariable(true);
-    const lastFaderValue = new ContextStateVariable(0);
-    this.fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      // Prevent identical messages to reduce fader noise
-      if (
-        areMotorsActive.get(context) &&
-        !this.mTouchedShadowValue.getProcessValue(context) &&
-        (difference !== 0 || lastFaderValue.get(context) === 0 || forceUpdate.get(context))
-      ) {
-        forceUpdate.set(context, false);
-        sendValue(context, newValue);
-      }
-
-      lastFaderValue.set(context, newValue);
-    };
-
-    // Set fader to `0` when unassigned
-    this.fader.mSurfaceValue.mOnTitleChange = (context, title) => {
-      if (title === "") {
-        forceUpdate.set(context, true);
-        this.fader.mSurfaceValue.setProcessValue(context, 0);
-        // `mOnProcessValueChange` somehow isn't run here on `setProcessValue()`, hence:
-        lastFaderValue.set(context, 0);
-        if (areMotorsActive.get(context)) {
-          forceUpdate.set(context, false);
-          sendValue(context, 0);
-        }
+        sendValue(context, surfaceValue.getProcessValue(context));
       }
     };
 
     areMotorsActive.addOnChangeCallback((context, areMotorsActive) => {
       if (areMotorsActive) {
-        sendValue(context, lastFaderValue.get(context));
+        sendValue(context, surfaceValue.getProcessValue(context));
       }
     });
+
+    const previousSurfaceValue = new ContextStateVariable(0);
+    const onSurfaceValueChange = (context: MR_ActiveDevice, value: number) => {
+      // The builtin `difference` parameter is zero in the beginning and when a fader was previously
+      // unassigned. It's also not available when manually triggering this function, so we revert to
+      // always computing `difference` ourselves:
+      const difference = value - previousSurfaceValue.get(context);
+
+      if (surfaceValue.getProcessValue(context) !== value) {
+        console.log(`${true}`);
+      }
+      // Prevent identical messages to reduce fader noise
+      if (
+        areMotorsActive.get(context) &&
+        !this.mTouchedShadowValue.getProcessValue(context) &&
+        difference !== 0
+      ) {
+        sendValue(context, value);
+      }
+
+      previousSurfaceValue.set(context, value);
+    };
+
+    surfaceValue.mOnProcessValueChange = onSurfaceValueChange;
+
+    // Send fader down when unassigned
+    surfaceValue.mOnTitleChange = (context, title) => {
+      if (title === "") {
+        surfaceValue.setProcessValue(context, 0);
+        // `mOnProcessValueChange` isn't run on `setProcessValue()` when the fader is not assigned
+        // to a mixer channel, so we manually trigger the update:
+        onSurfaceValueChange(context, 0);
+      }
+    };
   };
 }
 
