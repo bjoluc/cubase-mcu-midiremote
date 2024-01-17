@@ -1,5 +1,5 @@
-import { DecoratedDeviceSurface, DecoratedLamp } from "/decorators/surface";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
+import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveFader } from "/decorators/surface-elements/TouchSensitiveFader";
@@ -67,9 +67,9 @@ export interface ControlSectionSurfaceElements {
   buttons: ControlSectionButtons;
 
   displayLeds: {
-    smpte: DecoratedLamp;
-    beats: DecoratedLamp;
-    solo: DecoratedLamp;
+    smpte: Lamp;
+    beats: Lamp;
+    solo: Lamp;
   };
 
   expressionPedal: MR_Knob;
@@ -95,11 +95,11 @@ export interface DeviceConfig {
    * Creates and returns all surface elements of a main device, starting at the provided `x`
    * position.
    */
-  createMainSurface(surface: DecoratedDeviceSurface, x: number): DeviceSurface;
+  createMainSurface(surface: MR_DeviceSurface, x: number): DeviceSurface;
 
   /**
    * Creates and returns all surface elements of an extender device, starting at the provided `x`
    * position.
    */
-  createExtenderSurface(surface: DecoratedDeviceSurface, x: number): DeviceSurface;
+  createExtenderSurface(surface: MR_DeviceSurface, x: number): DeviceSurface;
 }

@@ -1,5 +1,4 @@
 import { config } from "/config";
-import { DecoratedFactoryMappingPage } from "/decorators/page";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
@@ -27,7 +26,7 @@ function setShiftableButtonsLedValues(
 }
 
 function bindCursorValueControlButton(
-  page: DecoratedFactoryMappingPage,
+  page: MR_FactoryMappingPage,
   button: LedButton,
   encoder: LedPushEncoder,
   jogWheel: JogWheel,
@@ -64,7 +63,7 @@ function bindCursorValueControlButton(
 }
 
 export function bindControlSection(
-  page: DecoratedFactoryMappingPage,
+  page: MR_FactoryMappingPage,
   controlSectionElements: ControlSectionSurfaceElements,
   channelElements: ChannelSurfaceElements[],
   mixerBankZone: MR_MixerBankZone,
@@ -403,7 +402,7 @@ export function bindControlSection(
 }
 
 export function bindFootControl(
-  page: DecoratedFactoryMappingPage,
+  page: MR_FactoryMappingPage,
   controlSectionElements: ControlSectionSurfaceElements,
 ) {
   for (const footSwitch of controlSectionElements.footSwitches) {

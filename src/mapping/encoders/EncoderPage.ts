@@ -1,6 +1,5 @@
 import type { EncoderMapper } from "./EncoderMapper";
 import { config } from "/config";
-import { DecoratedFactoryMappingPage } from "/decorators/page";
 import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ChannelSurfaceElements, ControlSectionButtons } from "/device-configs";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
@@ -60,7 +59,7 @@ export class EncoderPage implements EncoderPageConfig {
     public readonly index: number,
     public readonly pagesCount: number,
 
-    private readonly page: DecoratedFactoryMappingPage,
+    private readonly page: MR_FactoryMappingPage,
     private readonly subPageArea: MR_SubPageArea,
     private readonly deviceButtons: ControlSectionButtons[],
     private readonly channelElements: ChannelSurfaceElements[],

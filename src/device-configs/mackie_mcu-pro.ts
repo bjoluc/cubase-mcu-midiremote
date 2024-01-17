@@ -4,8 +4,8 @@
  */
 
 import { ChannelSurfaceElements, DeviceConfig } from ".";
-import { DecoratedDeviceSurface, DecoratedLamp } from "/decorators/surface";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
+import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveFader } from "/decorators/surface-elements/TouchSensitiveFader";
@@ -15,22 +15,22 @@ const channelWidth = 4;
 const channelElementsWidth = 8 * channelWidth;
 const surfaceHeight = 64;
 
-function makeChannelButton(surface: DecoratedDeviceSurface, channelX: number, buttonY: number) {
+function makeChannelButton(surface: MR_DeviceSurface, channelX: number, buttonY: number) {
   return new LedButton(surface, {
     position: [0.75 + channelX, buttonY, 2.5, 1.8],
     isChannelButton: true,
   });
 }
 
-function makeControlButton(surface: DecoratedDeviceSurface, x: number, y: number) {
+function makeControlButton(surface: MR_DeviceSurface, x: number, y: number) {
   return new LedButton(surface, { position: [x, y, 2.25, 1.75] });
 }
 
-function makeSmallButton(surface: DecoratedDeviceSurface, x: number, y: number) {
+function makeSmallButton(surface: MR_DeviceSurface, x: number, y: number) {
   return new LedButton(surface, { position: [x + 0.25, y, 1.5, 1.25] });
 }
 
-function makeChannelElements(surface: DecoratedDeviceSurface, x: number): ChannelSurfaceElements[] {
+function makeChannelElements(surface: MR_DeviceSurface, x: number): ChannelSurfaceElements[] {
   return createElements(8, (index) => {
     const currentChannelXPosition = x + index * channelWidth;
 
@@ -190,11 +190,9 @@ export const deviceConfig: DeviceConfig = {
         },
 
         displayLeds: {
-          smpte: surface
-            .makeDecoratedLamp(x + 8.5, 7.1, 0.9, 0.9)
-            .setShapeCircle() as DecoratedLamp, // x + 10.25, 7, 14, 2
-          beats: surface.makeDecoratedLamp(x + 8.5, 8, 0.9, 0.9).setShapeCircle() as DecoratedLamp,
-          solo: surface.makeDecoratedLamp(x + 24.75, 7.5, 1, 1).setShapeCircle() as DecoratedLamp,
+          smpte: new Lamp(surface, x + 8.5, 7.1, 0.9, 0.9).setShapeCircle(),
+          beats: new Lamp(surface, x + 8.5, 8, 0.9, 0.9).setShapeCircle(),
+          solo: new Lamp(surface, x + 24.75, 7.5, 1, 1).setShapeCircle(),
         },
 
         expressionPedal: surface.makeKnob(x - channelElementsWidth + 14, 2, 2, 2.6),

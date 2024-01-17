@@ -1,7 +1,6 @@
 import { bindControlSection, bindFootControl } from "./control";
 import { bindEncoders } from "./encoders";
 import { config } from "/config";
-import { DecoratedFactoryMappingPage } from "/decorators/page";
 import { Device, MainDevice } from "/devices";
 import { ActivationCallbacks } from "/midi/connection";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
@@ -9,7 +8,7 @@ import { GlobalState } from "/state";
 import { ContextStateVariable } from "/util";
 
 export function makeHostMapping(
-  page: DecoratedFactoryMappingPage,
+  page: MR_FactoryMappingPage,
   devices: Device[],
   segmentDisplayManager: SegmentDisplayManager,
   globalState: GlobalState,

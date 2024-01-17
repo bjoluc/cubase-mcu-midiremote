@@ -13,8 +13,6 @@ import "core-js/actual/reflect/construct";
 Reflect.get = undefined;
 
 import midiremoteApi from "midiremote_api_v1";
-import { decoratePage } from "/decorators/page";
-import { decorateSurface } from "/decorators/surface";
 import { createDevices } from "/devices";
 import { makeHostMapping } from "/mapping";
 import { bindDeviceToMidi } from "/midi";
@@ -24,10 +22,10 @@ import { createGlobalState } from "/state";
 
 const driver = midiremoteApi.makeDeviceDriver(VENDOR_NAME, DEVICE_NAME, "github.com/bjoluc");
 
-const surface = decorateSurface(driver.mSurface);
+const surface = driver.mSurface;
 
 const globalState = createGlobalState();
-const page = decoratePage(driver.mMapping.makePage("Mixer"), surface);
+const page = driver.mMapping.makePage("Mixer");
 const timerUtils = makeTimerUtils(driver, page, surface);
 
 // Create devices, i.e., midi ports, managers, and surface elements for each physical device

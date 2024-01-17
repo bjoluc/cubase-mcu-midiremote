@@ -2,7 +2,6 @@ import { mDefaults } from "midiremote_api_v1";
 import { EncoderMapper } from "./EncoderMapper";
 import { EncoderAssignmentConfig } from "./EncoderPage";
 import { config } from "/config";
-import { DecoratedFactoryMappingPage } from "/decorators/page";
 import { EncoderDisplayMode } from "/decorators/surface-elements/LedPushEncoder";
 import { Device, MainDevice } from "/devices";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
@@ -10,7 +9,7 @@ import { GlobalState } from "/state";
 import { createElements } from "/util";
 
 export function bindEncoders(
-  page: DecoratedFactoryMappingPage,
+  page: MR_FactoryMappingPage,
   devices: Device[],
   mixerBankChannels: MR_MixerBankChannel[],
   segmentDisplayManager: SegmentDisplayManager,

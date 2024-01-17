@@ -192,7 +192,7 @@ export function bindDeviceToMidi(
       button.bindToNote(ports, 40 + index);
     }
 
-    // Segment Display - handled by the SegmentDisplayManager, except for:
+    // Segment Display - handled by the SegmentDisplayManager, except for the individual LEDs:
     const { smpte, beats, solo } = elements.displayLeds;
     [smpte, beats, solo].forEach((lamp, index) => {
       lamp.bindToNote(ports.output, 0x71 + index);

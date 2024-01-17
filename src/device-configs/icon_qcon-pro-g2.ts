@@ -4,8 +4,8 @@
  */
 
 import { ChannelSurfaceElements, DeviceConfig } from ".";
-import { DecoratedDeviceSurface } from "/decorators/surface";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
+import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveFader } from "/decorators/surface-elements/TouchSensitiveFader";
@@ -19,7 +19,7 @@ const buttonRowHeight = 2.35;
 const buttonDistance = 2.55;
 
 function makeSquareButton(
-  surface: DecoratedDeviceSurface,
+  surface: MR_DeviceSurface,
   x: number,
   y: number,
   isChannelButton = false,
@@ -27,7 +27,7 @@ function makeSquareButton(
   return new LedButton(surface, { position: [x, y, 1.8, 1.5], isChannelButton });
 }
 
-function makeChannelElements(surface: DecoratedDeviceSurface, x: number): ChannelSurfaceElements[] {
+function makeChannelElements(surface: MR_DeviceSurface, x: number): ChannelSurfaceElements[] {
   return createElements(8, (index) => {
     const currentChannelXPosition = x + index * channelWidth;
 
@@ -205,9 +205,9 @@ export const deviceConfig: DeviceConfig = {
         },
 
         displayLeds: {
-          smpte: surface.makeDecoratedLamp(x + 5.25, 3.25, 0.75, 0.5),
-          beats: surface.makeDecoratedLamp(x + 5.25, 4.25, 0.75, 0.5),
-          solo: surface.makeDecoratedLamp(x + 18, 3.75, 0.75, 0.5),
+          smpte: new Lamp(surface, x + 5.25, 3.25, 0.75, 0.5),
+          beats: new Lamp(surface, x + 5.25, 4.25, 0.75, 0.5),
+          solo: new Lamp(surface, x + 18, 3.75, 0.75, 0.5),
         },
 
         expressionPedal: {

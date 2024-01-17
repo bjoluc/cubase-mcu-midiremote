@@ -4,13 +4,11 @@ import {
   DeviceSurface,
 } from "./device-configs";
 import { config, deviceConfig } from "/config";
-import { DecoratedDeviceSurface } from "/decorators/surface";
 import { PortPair, makePortPair } from "/midi/PortPair";
 import { ColorManager } from "/midi/managers/ColorManager";
 import { LcdManager } from "/midi/managers/lcd";
 import { GlobalState } from "/state";
 import { TimerUtils } from "/util";
-
 /**
  * A `Device` represents a physical device and manages its MIDI ports and surface elements
  */
@@ -47,7 +45,7 @@ export class MainDevice extends Device {
 
   constructor(
     driver: MR_DeviceDriver,
-    surface: DecoratedDeviceSurface,
+    surface: MR_DeviceSurface,
     globalState: GlobalState,
     timerUtils: TimerUtils,
     firstChannelIndex: number,
@@ -63,7 +61,7 @@ export class MainDevice extends Device {
 export class ExtenderDevice extends Device {
   constructor(
     driver: MR_DeviceDriver,
-    surface: DecoratedDeviceSurface,
+    surface: MR_DeviceSurface,
     globalState: GlobalState,
     timerUtils: TimerUtils,
     firstChannelIndex: number,
@@ -76,7 +74,7 @@ export class ExtenderDevice extends Device {
 
 export function createDevices(
   driver: MR_DeviceDriver,
-  surface: DecoratedDeviceSurface,
+  surface: MR_DeviceSurface,
   globalState: GlobalState,
   timerUtils: TimerUtils,
 ): Array<MainDevice | ExtenderDevice> {
