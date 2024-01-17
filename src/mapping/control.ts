@@ -2,7 +2,7 @@ import { config } from "/config";
 import { DecoratedFactoryMappingPage } from "/decorators/page";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
-import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
+import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "/device-configs";
 import { GlobalState } from "/state";
 
@@ -36,12 +36,7 @@ function bindCursorValueControlButton(
   const inactiveSubpage = subPageArea.makeSubPage("Cursor Value Control Inactive");
   const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
 
-  const encoderDisplayMode = page.mCustom.makeSettableHostValueVariable(
-    `cursorValueControlEncoderDisplayMode`,
-  );
-
   activeSubpage.mOnActivate = (context) => {
-    encoderDisplayMode.setProcessValue(context, EncoderDisplayMode.SingleDot);
     button.mLedValue.setProcessValue(context, 1);
     jogWheel.mKnobModeEnabledValue.setProcessValue(context, 1);
   };
@@ -60,7 +55,6 @@ function bindCursorValueControlButton(
   page
     .makeValueBinding(encoder.mEncoderValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
     .setSubPage(activeSubpage);
-  page.makeValueBinding(encoder.mDisplayModeValue, encoderDisplayMode).setSubPage(activeSubpage);
 
   const dummyHostVariable = page.mCustom.makeHostValueVariable("dummy");
   page.makeValueBinding(jogWheel.mSurfaceValue, dummyHostVariable).setSubPage(inactiveSubpage);

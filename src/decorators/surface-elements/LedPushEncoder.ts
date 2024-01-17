@@ -1,5 +1,5 @@
 import { PortPair } from "/midi/PortPair";
-import { makeCallbackCollection } from "/util";
+import { ObservableContextStateVariable, makeCallbackCollection } from "/util";
 
 export enum EncoderDisplayMode {
   SingleDot = 0,
@@ -14,7 +14,7 @@ class LedPushEncoderDecorator {
     private encoder: MR_PushEncoder,
   ) {}
 
-  mDisplayModeValue = this.surface.makeCustomValueVariable("encoderDisplayMode");
+  displayMode = new ObservableContextStateVariable(EncoderDisplayMode.SingleDot);
 
   mOnEncoderValueTitleChange = makeCallbackCollection(this.encoder.mEncoderValue, "mOnTitleChange");
 
@@ -27,7 +27,7 @@ class LedPushEncoderDecorator {
     this.encoder.mPushValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 32 + channelIndex);
 
     this.encoder.mEncoderValue.mOnProcessValueChange = (context, value) => {
-      const displayMode = this.mDisplayModeValue.getProcessValue(context);
+      const displayMode = this.displayMode.get(context);
 
       const isCenterLedOn = value === (displayMode === EncoderDisplayMode.Spread ? 0 : 0.5);
       const position = 1 + Math.round(value * (displayMode === EncoderDisplayMode.Spread ? 5 : 10));

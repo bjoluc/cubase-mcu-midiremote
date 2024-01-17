@@ -249,7 +249,7 @@ export class EncoderPage implements EncoderPageConfig {
     this.globalState.activeEncoderAssignmentId.set(context, this.assignmentButtonIndex);
 
     for (const [encoderIndex, { encoder }] of this.channelElements.entries()) {
-      encoder.mDisplayModeValue.setProcessValue(
+      encoder.displayMode.set(
         context,
         this.assignments[encoderIndex]?.displayMode ?? EncoderDisplayMode.SingleDot,
       );
