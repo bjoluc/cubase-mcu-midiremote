@@ -7,6 +7,7 @@ import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { DecoratedDeviceSurface, DecoratedLamp } from "/decorators/surface";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
+import { TouchSensitiveFader } from "/decorators/surface-elements/TouchSensitiveFader";
 import { createElements, getArrayElements } from "/util";
 
 const channelWidth = 4;
@@ -52,7 +53,7 @@ function makeChannelElements(surface: DecoratedDeviceSurface, x: number): Channe
         select: makeChannelButton(surface, currentChannelXPosition, 30),
       },
 
-      fader: surface.makeTouchSensitiveFader(currentChannelXPosition + 1, 36.5, 2, 16),
+      fader: new TouchSensitiveFader(surface, currentChannelXPosition + 1, 36.5, 2, 16),
     };
   });
 }
@@ -122,7 +123,7 @@ export const deviceConfig: DeviceConfig = {
       width: surfaceWidth,
       channelElements,
       controlSectionElements: {
-        mainFader: surface.makeTouchSensitiveFader(x + 2, 36.5, 2, 16),
+        mainFader: new TouchSensitiveFader(surface, x + 2, 36.5, 2, 16),
 
         jogWheel: surface.makeJogWheel(x + 15.1, 50.75, 10.5, 10.5),
 

@@ -1,10 +1,7 @@
-import { PortPair } from "./PortPair";
 import { ActivationCallbacks } from "./connection";
 import { RgbColor } from "./managers/ColorManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 import { config } from "/config";
-import { TouchSensitiveFader } from "/decorators/surface";
-import { EncoderDisplayMode } from "/decorators/surface-elements/LedPushEncoder";
 import { Device, MainDevice } from "/devices";
 import { GlobalState } from "/state";
 import { ContextStateVariable } from "/util";
@@ -15,64 +12,6 @@ export function bindDeviceToMidi(
   activationCallbacks: ActivationCallbacks,
 ) {
   const ports = device.ports;
-
-  function bindFader(ports: PortPair, fader: TouchSensitiveFader, faderIndex: number) {
-    fader.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToPitchBend(faderIndex);
-    fader.mTouchedValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 104 + faderIndex);
-    fader.mTouchedValueInternal.mMidiBinding
-      .setInputPort(ports.input)
-      .bindToNote(0, 104 + faderIndex);
-
-    const sendValue = (context: MR_ActiveDevice, value: number) => {
-      value *= 0x3fff;
-      ports.output.sendMidi(context, [0xe0 + faderIndex, value & 0x7f, value >> 7]);
-    };
-
-    const isFaderTouched = new ContextStateVariable(false);
-    fader.mTouchedValueInternal.mOnProcessValueChange = (context, value) => {
-      const isFaderTouchedValue = Boolean(value);
-      isFaderTouched.set(context, isFaderTouchedValue);
-      if (!isFaderTouchedValue) {
-        sendValue(context, lastFaderValue.get(context));
-      }
-    };
-
-    const forceUpdate = new ContextStateVariable(true);
-    const lastFaderValue = new ContextStateVariable(0);
-    fader.mSurfaceValue.mOnProcessValueChange = (context, newValue, difference) => {
-      // Prevent identical messages to reduce fader noise
-      if (
-        globalState.areMotorsActive.get(context) &&
-        !isFaderTouched.get(context) &&
-        (difference !== 0 || lastFaderValue.get(context) === 0 || forceUpdate.get(context))
-      ) {
-        forceUpdate.set(context, false);
-        sendValue(context, newValue);
-      }
-
-      lastFaderValue.set(context, newValue);
-    };
-
-    // Set fader to `0` when unassigned
-    fader.mSurfaceValue.mOnTitleChange = (context, title) => {
-      if (title === "") {
-        forceUpdate.set(context, true);
-        fader.mSurfaceValue.setProcessValue(context, 0);
-        // `mOnProcessValueChange` somehow isn't run here on `setProcessValue()`, hence:
-        lastFaderValue.set(context, 0);
-        if (globalState.areMotorsActive.get(context)) {
-          forceUpdate.set(context, false);
-          sendValue(context, 0);
-        }
-      }
-    };
-
-    globalState.areMotorsActive.addOnChangeCallback((context, areMotorsActive) => {
-      if (areMotorsActive) {
-        sendValue(context, lastFaderValue.get(context));
-      }
-    });
-  }
 
   for (const [channelIndex, channel] of device.channelElements.entries()) {
     // Push Encoder
@@ -189,7 +128,7 @@ export function bindDeviceToMidi(
     }
 
     // Fader
-    bindFader(ports, channel.fader, channelIndex);
+    channel.fader.bindToMidi(ports, channelIndex, globalState);
   }
 
   if (DEVICE_NAME === "MCU Pro") {
@@ -225,7 +164,7 @@ export function bindDeviceToMidi(
       }
     });
 
-    bindFader(ports, elements.mainFader, 8);
+    elements.mainFader.bindToMidi(ports, 8, globalState);
 
     for (const [index, button] of [
       ...[0, 3, 1, 4, 2, 5].map((index) => buttons.encoderAssign[index]),

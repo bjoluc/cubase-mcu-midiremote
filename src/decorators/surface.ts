@@ -1,10 +1,5 @@
 import { EnhancedMidiOutput } from "/midi/PortPair";
 
-export interface TouchSensitiveFader extends MR_Fader {
-  mTouchedValue: MR_SurfaceCustomValueVariable;
-  mTouchedValueInternal: MR_SurfaceCustomValueVariable;
-}
-
 export interface JogWheel extends MR_Fader {
   mKnobModeEnabledValue: MR_SurfaceCustomValueVariable;
   mJogRightValue: MR_SurfaceCustomValueVariable;
@@ -17,31 +12,12 @@ export interface DecoratedLamp extends MR_Lamp {
 }
 
 export interface DecoratedDeviceSurface extends MR_DeviceSurface {
-  makeTouchSensitiveFader: (
-    ...args: Parameters<MR_DeviceSurface["makeFader"]>
-  ) => TouchSensitiveFader;
   makeJogWheel: (...args: Parameters<MR_DeviceSurface["makeKnob"]>) => JogWheel;
   makeDecoratedLamp: (...args: Parameters<MR_DeviceSurface["makeLamp"]>) => DecoratedLamp;
 }
 
 export function decorateSurface(surface: MR_DeviceSurface) {
   const decoratedSurface = surface as DecoratedDeviceSurface;
-
-  decoratedSurface.makeTouchSensitiveFader = (...args) => {
-    const fader = surface.makeFader(...args) as TouchSensitiveFader;
-
-    fader.mTouchedValue = surface.makeCustomValueVariable("faderTouched");
-    // Workaround because `filterByValue` in the encoder bindings hides zero values from
-    // `mOnProcessValueChange`
-    fader.mTouchedValueInternal = surface.makeCustomValueVariable("faderTouchedInternal");
-
-    // Cubase 13 only:
-    if (fader.mSurfaceValue.mTouchState) {
-      fader.mSurfaceValue.mTouchState.bindTo(fader.mTouchedValue);
-    }
-
-    return fader;
-  };
 
   decoratedSurface.makeJogWheel = (...args) => {
     const jogWheel = surface.makeKnob(...args) as JogWheel;

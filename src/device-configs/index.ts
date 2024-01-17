@@ -1,11 +1,7 @@
-import {
-  DecoratedDeviceSurface,
-  DecoratedLamp,
-  JogWheel,
-  TouchSensitiveFader,
-} from "/decorators/surface";
+import { DecoratedDeviceSurface, DecoratedLamp, JogWheel } from "/decorators/surface";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
+import { TouchSensitiveFader } from "/decorators/surface-elements/TouchSensitiveFader";
 
 export interface DeviceSurface {
   width: number;
