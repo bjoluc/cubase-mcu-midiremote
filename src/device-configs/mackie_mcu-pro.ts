@@ -8,7 +8,7 @@ import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
-import { TouchSensitiveFader } from "/decorators/surface-elements/TouchSensitiveFader";
+import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
 import { createElements, getArrayElements } from "/util";
 
 const channelWidth = 4;
@@ -54,7 +54,7 @@ function makeChannelElements(surface: MR_DeviceSurface, x: number): ChannelSurfa
         select: makeChannelButton(surface, currentChannelXPosition, 30),
       },
 
-      fader: new TouchSensitiveFader(surface, currentChannelXPosition + 1, 36.5, 2, 16),
+      fader: new TouchSensitiveMotorFader(surface, currentChannelXPosition + 1, 36.5, 2, 16),
     };
   });
 }
@@ -124,7 +124,7 @@ export const deviceConfig: DeviceConfig = {
       width: surfaceWidth,
       channelElements,
       controlSectionElements: {
-        mainFader: new TouchSensitiveFader(surface, x + 2, 36.5, 2, 16),
+        mainFader: new TouchSensitiveMotorFader(surface, x + 2, 36.5, 2, 16),
 
         jogWheel: new JogWheel(surface, x + 15.1, 50.75, 10.5, 10.5),
 

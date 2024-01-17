@@ -2,7 +2,7 @@ import { MidiPortPair } from "/midi/MidiPortPair";
 import { GlobalState } from "/state";
 import { ContextStateVariable } from "/util";
 
-class TouchSensitiveFaderDecorator {
+class TouchSensitiveMotorFaderDecorator {
   // Workaround because `filterByValue` in the encoder bindings hides zero values from
   // `mOnProcessValueChange`
   private mTouchedShadowValue = this.surface.makeCustomValueVariable("faderTouchedShadow");
@@ -81,7 +81,7 @@ class TouchSensitiveFaderDecorator {
   };
 }
 
-export class TouchSensitiveFader extends TouchSensitiveFaderDecorator {
+export class TouchSensitiveMotorFader extends TouchSensitiveMotorFaderDecorator {
   constructor(surface: MR_DeviceSurface, x: number, y: number, w: number, h: number) {
     const fader = surface.makeFader(x, y, w, h);
 
@@ -92,4 +92,4 @@ export class TouchSensitiveFader extends TouchSensitiveFaderDecorator {
 }
 
 // TS merges this declaration with the `TouchSensitiveFader` class above
-export interface TouchSensitiveFader extends MR_Fader {}
+export interface TouchSensitiveMotorFader extends MR_Fader {}

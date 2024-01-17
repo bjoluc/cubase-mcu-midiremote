@@ -2,7 +2,7 @@ import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
-import { TouchSensitiveFader } from "/decorators/surface-elements/TouchSensitiveFader";
+import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
 
 export interface DeviceSurface {
   width: number;
@@ -23,7 +23,7 @@ export interface ChannelSurfaceElements {
     mute: LedButton;
     select: LedButton;
   };
-  fader: TouchSensitiveFader;
+  fader: TouchSensitiveMotorFader;
 }
 
 export interface ControlSectionButtons {
@@ -62,7 +62,7 @@ export interface ControlSectionButtons {
 }
 
 export interface ControlSectionSurfaceElements {
-  mainFader: TouchSensitiveFader;
+  mainFader: TouchSensitiveMotorFader;
   jogWheel: JogWheel;
   buttons: ControlSectionButtons;
 
