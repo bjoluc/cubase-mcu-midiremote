@@ -13,7 +13,7 @@ class TouchSensitiveFaderDecorator {
   ) {
     // Cubase 13 only:
     if (fader.mSurfaceValue.mTouchState) {
-      fader.mSurfaceValue.mTouchState.bindTo(this.mTouchedValue);
+      fader.mSurfaceValue.mTouchState.bindTo(this.mTouchedShadowValue);
     }
   }
 
