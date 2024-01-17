@@ -70,8 +70,8 @@ class TouchSensitiveFaderDecorator {
     surfaceValue.mOnProcessValueChange = onSurfaceValueChange;
 
     // Send fader down when unassigned
-    surfaceValue.mOnTitleChange = (context, title) => {
-      if (title === "") {
+    surfaceValue.mOnTitleChange = (context, _title1, title2) => {
+      if (title2 === "") {
         surfaceValue.setProcessValue(context, 0);
         // `mOnProcessValueChange` isn't run on `setProcessValue()` when the fader is not assigned
         // to a mixer channel, so we manually trigger the update:
