@@ -1,4 +1,5 @@
-import { DecoratedDeviceSurface, DecoratedLamp, JogWheel } from "/decorators/surface";
+import { DecoratedDeviceSurface, DecoratedLamp } from "/decorators/surface";
+import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveFader } from "/decorators/surface-elements/TouchSensitiveFader";

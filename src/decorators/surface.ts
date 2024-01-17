@@ -1,76 +1,15 @@
 import { EnhancedMidiOutput } from "/midi/PortPair";
 
-export interface JogWheel extends MR_Fader {
-  mKnobModeEnabledValue: MR_SurfaceCustomValueVariable;
-  mJogRightValue: MR_SurfaceCustomValueVariable;
-  mJogLeftValue: MR_SurfaceCustomValueVariable;
-  bindToControlChange: (input: MR_DeviceMidiInput, controlChangeNumber: number) => void;
-}
-
 export interface DecoratedLamp extends MR_Lamp {
   bindToNote: (output: EnhancedMidiOutput, note: number) => void;
 }
 
 export interface DecoratedDeviceSurface extends MR_DeviceSurface {
-  makeJogWheel: (...args: Parameters<MR_DeviceSurface["makeKnob"]>) => JogWheel;
   makeDecoratedLamp: (...args: Parameters<MR_DeviceSurface["makeLamp"]>) => DecoratedLamp;
 }
 
 export function decorateSurface(surface: MR_DeviceSurface) {
   const decoratedSurface = surface as DecoratedDeviceSurface;
-
-  decoratedSurface.makeJogWheel = (...args) => {
-    const jogWheel = surface.makeKnob(...args) as JogWheel;
-
-    const mProxyValue = surface.makeCustomValueVariable("jogWheelProxy");
-    jogWheel.mKnobModeEnabledValue = surface.makeCustomValueVariable("jogWheelKnobModeEnabled");
-    jogWheel.mJogRightValue = surface.makeCustomValueVariable("jogWheelJogRight");
-    jogWheel.mJogLeftValue = surface.makeCustomValueVariable("jogWheelJogLeft");
-
-    jogWheel.bindToControlChange = (input, controlChangeNumber) => {
-      mProxyValue.mMidiBinding
-        .setInputPort(input)
-        .bindToControlChange(0, controlChangeNumber)
-        .setTypeRelativeSignedBit();
-      mProxyValue.mOnProcessValueChange = (context, value, difference) => {
-        const jumpOffset = 0.4;
-
-        // Prevent value from reaching its limits
-        if (value < 0.5 - jumpOffset) {
-          mProxyValue.setProcessValue(context, value + jumpOffset);
-        } else if (value > 0.5 + jumpOffset) {
-          mProxyValue.setProcessValue(context, value - jumpOffset);
-        }
-
-        // Compensate for the difference value offsets introduced above
-        if (Math.abs(difference) >= jumpOffset - 0.1) {
-          if (difference > 0) {
-            difference -= jumpOffset;
-          } else {
-            difference += jumpOffset;
-          }
-        }
-
-        if (jogWheel.mKnobModeEnabledValue.getProcessValue(context)) {
-          jogWheel.mSurfaceValue.setProcessValue(
-            context,
-            Math.max(0, Math.min(1, jogWheel.mSurfaceValue.getProcessValue(context) + difference)),
-          );
-        } else {
-          // Handle jog events
-          if (difference !== 0) {
-            if (difference < 0) {
-              jogWheel.mJogLeftValue.setProcessValue(context, 1);
-            } else {
-              jogWheel.mJogRightValue.setProcessValue(context, 1);
-            }
-          }
-        }
-      };
-    };
-
-    return jogWheel;
-  };
 
   decoratedSurface.makeDecoratedLamp = (...args) => {
     const lamp = decoratedSurface.makeLamp(...args) as DecoratedLamp;

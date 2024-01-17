@@ -5,6 +5,7 @@
 
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { DecoratedDeviceSurface } from "/decorators/surface";
+import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveFader } from "/decorators/surface-elements/TouchSensitiveFader";
@@ -136,7 +137,7 @@ export const deviceConfig: DeviceConfig = {
       controlSectionElements: {
         mainFader: new TouchSensitiveFader(surface, x, 24.4, 1.8, 12),
 
-        jogWheel: surface.makeJogWheel(x + 12.75, 30, 6, 6),
+        jogWheel: new JogWheel(surface, x + 12.75, 30, 6, 6),
 
         buttons: {
           display: upperControlButtons[0],

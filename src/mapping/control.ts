@@ -1,6 +1,6 @@
 import { config } from "/config";
 import { DecoratedFactoryMappingPage } from "/decorators/page";
-import { JogWheel } from "/decorators/surface";
+import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "/device-configs";
