@@ -193,10 +193,12 @@ export function bindDeviceToMidi(
     }
 
     // Segment Display - handled by the SegmentDisplayManager, except for the individual LEDs:
-    const { smpte, beats, solo } = elements.displayLeds;
-    [smpte, beats, solo].forEach((lamp, index) => {
-      lamp.bindToNote(ports.output, 0x71 + index);
-    });
+    if (elements.displayLeds) {
+      const { smpte, beats, solo } = elements.displayLeds;
+      [smpte, beats, solo].forEach((lamp, index) => {
+        lamp.bindToNote(ports.output, 0x71 + index);
+      });
+    }
 
     // Jog wheel
     elements.jogWheel.bindToControlChange(ports.input, 0x3c);

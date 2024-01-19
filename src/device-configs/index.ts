@@ -66,7 +66,7 @@ export interface ControlSectionSurfaceElements {
   jogWheel: JogWheel;
   buttons: ControlSectionButtons;
 
-  displayLeds: {
+  displayLeds?: {
     smpte: Lamp;
     beats: Lamp;
     solo: Lamp;
