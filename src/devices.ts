@@ -68,7 +68,7 @@ export class ExtenderDevice extends Device {
     firstChannelIndex: number,
     surfaceXPosition: number,
   ) {
-    const deviceSurface = deviceConfig.createExtenderSurface(surface, surfaceXPosition);
+    const deviceSurface = deviceConfig.createExtenderSurface!(surface, surfaceXPosition);
     super(driver, firstChannelIndex, deviceSurface, globalState, timerUtils, true);
   }
 }
@@ -82,7 +82,11 @@ export function createDevices(
   let nextDeviceXPosition = 0;
 
   const devices = config.devices.map((deviceType, deviceIndex) => {
-    const device = new (deviceType === "main" ? MainDevice : ExtenderDevice)(
+    const device = new (deviceType === "main"
+      ? MainDevice
+      : deviceConfig.createExtenderSurface
+        ? ExtenderDevice
+        : MainDevice)(
       driver,
       surface,
       globalState,

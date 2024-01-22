@@ -14,8 +14,22 @@ class LampDecorator {
  * Extends the MR_Lamp by a `bindToNote()` method
  */
 export class Lamp extends LampDecorator {
-  constructor(surface: MR_DeviceSurface, x: number, y: number, w: number, h: number) {
-    const lamp = surface.makeLamp(x, y, w, h);
+  constructor(surface: MR_DeviceSurface, x?: number, y?: number, w?: number, h?: number) {
+    const lamp: MR_Lamp =
+      typeof x !== "undefined" &&
+      typeof y !== "undefined" &&
+      typeof w !== "undefined" &&
+      typeof h !== "undefined"
+        ? surface.makeLamp(x, y, w, h)
+        : {
+            mSurfaceValue: surface.makeCustomValueVariable("hiddenLamp"),
+            setShapeCircle() {
+              return lamp;
+            },
+            setShapeRectangle() {
+              return lamp;
+            },
+          };
 
     super(lamp);
 
@@ -25,6 +39,6 @@ export class Lamp extends LampDecorator {
 
 // TS merges this declaration with the `Lamp` class above
 export interface Lamp extends MR_Lamp {
-  setShapeRectangle(): Lamp;
   setShapeCircle(): Lamp;
+  setShapeRectangle(): Lamp;
 }
