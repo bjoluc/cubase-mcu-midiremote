@@ -5,7 +5,6 @@
 
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
-import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
