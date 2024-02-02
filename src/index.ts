@@ -19,6 +19,7 @@ import { bindDeviceToMidi } from "/midi";
 import { setupDeviceConnection } from "/midi/connection";
 import { makeTimerUtils } from "/util";
 import { createGlobalState } from "/state";
+import { deviceConfig } from "./config";
 
 const driver = midiremoteApi.makeDeviceDriver(VENDOR_NAME, DEVICE_NAME, "github.com/bjoluc");
 
@@ -51,18 +52,13 @@ for (const device of devices) {
 // Map elements to host functions
 makeHostMapping(page, devices, segmentDisplayManager, globalState, activationCallbacks);
 
-if (DEVICE_NAME === "MCU Pro") {
-  // Initially disable LCD channel metering for all devices
-  activationCallbacks.addCallback((context) => {
-    globalState.isGlobalLcdMeterModeVertical.set(context, true);
-    globalState.areChannelMetersEnabled.set(context, false);
+if (deviceConfig.enhanceMapping) {
+  deviceConfig.enhanceMapping({
+    driver,
+    page,
+    devices,
+    segmentDisplayManager,
+    globalState,
+    activationCallbacks,
   });
-
-  // Clear meter overloads when playback is started
-  page.mHostAccess.mTransport.mValue.mStart.mOnProcessValueChange = (context, mapping, value) => {
-    const isPlaybackActive = Boolean(value);
-    if (isPlaybackActive !== globalState.shouldMeterOverloadsBeCleared.get(context)) {
-      globalState.shouldMeterOverloadsBeCleared.set(context, isPlaybackActive);
-    }
-  };
 }

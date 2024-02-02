@@ -204,4 +204,20 @@ export const deviceConfig: DeviceConfig = {
       },
     };
   },
+
+  enhanceMapping({ activationCallbacks, globalState, page }) {
+    // Initially disable LCD channel metering for all devices
+    activationCallbacks.addCallback((context) => {
+      globalState.isGlobalLcdMeterModeVertical.set(context, true);
+      globalState.areChannelMetersEnabled.set(context, false);
+    });
+
+    // Clear meter overloads when playback is started
+    page.mHostAccess.mTransport.mValue.mStart.mOnProcessValueChange = (context, mapping, value) => {
+      const isPlaybackActive = Boolean(value);
+      if (isPlaybackActive !== globalState.shouldMeterOverloadsBeCleared.get(context)) {
+        globalState.shouldMeterOverloadsBeCleared.set(context, isPlaybackActive);
+      }
+    };
+  },
 };

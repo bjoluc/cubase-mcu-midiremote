@@ -3,6 +3,10 @@ import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
+import { Device } from "/devices";
+import { ActivationCallbacks } from "/midi/connection";
+import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
+import { GlobalState } from "/state";
 
 export interface DeviceSurface {
   width: number;
@@ -102,4 +106,13 @@ export interface DeviceConfig {
    * position.
    */
   createExtenderSurface(surface: MR_DeviceSurface, x: number): DeviceSurface;
+
+  enhanceMapping?(mappingDependencies: {
+    driver: MR_DeviceDriver;
+    page: MR_FactoryMappingPage;
+    devices: Device[];
+    segmentDisplayManager: SegmentDisplayManager;
+    globalState: GlobalState;
+    activationCallbacks: ActivationCallbacks;
+  }): void;
 }
