@@ -40,11 +40,46 @@ export interface ControlSectionButtons {
   encoderAssign: LedButton[];
   number: LedButton[];
   function: LedButton[];
-  modify: LedButton[];
-  automation: LedButton[];
-  utility: LedButton[];
 
-  transport: LedButton[];
+  modify: {
+    undo: LedButton;
+    redo: LedButton;
+    save: LedButton;
+    revert: LedButton;
+  };
+  automation: {
+    read: LedButton;
+    write: LedButton;
+    sends: LedButton;
+    project: LedButton;
+    mixer: LedButton;
+    motor: LedButton;
+  };
+  utility: {
+    instrument: LedButton;
+    main: LedButton;
+    soloDefeat: LedButton;
+    shift: LedButton;
+  };
+
+  transport: {
+    left: LedButton;
+    right: LedButton;
+    cycle: LedButton;
+    punch: LedButton;
+
+    markers: {
+      previous: LedButton;
+      add: LedButton;
+      next: LedButton;
+    };
+
+    rewind: LedButton;
+    forward: LedButton;
+    stop: LedButton;
+    play: LedButton;
+    record: LedButton;
+  };
 
   navigation: {
     bank: {

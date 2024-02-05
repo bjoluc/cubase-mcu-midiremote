@@ -9,7 +9,7 @@ import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
-import { createElements, getArrayElements } from "/util";
+import { createElements } from "/util";
 
 const channelWidth = 3.75;
 const channelElementsWidth = 4 + 8 * channelWidth;
@@ -118,6 +118,10 @@ export const deviceConfig: DeviceConfig = {
       ),
     );
 
+    const automationButtons = createElements(6, (index) =>
+      makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 3),
+    );
+
     const layer2FunctionButtons = createElements(
       8,
       (index) =>
@@ -128,6 +132,14 @@ export const deviceConfig: DeviceConfig = {
             1.8,
             0.75,
           ],
+        }),
+    );
+
+    const markerButtons = createElements(
+      3,
+      (index) =>
+        new LedButton(surface, {
+          position: [x + 3.5 + index * buttonDistance, 23.5 + buttonRowHeight * 2 - 0.5, 1.8, 0.75],
         }),
     );
 
@@ -157,32 +169,44 @@ export const deviceConfig: DeviceConfig = {
               13 + buttonRowHeight * (Math.floor(index / 4) - 0.5),
             ),
           ),
-          modify: [...upperControlButtons.slice(2, 5), new LedButton(surface)],
-          automation: createElements(6, (index) =>
-            makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 3),
-          ),
-          utility: [
-            ...lowerControlButtons.slice(0, 2),
-            lowerControlButtons[8],
-            lowerControlButtons[2],
-          ],
-          transport: [
-            ...getArrayElements(lowerControlButtons, [6, 7, 4]),
-            new LedButton(surface), //Cycle
-            ...createElements(
-              3,
-              (index) =>
-                new LedButton(surface, {
-                  position: [
-                    x + 3.5 + index * buttonDistance,
-                    23.5 + buttonRowHeight * 2 - 0.5,
-                    1.8,
-                    0.75,
-                  ],
-                }),
-            ),
-            ...getArrayElements(lowerControlButtons, [3, 5, 11, 10, 9]),
-          ],
+          modify: {
+            undo: upperControlButtons[2],
+            redo: upperControlButtons[3],
+            save: upperControlButtons[4],
+            revert: new LedButton(surface),
+          },
+          automation: {
+            read: automationButtons[0],
+            write: automationButtons[1],
+            sends: automationButtons[2],
+            project: automationButtons[3],
+            mixer: automationButtons[4],
+            motor: automationButtons[5],
+          },
+          utility: {
+            instrument: lowerControlButtons[0],
+            main: lowerControlButtons[1],
+            soloDefeat: lowerControlButtons[8],
+            shift: lowerControlButtons[2],
+          },
+          transport: {
+            left: lowerControlButtons[6],
+            right: lowerControlButtons[7],
+            cycle: lowerControlButtons[4],
+            punch: new LedButton(surface),
+
+            markers: {
+              previous: markerButtons[0],
+              add: markerButtons[1],
+              next: markerButtons[2],
+            },
+
+            rewind: lowerControlButtons[3],
+            forward: lowerControlButtons[5],
+            stop: lowerControlButtons[11],
+            play: lowerControlButtons[10],
+            record: lowerControlButtons[9],
+          },
 
           navigation: {
             channel: {
