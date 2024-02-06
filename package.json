@@ -11,16 +11,14 @@
   },
   "author": "bjoluc",
   "license": "MIT",
-  "dependencies": {
-    "abbreviate": "0.0.3",
-    "color-diff": "1.4.0",
-    "core-js": "3.35.0"
-  },
   "devDependencies": {
     "@bjoluc/semantic-release-config-npm": "^5.0.0",
     "@sindresorhus/slugify": "^2.2.1",
     "@types/color-diff": "^1.2.5",
     "@types/node": "^20.10.8",
+    "abbreviate": "0.0.3",
+    "color-diff": "1.4.0",
+    "core-js": "3.35.0",
     "dotenv": "^16.3.1",
     "execa": "^8.0.1",
     "jest-docblock": "^29.7.0",
