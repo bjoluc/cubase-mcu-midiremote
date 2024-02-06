@@ -1,3 +1,4 @@
+import { Except } from "type-fest";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
@@ -8,10 +9,40 @@ import { ActivationCallbacks } from "/midi/connection";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
 
+type SurfaceElement = LedButton | TouchSensitiveMotorFader | Lamp | JogWheel | MR_Knob;
+
+/**
+ * Given a (nested) surface elements object, sets all properties containing a surface element to
+ * required.
+ */
+type RequireAllElements<T> = T extends SurfaceElement
+  ? T
+  : {
+      [K in keyof T]-?: RequireAllElements<T[K]>;
+    };
+
+/**
+ * Given a (nested) surface elements object, infers an object containing a default element factory
+ * function for each optional property
+ */
+type DefaultElementsFactory<T> = T extends SurfaceElement | SurfaceElement[]
+  ? () => T
+  : Except<
+      {
+        [K in keyof T]-?: DefaultElementsFactory<T[K]>;
+      },
+      {
+        [K in keyof T]: undefined extends T[K] ? never : K;
+      }[keyof T]
+    >;
+
 export interface DeviceSurface {
   width: number;
   channelElements: ChannelSurfaceElements[];
-  controlSectionElements?: ControlSectionSurfaceElements;
+}
+
+export interface MainDeviceSurface extends DeviceSurface {
+  controlSectionElements: PartialControlSectionSurfaceElements;
 }
 
 export interface ChannelSurfaceElements {
@@ -30,58 +61,58 @@ export interface ChannelSurfaceElements {
   fader: TouchSensitiveMotorFader;
 }
 
-export interface ControlSectionButtons {
-  display: LedButton;
-  timeMode: LedButton;
-  edit: LedButton;
-  flip: LedButton;
-  scrub: LedButton;
+export interface PartialControlSectionButtons {
+  display?: LedButton;
+  timeMode?: LedButton;
+  edit?: LedButton;
+  flip?: LedButton;
+  scrub?: LedButton;
 
-  encoderAssign: LedButton[];
-  number: LedButton[];
-  function: LedButton[];
+  encoderAssign?: LedButton[];
+  number?: LedButton[];
+  function?: LedButton[];
 
-  modify: {
-    undo: LedButton;
-    redo: LedButton;
-    save: LedButton;
-    revert: LedButton;
+  modify?: {
+    undo?: LedButton;
+    redo?: LedButton;
+    save?: LedButton;
+    revert?: LedButton;
   };
-  automation: {
-    read: LedButton;
-    write: LedButton;
-    sends: LedButton;
-    project: LedButton;
-    mixer: LedButton;
-    motor: LedButton;
+  automation?: {
+    read?: LedButton;
+    write?: LedButton;
+    sends?: LedButton;
+    project?: LedButton;
+    mixer?: LedButton;
+    motor?: LedButton;
   };
-  utility: {
-    instrument: LedButton;
-    main: LedButton;
-    soloDefeat: LedButton;
-    shift: LedButton;
+  utility?: {
+    instrument?: LedButton;
+    main?: LedButton;
+    soloDefeat?: LedButton;
+    shift?: LedButton;
   };
 
-  transport: {
-    left: LedButton;
-    right: LedButton;
-    cycle: LedButton;
-    punch: LedButton;
+  transport?: {
+    left?: LedButton;
+    right?: LedButton;
+    cycle?: LedButton;
+    punch?: LedButton;
 
-    markers: {
-      previous: LedButton;
-      add: LedButton;
-      next: LedButton;
+    markers?: {
+      previous?: LedButton;
+      add?: LedButton;
+      next?: LedButton;
     };
 
-    rewind: LedButton;
-    forward: LedButton;
-    stop: LedButton;
-    play: LedButton;
-    record: LedButton;
+    rewind?: LedButton;
+    forward?: LedButton;
+    stop?: LedButton;
+    play?: LedButton;
+    record?: LedButton;
   };
 
-  navigation: {
+  navigation?: {
     bank: {
       left: LedButton;
       right: LedButton;
@@ -90,20 +121,22 @@ export interface ControlSectionButtons {
       left: LedButton;
       right: LedButton;
     };
-    directions: {
-      left: LedButton;
-      right: LedButton;
-      up: LedButton;
-      center: LedButton;
-      down: LedButton;
+    directions?: {
+      left?: LedButton;
+      right?: LedButton;
+      up?: LedButton;
+      center?: LedButton;
+      down?: LedButton;
     };
   };
 }
 
-export interface ControlSectionSurfaceElements {
+export type ControlSectionButtons = RequireAllElements<PartialControlSectionButtons>;
+
+export interface PartialControlSectionSurfaceElements {
   mainFader: TouchSensitiveMotorFader;
   jogWheel: JogWheel;
-  buttons: ControlSectionButtons;
+  buttons?: PartialControlSectionButtons;
 
   displayLeds: {
     smpte: Lamp;
@@ -111,9 +144,15 @@ export interface ControlSectionSurfaceElements {
     solo: Lamp;
   };
 
-  expressionPedal: MR_Knob;
+  expressionPedal?: MR_Knob;
   footSwitches: MR_Button[];
 }
+
+export type ControlSectionSurfaceElements =
+  RequireAllElements<PartialControlSectionSurfaceElements>;
+
+export type ControlSectionSurfaceElementsDefaultsFactory =
+  DefaultElementsFactory<PartialControlSectionSurfaceElements>;
 
 export interface DeviceConfig {
   detectionUnits: Array<{
@@ -134,7 +173,7 @@ export interface DeviceConfig {
    * Creates and returns all surface elements of a main device, starting at the provided `x`
    * position.
    */
-  createMainSurface(surface: MR_DeviceSurface, x: number): DeviceSurface;
+  createMainSurface(surface: MR_DeviceSurface, x: number): MainDeviceSurface;
 
   /**
    * Creates and returns all surface elements of an extender device, starting at the provided `x`

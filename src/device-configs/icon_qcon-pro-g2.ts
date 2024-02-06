@@ -161,7 +161,7 @@ export const deviceConfig: DeviceConfig = {
           encoderAssign: createElements(6, (index) =>
             makeSquareButton(surface, x + 3.5 + index * buttonDistance, 13 + buttonRowHeight * 2),
           ),
-          number: [...layer2FunctionButtons.slice(0, 7), new LedButton(surface)],
+          number: layer2FunctionButtons.slice(0, 7).concat(new LedButton(surface)),
           function: createElements(8, (index) =>
             makeSquareButton(
               surface,
@@ -173,7 +173,6 @@ export const deviceConfig: DeviceConfig = {
             undo: upperControlButtons[2],
             redo: upperControlButtons[3],
             save: upperControlButtons[4],
-            revert: new LedButton(surface),
           },
           automation: {
             read: automationButtons[0],
@@ -193,7 +192,6 @@ export const deviceConfig: DeviceConfig = {
             left: lowerControlButtons[6],
             right: lowerControlButtons[7],
             cycle: lowerControlButtons[4],
-            punch: new LedButton(surface),
 
             markers: {
               previous: markerButtons[0],
@@ -234,9 +232,6 @@ export const deviceConfig: DeviceConfig = {
           solo: new Lamp(surface, x + 18, 3.75, 0.75, 0.5),
         },
 
-        expressionPedal: {
-          mSurfaceValue: surface.makeCustomValueVariable("ExpressionPedal"),
-        } as MR_Knob,
         footSwitches: createElements(2, (index) =>
           surface.makeButton(x + 6 + index * 2, 0.875, 1.5, 1.5).setShapeCircle(),
         ),
