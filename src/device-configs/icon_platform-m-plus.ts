@@ -8,7 +8,7 @@ import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
-import { createElements, getArrayElements } from "/util";
+import { createElements } from "/util";
 
 const channelWidth = 5;
 const channelElementsWidth = 2 + 8 * channelWidth;
@@ -87,10 +87,6 @@ export const deviceConfig: DeviceConfig = {
   },
 
   createMainSurface(surface, x) {
-    function makeHiddenButtons(buttonCount: number) {
-      return createElements(buttonCount, () => new LedButton(surface));
-    }
-
     const surfaceWidth = channelElementsWidth + 12;
 
     // Device frame
@@ -132,31 +128,19 @@ export const deviceConfig: DeviceConfig = {
         jogWheel: new JogWheel(surface, x + 4.15, 27.4, 6, 6),
 
         buttons: {
-          display: new LedButton(surface),
-          timeMode: new LedButton(surface),
-          edit: new LedButton(surface),
-          flip: new LedButton(surface),
-          scrub: new LedButton(surface),
-
-          encoderAssign: makeHiddenButtons(6),
-          number: makeHiddenButtons(8),
-          function: makeHiddenButtons(8),
-          modify: makeHiddenButtons(4),
-          automation: [
-            mainChannelButtons[1],
-            mainChannelButtons[2],
-            ...makeHiddenButtons(2),
-            mainChannelButtons[0],
-            new LedButton(surface),
-          ],
-          utility: makeHiddenButtons(4),
-          transport: [
-            ...makeHiddenButtons(2),
-            controlButtonArray[9],
-            ...makeHiddenButtons(4),
-            ...getArrayElements(controlButtonArray, [4, 5, 7, 6, 8]),
-          ],
-
+          automation: {
+            read: mainChannelButtons[1],
+            write: mainChannelButtons[2],
+            mixer: mainChannelButtons[0],
+          },
+          transport: {
+            cycle: controlButtonArray[9],
+            rewind: controlButtonArray[4],
+            forward: controlButtonArray[5],
+            stop: controlButtonArray[7],
+            play: controlButtonArray[6],
+            record: controlButtonArray[8],
+          },
           navigation: {
             channel: {
               left: controlButtonArray[0],
@@ -166,20 +150,9 @@ export const deviceConfig: DeviceConfig = {
               left: controlButtonArray[2],
               right: controlButtonArray[3],
             },
-
-            directions: {
-              left: new LedButton(surface),
-              right: new LedButton(surface),
-              up: new LedButton(surface),
-              center: new LedButton(surface),
-              down: new LedButton(surface),
-            },
           },
         },
 
-        expressionPedal: {
-          mSurfaceValue: surface.makeCustomValueVariable("ExpressionPedal"),
-        } as MR_Knob,
         footSwitches: [
           {
             mSurfaceValue: surface.makeCustomValueVariable("FootSwitch1"),

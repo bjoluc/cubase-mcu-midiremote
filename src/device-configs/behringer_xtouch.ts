@@ -9,7 +9,7 @@ import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
-import { createElements, getArrayElements } from "/util";
+import { createElements } from "/util";
 
 const channelWidth = 5;
 const channelElementsWidth = 8 * channelWidth;
@@ -118,6 +118,11 @@ export const deviceConfig: DeviceConfig = {
       ),
     );
 
+    const transportButtons = createElements(
+      5,
+      (index) => new LedButton(surface, { position: [x + 6.25 + index * 4.0625, 28.5, 3.1, 2.1] }),
+    );
+
     return {
       width: surfaceWidth,
       channelElements,
@@ -142,17 +147,45 @@ export const deviceConfig: DeviceConfig = {
           function: createElements(8, (index) =>
             makeSquareButton(surface, x + 6 + index * 2.55, 15.75),
           ),
-          modify: getArrayElements(miscControlButtons, [0, 1, 7, 8]),
-          automation: getArrayElements(miscControlButtons, [2, 3, 4, 9, 10, 11]),
-          utility: getArrayElements(miscControlButtons, [5, 6, 12, 13]),
-          transport: [
-            ...miscControlButtons.slice(14),
-            ...createElements(
-              5,
-              (index) =>
-                new LedButton(surface, { position: [x + 6.25 + index * 4.0625, 28.5, 3.1, 2.1] }),
-            ),
-          ],
+
+          modify: {
+            undo: miscControlButtons[0],
+            redo: miscControlButtons[1],
+            save: miscControlButtons[7],
+            revert: miscControlButtons[8],
+          },
+          automation: {
+            read: miscControlButtons[2],
+            write: miscControlButtons[3],
+            sends: miscControlButtons[4],
+            project: miscControlButtons[9],
+            mixer: miscControlButtons[10],
+            motor: miscControlButtons[11],
+          },
+          utility: {
+            instrument: miscControlButtons[5],
+            main: miscControlButtons[6],
+            soloDefeat: miscControlButtons[12],
+            shift: miscControlButtons[13],
+          },
+          transport: {
+            left: miscControlButtons[14],
+            right: miscControlButtons[15],
+            cycle: miscControlButtons[16],
+            punch: miscControlButtons[17],
+
+            markers: {
+              previous: miscControlButtons[18],
+              add: miscControlButtons[19],
+              next: miscControlButtons[20],
+            },
+
+            rewind: transportButtons[0],
+            forward: transportButtons[1],
+            stop: transportButtons[2],
+            play: transportButtons[3],
+            record: transportButtons[4],
+          },
 
           navigation: {
             bank: {
@@ -174,9 +207,9 @@ export const deviceConfig: DeviceConfig = {
         },
 
         displayLeds: {
-          smpte: new Lamp(surface, x + 23.25, 6.9, 0.75, 0.5),
-          beats: new Lamp(surface, x + 23.25, 9.9, 0.75, 0.5),
-          solo: new Lamp(surface, x + 8, 8.4, 0.75, 0.5),
+          smpte: new Lamp(surface, { position: [x + 23.25, 6.9, 0.75, 0.5] }),
+          beats: new Lamp(surface, { position: [x + 23.25, 9.9, 0.75, 0.5] }),
+          solo: new Lamp(surface, { position: [x + 8, 8.4, 0.75, 0.5] }),
         },
 
         expressionPedal: surface.makeKnob(x + 20.1, 3.5, 1.5, 1.9),

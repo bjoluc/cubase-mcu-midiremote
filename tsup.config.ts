@@ -55,7 +55,6 @@ export default defineConfig(
     outDir: device.targetPath,
     clean: true,
     external: ["midiremote_api_v1"],
-    noExternal: ["abbreviate", "core-js", "color-diff"],
     onSuccess: async () => {
       // Remove all config options that have a `@device` pragma for a different device
       const deviceSpecificScriptConfig = scriptConfig.replace(

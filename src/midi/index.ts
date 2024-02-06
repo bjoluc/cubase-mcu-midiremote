@@ -172,33 +172,63 @@ export function bindDeviceToMidi(
       buttons.navigation.bank.right,
       buttons.navigation.channel.left,
       buttons.navigation.channel.right,
+
       buttons.flip,
       buttons.edit,
       buttons.display,
       buttons.timeMode,
+
       ...buttons.function,
       ...buttons.number,
-      ...buttons.modify,
-      ...buttons.automation,
-      ...buttons.utility,
-      ...buttons.transport,
+
+      buttons.modify.undo,
+      buttons.modify.redo,
+      buttons.modify.save,
+      buttons.modify.revert,
+
+      buttons.automation.read,
+      buttons.automation.write,
+      buttons.automation.sends,
+      buttons.automation.project,
+      buttons.automation.mixer,
+      buttons.automation.motor,
+
+      buttons.utility.instrument,
+      buttons.utility.main,
+      buttons.utility.soloDefeat,
+      buttons.utility.shift,
+
+      buttons.transport.left,
+      buttons.transport.right,
+      buttons.transport.cycle,
+      buttons.transport.punch,
+
+      buttons.transport.markers.previous,
+      buttons.transport.markers.add,
+      buttons.transport.markers.next,
+
+      buttons.transport.rewind,
+      buttons.transport.forward,
+      buttons.transport.stop,
+      buttons.transport.play,
+      buttons.transport.record,
+
       buttons.navigation.directions.up,
       buttons.navigation.directions.down,
       buttons.navigation.directions.left,
       buttons.navigation.directions.right,
       buttons.navigation.directions.center,
+
       buttons.scrub,
     ].entries()) {
       button.bindToNote(ports, 40 + index);
     }
 
     // Segment Display - handled by the SegmentDisplayManager, except for the individual LEDs:
-    if (elements.displayLeds) {
-      const { smpte, beats, solo } = elements.displayLeds;
-      [smpte, beats, solo].forEach((lamp, index) => {
-        lamp.bindToNote(ports.output, 0x71 + index);
-      });
-    }
+    const { smpte, beats, solo } = elements.displayLeds;
+    [smpte, beats, solo].forEach((lamp, index) => {
+      lamp.bindToNote(ports.output, 0x71 + index);
+    });
 
     // Jog wheel
     elements.jogWheel.bindToControlChange(ports.input, 0x3c);
