@@ -156,6 +156,8 @@ export type ControlSectionSurfaceElementsDefaultsFactory =
   DefaultElementsFactory<PartialControlSectionSurfaceElements>;
 
 export interface DeviceConfig {
+  channelColorSupport?: "behringer";
+
   detectionUnits: Array<{
     /**
      * A function that configures a `MR_DetectionPortPair` with main device input and output port

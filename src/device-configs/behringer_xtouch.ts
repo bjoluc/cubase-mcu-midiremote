@@ -66,6 +66,7 @@ function makeChannelElements(surface: MR_DeviceSurface, x: number): ChannelSurfa
 }
 
 export const deviceConfig: DeviceConfig = {
+  channelColorSupport: "behringer",
   detectionUnits: [
     {
       main: (detectionPortPair) =>
