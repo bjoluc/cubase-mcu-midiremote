@@ -14,11 +14,11 @@ function setShiftableButtonsLedValues(
 
   for (const button of [
     buttons.edit,
-    buttons.modify[0],
-    buttons.modify[2],
-    buttons.utility[2],
-    buttons.transport[0],
-    buttons.transport[1],
+    buttons.modify.undo,
+    buttons.modify.save,
+    buttons.utility.soloDefeat,
+    buttons.transport.left,
+    buttons.transport.right,
     buttons.navigation.bank.left,
   ]) {
     button.mLedValue.setProcessValue(context, value);
@@ -183,30 +183,30 @@ export function bindControlSection(
 
   // Undo
   page
-    .makeCommandBinding(buttons.modify[0].mSurfaceValue, "Edit", "Undo")
+    .makeCommandBinding(buttons.modify.undo.mSurfaceValue, "Edit", "Undo")
     .setSubPage(regularSubPage);
   page
-    .makeCommandBinding(buttons.modify[0].mSurfaceValue, "Edit", "History")
+    .makeCommandBinding(buttons.modify.undo.mSurfaceValue, "Edit", "History")
     .setSubPage(shiftSubPage);
 
   // Redo
-  page.makeCommandBinding(buttons.modify[1].mSurfaceValue, "Edit", "Redo");
+  page.makeCommandBinding(buttons.modify.redo.mSurfaceValue, "Edit", "Redo");
 
   // Save
   page
-    .makeCommandBinding(buttons.modify[2].mSurfaceValue, "File", "Save")
+    .makeCommandBinding(buttons.modify.save.mSurfaceValue, "File", "Save")
     .setSubPage(regularSubPage);
   page
-    .makeCommandBinding(buttons.modify[2].mSurfaceValue, "File", "Save New Version")
+    .makeCommandBinding(buttons.modify.save.mSurfaceValue, "File", "Save New Version")
     .setSubPage(shiftSubPage);
 
   // Revert
-  page.makeCommandBinding(buttons.modify[3].mSurfaceValue, "File", "Revert");
+  page.makeCommandBinding(buttons.modify.revert.mSurfaceValue, "File", "Revert");
 
   // Read/Off
   page
     .makeValueBinding(
-      buttons.automation[0].mSurfaceValue,
+      buttons.automation.read.mSurfaceValue,
       host.mTrackSelection.mMixerChannel.mValue.mAutomationRead,
     )
     .setTypeToggle();
@@ -214,7 +214,7 @@ export function bindControlSection(
   // Write
   page
     .makeValueBinding(
-      buttons.automation[1].mSurfaceValue,
+      buttons.automation.write.mSurfaceValue,
       host.mTrackSelection.mMixerChannel.mValue.mAutomationWrite,
     )
     .setTypeToggle();
@@ -222,55 +222,55 @@ export function bindControlSection(
   // Sends (Control value under cursor)
   bindCursorValueControlButton(
     page,
-    buttons.automation[2],
+    buttons.automation.sends,
     channelElements[7].encoder,
     controlSectionElements.jogWheel,
   );
 
   // Project
-  page.makeCommandBinding(buttons.automation[3].mSurfaceValue, "Project", "Bring To Front");
+  page.makeCommandBinding(buttons.automation.project.mSurfaceValue, "Project", "Bring To Front");
 
   // Mixer
-  page.makeCommandBinding(buttons.automation[4].mSurfaceValue, "Devices", "Mixer");
+  page.makeCommandBinding(buttons.automation.mixer.mSurfaceValue, "Devices", "Mixer");
 
   // Motor
   page.makeValueBinding(
-    buttons.automation[5].mSurfaceValue,
+    buttons.automation.motor.mSurfaceValue,
     page.mCustom.makeHostValueVariable("Disable/Enable Fader Motors"),
-  ).mOnValueChange = (context, mapping, value) => {
+  ).mOnValueChange = (context, _mapping, value) => {
     if (value) {
       globalState.areMotorsActive.toggle(context);
     }
   };
   globalState.areMotorsActive.addOnChangeCallback((context, value) => {
-    buttons.automation[5].mLedValue.setProcessValue(context, +value);
+    buttons.automation.motor.mLedValue.setProcessValue(context, +value);
   });
 
   // Instrument
   page.makeCommandBinding(
-    buttons.utility[0].mSurfaceValue,
+    buttons.utility.instrument.mSurfaceValue,
     "MixConsole History",
     "Undo MixConsole Step",
   );
 
   // Main
   page.makeCommandBinding(
-    buttons.utility[1].mSurfaceValue,
+    buttons.utility.main.mSurfaceValue,
     "MixConsole History",
     "Redo MixConsole Step",
   );
 
   // Solo Defeat
   page
-    .makeCommandBinding(buttons.utility[2].mSurfaceValue, "Edit", "Deactivate All Solo")
+    .makeCommandBinding(buttons.utility.soloDefeat.mSurfaceValue, "Edit", "Deactivate All Solo")
     .setSubPage(regularSubPage);
   page
-    .makeCommandBinding(buttons.utility[2].mSurfaceValue, "Edit", "Unmute All")
+    .makeCommandBinding(buttons.utility.soloDefeat.mSurfaceValue, "Edit", "Unmute All")
     .setSubPage(shiftSubPage);
 
   // Shift button
   page.makeActionBinding(
-    buttons.utility[3].mSurfaceValue,
+    buttons.utility.shift.mSurfaceValue,
     shiftSubPage.mAction.mActivate,
   ).mOnValueChange = (context, mapping, value) => {
     globalState.isShiftModeActive.set(context, Boolean(value), mapping);
@@ -280,42 +280,50 @@ export function bindControlSection(
   const mTransport = host.mTransport;
 
   page
-    .makeCommandBinding(buttons.transport[0].mSurfaceValue, "Transport", "To Left Locator")
+    .makeCommandBinding(buttons.transport.left.mSurfaceValue, "Transport", "To Left Locator")
     .setSubPage(regularSubPage);
   page
-    .makeCommandBinding(buttons.transport[0].mSurfaceValue, "Transport", "Set Left Locator")
+    .makeCommandBinding(buttons.transport.left.mSurfaceValue, "Transport", "Set Left Locator")
     .setSubPage(shiftSubPage);
 
   page
-    .makeCommandBinding(buttons.transport[1].mSurfaceValue, "Transport", "To Right Locator")
+    .makeCommandBinding(buttons.transport.right.mSurfaceValue, "Transport", "To Right Locator")
     .setSubPage(regularSubPage);
   page
-    .makeCommandBinding(buttons.transport[1].mSurfaceValue, "Transport", "Set Right Locator")
+    .makeCommandBinding(buttons.transport.right.mSurfaceValue, "Transport", "Set Right Locator")
     .setSubPage(shiftSubPage);
 
   page
-    .makeValueBinding(buttons.transport[2].mSurfaceValue, mTransport.mValue.mCycleActive)
+    .makeValueBinding(buttons.transport.cycle.mSurfaceValue, mTransport.mValue.mCycleActive)
     .setTypeToggle();
-  page.makeCommandBinding(buttons.transport[3].mSurfaceValue, "Transport", "Auto Punch In");
+  page.makeCommandBinding(buttons.transport.punch.mSurfaceValue, "Transport", "Auto Punch In");
 
   page.makeCommandBinding(
-    buttons.transport[4].mSurfaceValue,
+    buttons.transport.markers.previous.mSurfaceValue,
     "Transport",
     "Locate Previous Marker",
   );
-  page.makeCommandBinding(buttons.transport[5].mSurfaceValue, "Transport", "Insert Marker");
-  page.makeCommandBinding(buttons.transport[6].mSurfaceValue, "Transport", "Locate Next Marker");
+  page.makeCommandBinding(
+    buttons.transport.markers.add.mSurfaceValue,
+    "Transport",
+    "Insert Marker",
+  );
+  page.makeCommandBinding(
+    buttons.transport.markers.next.mSurfaceValue,
+    "Transport",
+    "Locate Next Marker",
+  );
 
-  page.makeValueBinding(buttons.transport[7].mSurfaceValue, mTransport.mValue.mRewind);
-  page.makeValueBinding(buttons.transport[8].mSurfaceValue, mTransport.mValue.mForward);
+  page.makeValueBinding(buttons.transport.rewind.mSurfaceValue, mTransport.mValue.mRewind);
+  page.makeValueBinding(buttons.transport.forward.mSurfaceValue, mTransport.mValue.mForward);
   page
-    .makeValueBinding(buttons.transport[9].mSurfaceValue, mTransport.mValue.mStop)
+    .makeValueBinding(buttons.transport.stop.mSurfaceValue, mTransport.mValue.mStop)
     .setTypeToggle();
   page
-    .makeValueBinding(buttons.transport[10].mSurfaceValue, mTransport.mValue.mStart)
+    .makeValueBinding(buttons.transport.play.mSurfaceValue, mTransport.mValue.mStart)
     .setTypeToggle();
   page
-    .makeValueBinding(buttons.transport[11].mSurfaceValue, mTransport.mValue.mRecord)
+    .makeValueBinding(buttons.transport.record.mSurfaceValue, mTransport.mValue.mRecord)
     .setTypeToggle();
 
   // Navigation Buttons

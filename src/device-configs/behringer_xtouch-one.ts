@@ -26,10 +26,6 @@ export const deviceConfig: DeviceConfig = {
     const makeSquareButton = (x: number, y: number, isChannelButton = false) =>
       new LedButton(surface, { position: [x + 0.25, y, 1.5, 1.5], isChannelButton });
 
-    const makeHiddenLedButtons = (numberOfButtons: number) => {
-      return createElements(numberOfButtons, () => new LedButton(surface));
-    };
-
     const getGridButtonPosition = (column: number, row: number): [number, number] => {
       return [x + 7.75 + column * 2.975, 9 + row * 3.75];
     };
@@ -87,6 +83,14 @@ export const deviceConfig: DeviceConfig = {
 
     const mainChannelControlLayer = channelsControlLayerZone.makeControlLayer("Main");
 
+    const upperTransportButtons = createElements(5, (index) =>
+      makeSquareButton(...getGridButtonPosition(2 + index, 2)),
+    );
+    const lowerTransportButtons = createElements(
+      5,
+      (index) => new LedButton(surface, { position: [x + 8 + index * 4.0625, 19.5, 3.1, 2.1] }),
+    );
+
     return {
       width: surfaceWidth,
       channelElements,
@@ -98,42 +102,36 @@ export const deviceConfig: DeviceConfig = {
         jogWheel: new JogWheel(surface, x + 14.9 + 1.75, 25.2, 9, 9),
 
         buttons: {
-          display: new LedButton(surface),
           timeMode: makeSquareButton(...getGridButtonPosition(1, 0)),
-          edit: new LedButton(surface),
-          flip: new LedButton(surface),
           scrub: makeSquareButton(x + 23.85 + 1.75, 22.75),
 
-          encoderAssign: makeHiddenLedButtons(6),
-          number: makeHiddenLedButtons(8),
-          function: [
-            ...createElements(4, (index) =>
-              makeSquareButton(...getGridButtonPosition(1 + index, 1)),
-            ),
-            ...makeHiddenLedButtons(4),
-          ],
-          modify: [
-            makeSquareButton(...getGridButtonPosition(0, 2)),
-            makeSquareButton(...getGridButtonPosition(1, 2)),
-            ...makeHiddenLedButtons(2),
-          ],
-          automation: [
-            makeSquareButton(...getGridButtonPosition(5, 1)),
-            makeSquareButton(...getGridButtonPosition(6, 1)),
-            ...makeHiddenLedButtons(4),
-          ],
-          utility: makeHiddenLedButtons(4),
-          transport: [
-            ...makeHiddenLedButtons(2),
-            ...createElements(5, (index) =>
-              makeSquareButton(...getGridButtonPosition(2 + index, 2)),
-            ),
-            ...createElements(
-              5,
-              (index) =>
-                new LedButton(surface, { position: [x + 8 + index * 4.0625, 19.5, 3.1, 2.1] }),
-            ),
-          ],
+          function: createElements(4, (index) =>
+            makeSquareButton(...getGridButtonPosition(1 + index, 1)),
+          ).concat(createElements(4, () => new LedButton(surface))),
+
+          modify: {
+            undo: makeSquareButton(...getGridButtonPosition(0, 2)),
+            redo: makeSquareButton(...getGridButtonPosition(1, 2)),
+          },
+          automation: {
+            read: makeSquareButton(...getGridButtonPosition(5, 1)),
+            write: makeSquareButton(...getGridButtonPosition(6, 1)),
+          },
+          transport: {
+            cycle: upperTransportButtons[0],
+            punch: upperTransportButtons[1],
+            markers: {
+              previous: upperTransportButtons[2],
+              add: upperTransportButtons[3],
+              next: upperTransportButtons[4],
+            },
+
+            rewind: lowerTransportButtons[0],
+            forward: lowerTransportButtons[1],
+            stop: lowerTransportButtons[2],
+            play: lowerTransportButtons[3],
+            record: lowerTransportButtons[4],
+          },
 
           navigation: {
             bank: {
@@ -155,14 +153,9 @@ export const deviceConfig: DeviceConfig = {
         },
 
         displayLeds: {
-          smpte: new Lamp(surface),
-          beats: new Lamp(surface),
-          solo: new Lamp(surface, x + 11.75, 5.4, 0.75, 0.5),
+          solo: new Lamp(surface, { position: [x + 11.75, 5.4, 0.75, 0.5] }),
         },
 
-        expressionPedal: {
-          mSurfaceValue: surface.makeCustomValueVariable("ExpressionPedal"),
-        } as MR_Knob,
         footSwitches: [
           surface.makeButton(x + 11.375, 0.5, 1.5, 1.5).setShapeCircle(),
           {
