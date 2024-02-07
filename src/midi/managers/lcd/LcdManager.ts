@@ -4,8 +4,6 @@ import { GlobalState } from "/state";
 import { TimerUtils, createElements } from "/util";
 
 export class LcdManager {
-  static readonly channelWidth = DEVICE_NAME.includes("X-Touch") ? 7 : 6;
-
   private static asciiStringToCharArray(input: string) {
     const chars = [];
     for (let i = 0; i < input.length; i++) {

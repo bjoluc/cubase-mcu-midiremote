@@ -12,6 +12,8 @@ import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSens
 import { createElements } from "/util";
 
 export const deviceConfig: DeviceConfig = {
+  channelColorSupport: "behringer",
+  hasIndividualScribbleStrips: true,
   detectionUnits: [
     {
       main: (detectionPortPair) =>
@@ -156,12 +158,7 @@ export const deviceConfig: DeviceConfig = {
           solo: new Lamp(surface, { position: [x + 11.75, 5.4, 0.75, 0.5] }),
         },
 
-        footSwitches: [
-          surface.makeButton(x + 11.375, 0.5, 1.5, 1.5).setShapeCircle(),
-          {
-            mSurfaceValue: surface.makeCustomValueVariable("FootSwitch"),
-          } as MR_Button,
-        ],
+        footSwitch1: surface.makeButton(x + 11.375, 0.5, 1.5, 1.5).setShapeCircle(),
       },
     };
   },

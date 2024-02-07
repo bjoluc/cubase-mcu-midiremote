@@ -232,9 +232,8 @@ export const deviceConfig: DeviceConfig = {
           solo: new Lamp(surface, { position: [x + 18, 3.75, 0.75, 0.5] }),
         },
 
-        footSwitches: createElements(2, (index) =>
-          surface.makeButton(x + 6 + index * 2, 0.875, 1.5, 1.5).setShapeCircle(),
-        ),
+        footSwitch1: surface.makeButton(x + 6, 0.875, 1.5, 1.5).setShapeCircle(),
+        footSwitch2: surface.makeButton(x + 6 + 2, 0.875, 1.5, 1.5).setShapeCircle(),
       },
     };
   },

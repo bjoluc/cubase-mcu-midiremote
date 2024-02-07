@@ -1,7 +1,7 @@
 import { ActivationCallbacks } from "./connection";
 import { RgbColor } from "./managers/ColorManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
-import { config } from "/config";
+import { config, deviceConfig } from "/config";
 import { Device, MainDevice } from "/devices";
 import { GlobalState } from "/state";
 import { ContextStateVariable } from "/util";
@@ -18,7 +18,7 @@ export function bindDeviceToMidi(
     channel.encoder.bindToMidi(ports, channelIndex);
 
     // Display colors – only supported by the X-Touch
-    if (DEVICE_NAME === "X-Touch") {
+    if (deviceConfig.channelColorSupport === "behringer") {
       const encoderColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
       channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
         encoderColor.set(context, { isAssigned, r, g, b });
@@ -138,7 +138,7 @@ export function bindDeviceToMidi(
     });
   }
 
-  if (DEVICE_NAME === "X-Touch") {
+  if (deviceConfig.channelColorSupport === "behringer") {
     // Send an initial (all-black by default) color message to the device. Otherwise, in projects
     // without enough channels for each device, devices without channels assigned to them would not
     // receive a color update at all, leaving their displays white although they should be black.
@@ -234,9 +234,8 @@ export function bindDeviceToMidi(
     elements.jogWheel.bindToControlChange(ports.input, 0x3c);
 
     // Foot control
-    for (const [index, footSwitch] of elements.footSwitches.entries()) {
-      footSwitch.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x66 + index);
-    }
+    elements.footSwitch1.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x66);
+    elements.footSwitch2.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x67);
     elements.expressionPedal.mSurfaceValue.mMidiBinding
       .setInputPort(ports.input)
       .bindToControlChange(0, 0x2e)

@@ -66,6 +66,8 @@ function makeChannelElements(surface: MR_DeviceSurface, x: number): ChannelSurfa
 }
 
 export const deviceConfig: DeviceConfig = {
+  channelColorSupport: "behringer",
+  hasIndividualScribbleStrips: true,
   detectionUnits: [
     {
       main: (detectionPortPair) =>
@@ -213,9 +215,8 @@ export const deviceConfig: DeviceConfig = {
         },
 
         expressionPedal: surface.makeKnob(x + 20.1, 3.5, 1.5, 1.9),
-        footSwitches: createElements(2, (index) =>
-          surface.makeButton(x + 22.1 + index * 2, 3.5, 1.5, 1.5).setShapeCircle(),
-        ),
+        footSwitch1: surface.makeButton(x + 22.1, 3.5, 1.5, 1.5).setShapeCircle(),
+        footSwitch2: surface.makeButton(x + 22.1 + 2, 3.5, 1.5, 1.5).setShapeCircle(),
       },
     };
   },
