@@ -158,6 +158,14 @@ export type ControlSectionSurfaceElementsDefaultsFactory =
 export interface DeviceConfig {
   channelColorSupport?: "behringer";
 
+  /**
+   * Whether the device has per-channel scribble strip displays, i.e. no display padding characters
+   * are needed between channels.
+   *
+   * @default {false}
+   */
+  hasIndividualScribbleStrips?: boolean;
+
   detectionUnits: Array<{
     /**
      * A function that configures a `MR_DetectionPortPair` with main device input and output port
