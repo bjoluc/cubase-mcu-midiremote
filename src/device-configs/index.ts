@@ -145,7 +145,8 @@ export interface PartialControlSectionSurfaceElements {
   };
 
   expressionPedal?: MR_Knob;
-  footSwitches: MR_Button[];
+  footSwitch1?: MR_Button;
+  footSwitch2?: MR_Button;
 }
 
 export type ControlSectionSurfaceElements =

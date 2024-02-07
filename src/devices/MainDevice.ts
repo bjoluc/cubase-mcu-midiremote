@@ -120,6 +120,15 @@ export class MainDevice extends Device {
         ({
           mSurfaceValue: surface.makeCustomValueVariable("ExpressionPedal"),
         }) as MR_Knob,
+
+      footSwitch1: () =>
+        ({
+          mSurfaceValue: surface.makeCustomValueVariable("FootSwitch1"),
+        }) as MR_Button,
+      footSwitch2: () =>
+        ({
+          mSurfaceValue: surface.makeCustomValueVariable("FootSwitch2"),
+        }) as MR_Button,
     };
 
     return applyDefaultsFactory(elements, defaultsFactory);

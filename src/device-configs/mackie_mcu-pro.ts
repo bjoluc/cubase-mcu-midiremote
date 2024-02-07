@@ -230,11 +230,8 @@ export const deviceConfig: DeviceConfig = {
         },
 
         expressionPedal: surface.makeKnob(x - channelElementsWidth + 14, 2, 2, 2.6),
-        footSwitches: createElements(2, (index) =>
-          surface
-            .makeButton(x - channelElementsWidth + 17 + (1 - index) * 3, 2, 2, 2)
-            .setShapeCircle(),
-        ),
+        footSwitch1: surface.makeButton(x - channelElementsWidth + 20, 2, 2, 2).setShapeCircle(),
+        footSwitch2: surface.makeButton(x - channelElementsWidth + 17, 2, 2, 2).setShapeCircle(),
       },
     };
   },

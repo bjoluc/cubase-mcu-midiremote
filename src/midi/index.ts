@@ -234,9 +234,8 @@ export function bindDeviceToMidi(
     elements.jogWheel.bindToControlChange(ports.input, 0x3c);
 
     // Foot control
-    for (const [index, footSwitch] of elements.footSwitches.entries()) {
-      footSwitch.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x66 + index);
-    }
+    elements.footSwitch1.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x66);
+    elements.footSwitch2.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x67);
     elements.expressionPedal.mSurfaceValue.mMidiBinding
       .setInputPort(ports.input)
       .bindToControlChange(0, 0x2e)
