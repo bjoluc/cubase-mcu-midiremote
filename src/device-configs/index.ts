@@ -112,14 +112,14 @@ export interface PartialControlSectionButtons {
     record?: LedButton;
   };
 
-  navigation: {
-    bank: {
-      left: LedButton;
-      right: LedButton;
+  navigation?: {
+    bank?: {
+      left?: LedButton;
+      right?: LedButton;
     };
-    channel: {
-      left: LedButton;
-      right: LedButton;
+    channel?: {
+      left?: LedButton;
+      right?: LedButton;
     };
     directions?: {
       left?: LedButton;

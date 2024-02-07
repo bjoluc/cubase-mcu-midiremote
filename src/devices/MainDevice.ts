@@ -91,6 +91,14 @@ export class MainDevice extends Device {
         },
 
         navigation: {
+          bank: {
+            left: makeButton,
+            right: makeButton,
+          },
+          channel: {
+            left: makeButton,
+            right: makeButton,
+          },
           directions: {
             left: makeButton,
             right: makeButton,
