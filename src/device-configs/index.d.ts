@@ -113,13 +113,13 @@ export interface PartialControlSectionButtons {
   };
 
   navigation?: {
-    bank: {
-      left: LedButton;
-      right: LedButton;
+    bank?: {
+      left?: LedButton;
+      right?: LedButton;
     };
-    channel: {
-      left: LedButton;
-      right: LedButton;
+    channel?: {
+      left?: LedButton;
+      right?: LedButton;
     };
     directions?: {
       left?: LedButton;
@@ -145,7 +145,8 @@ export interface PartialControlSectionSurfaceElements {
   };
 
   expressionPedal?: MR_Knob;
-  footSwitches: MR_Button[];
+  footSwitch1?: MR_Button;
+  footSwitch2?: MR_Button;
 }
 
 export type ControlSectionSurfaceElements =
@@ -155,6 +156,16 @@ export type ControlSectionSurfaceElementsDefaultsFactory =
   DefaultElementsFactory<PartialControlSectionSurfaceElements>;
 
 export interface DeviceConfig {
+  channelColorSupport?: "behringer";
+
+  /**
+   * Whether the device has per-channel scribble strip displays, i.e. no display padding characters
+   * are needed between channels.
+   *
+   * @default {false}
+   */
+  hasIndividualScribbleStrips?: boolean;
+
   detectionUnits: Array<{
     /**
      * A function that configures a `MR_DetectionPortPair` with main device input and output port

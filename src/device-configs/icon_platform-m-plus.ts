@@ -152,15 +152,6 @@ export const deviceConfig: DeviceConfig = {
             },
           },
         },
-
-        footSwitches: [
-          {
-            mSurfaceValue: surface.makeCustomValueVariable("FootSwitch1"),
-          } as MR_Button,
-          {
-            mSurfaceValue: surface.makeCustomValueVariable("FootSwitch2"),
-          } as MR_Button,
-        ],
       },
     };
   },

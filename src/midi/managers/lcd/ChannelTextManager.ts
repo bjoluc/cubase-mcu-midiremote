@@ -1,6 +1,7 @@
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
 import { LcdManager } from "./LcdManager";
+import { deviceConfig } from "/config";
 import { GlobalState } from "/state";
 import { ContextStateVariable, TimerUtils } from "/util";
 
@@ -8,6 +9,8 @@ import { ContextStateVariable, TimerUtils } from "/util";
  * Handles the LCD display text of a single channel
  */
 export class ChannelTextManager {
+  private static readonly channelWidth = deviceConfig.hasIndividualScribbleStrips ? 7 : 6;
+
   private static nextManagerId = 0;
 
   /**
@@ -18,15 +21,18 @@ export class ChannelTextManager {
   }
 
   /**
-   * Given a <= `LcdManager.channelWidth` characters long string, returns a left-padded version of
-   * it that appears centered on an `LcdManager.channelWidth`-character display.
+   * Given a <= `ChannelTextManager.channelWidth` characters long string, returns a left-padded
+   * version of it that appears centered on an `ChannelTextManager.channelWidth`-character display.
    */
   private static centerString(input: string) {
-    if (input.length >= LcdManager.channelWidth) {
+    if (input.length >= ChannelTextManager.channelWidth) {
       return input;
     }
 
-    return LcdManager.makeSpaces(Math.floor((LcdManager.channelWidth - input.length) / 2)) + input;
+    return (
+      LcdManager.makeSpaces(Math.floor((ChannelTextManager.channelWidth - input.length) / 2)) +
+      input
+    );
   }
 
   /**
@@ -34,11 +40,11 @@ export class ChannelTextManager {
    * `LcdManager.channelWidth` characters.
    */
   private static abbreviateString(input: string) {
-    if (input.length < LcdManager.channelWidth) {
+    if (input.length < ChannelTextManager.channelWidth) {
       return input;
     }
 
-    return abbreviate(input, { length: LcdManager.channelWidth });
+    return abbreviate(input, { length: ChannelTextManager.channelWidth });
   }
 
   private static translateParameterName(parameterName: string) {

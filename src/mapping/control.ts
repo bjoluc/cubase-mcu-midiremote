@@ -413,7 +413,10 @@ export function bindFootControl(
   page: MR_FactoryMappingPage,
   controlSectionElements: ControlSectionSurfaceElements,
 ) {
-  for (const footSwitch of controlSectionElements.footSwitches) {
+  for (const footSwitch of [
+    controlSectionElements.footSwitch1,
+    controlSectionElements.footSwitch2,
+  ]) {
     page.makeCommandBinding(
       footSwitch.mSurfaceValue,
       "MIDI Remote",
