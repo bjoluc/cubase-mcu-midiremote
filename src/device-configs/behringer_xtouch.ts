@@ -207,9 +207,9 @@ export const deviceConfig: DeviceConfig = {
         },
 
         displayLeds: {
-          smpte: new Lamp(surface, x + 23.25, 6.9, 0.75, 0.5),
-          beats: new Lamp(surface, x + 23.25, 9.9, 0.75, 0.5),
-          solo: new Lamp(surface, x + 8, 8.4, 0.75, 0.5),
+          smpte: new Lamp(surface, { position: [x + 23.25, 6.9, 0.75, 0.5] }),
+          beats: new Lamp(surface, { position: [x + 23.25, 9.9, 0.75, 0.5] }),
+          solo: new Lamp(surface, { position: [x + 8, 8.4, 0.75, 0.5] }),
         },
 
         expressionPedal: surface.makeKnob(x + 20.1, 3.5, 1.5, 1.9),

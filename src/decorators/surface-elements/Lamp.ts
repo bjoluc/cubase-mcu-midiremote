@@ -1,5 +1,12 @@
 import { MidiOutputPort } from "../MidiOutputPort";
 
+interface LampOptions {
+  /**
+   * The position and size of the lamp. If omitted, the lamp will be hidden.
+   */
+  position?: [x: number, y: number, w: number, h: number];
+}
+
 class LampDecorator {
   constructor(private lamp: MR_Lamp) {}
 
@@ -11,11 +18,17 @@ class LampDecorator {
 }
 
 /**
- * Extends the MR_Lamp by a `bindToNote()` method
+ * Extends the MR_Lamp by a `bindToNote()` method and makes it hidable
  */
 export class Lamp extends LampDecorator {
-  constructor(surface: MR_DeviceSurface, x: number, y: number, w: number, h: number) {
-    const lamp = surface.makeLamp(x, y, w, h);
+  constructor(surface: MR_DeviceSurface, options: LampOptions = {}) {
+    const lamp: MR_Lamp = options.position
+      ? surface.makeLamp(...options.position)
+      : {
+          mSurfaceValue: surface.makeCustomValueVariable("HiddenLamp"),
+          setShapeCircle: () => lamp,
+          setShapeRectangle: () => lamp,
+        };
 
     super(lamp);
 

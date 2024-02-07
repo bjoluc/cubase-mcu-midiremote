@@ -138,10 +138,10 @@ export interface PartialControlSectionSurfaceElements {
   jogWheel: JogWheel;
   buttons?: PartialControlSectionButtons;
 
-  displayLeds: {
-    smpte: Lamp;
-    beats: Lamp;
-    solo: Lamp;
+  displayLeds?: {
+    smpte?: Lamp;
+    beats?: Lamp;
+    solo?: Lamp;
   };
 
   expressionPedal?: MR_Knob;

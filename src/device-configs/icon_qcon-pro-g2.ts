@@ -227,9 +227,9 @@ export const deviceConfig: DeviceConfig = {
         },
 
         displayLeds: {
-          smpte: new Lamp(surface, x + 5.25, 3.25, 0.75, 0.5),
-          beats: new Lamp(surface, x + 5.25, 4.25, 0.75, 0.5),
-          solo: new Lamp(surface, x + 18, 3.75, 0.75, 0.5),
+          smpte: new Lamp(surface, { position: [x + 5.25, 3.25, 0.75, 0.5] }),
+          beats: new Lamp(surface, { position: [x + 5.25, 4.25, 0.75, 0.5] }),
+          solo: new Lamp(surface, { position: [x + 18, 3.75, 0.75, 0.5] }),
         },
 
         footSwitches: createElements(2, (index) =>

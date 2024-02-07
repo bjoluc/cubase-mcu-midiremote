@@ -224,9 +224,9 @@ export const deviceConfig: DeviceConfig = {
         },
 
         displayLeds: {
-          smpte: new Lamp(surface, x + 8.5, 7.1, 0.9, 0.9).setShapeCircle(),
-          beats: new Lamp(surface, x + 8.5, 8, 0.9, 0.9).setShapeCircle(),
-          solo: new Lamp(surface, x + 24.75, 7.5, 1, 1).setShapeCircle(),
+          smpte: new Lamp(surface, { position: [x + 8.5, 7.1, 0.9, 0.9] }).setShapeCircle(),
+          beats: new Lamp(surface, { position: [x + 8.5, 8, 0.9, 0.9] }).setShapeCircle(),
+          solo: new Lamp(surface, { position: [x + 24.75, 7.5, 1, 1] }).setShapeCircle(),
         },
 
         expressionPedal: surface.makeKnob(x - channelElementsWidth + 14, 2, 2, 2.6),

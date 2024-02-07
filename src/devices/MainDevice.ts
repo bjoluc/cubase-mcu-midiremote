@@ -5,6 +5,7 @@ import {
 } from "../device-configs";
 import { Device } from "./Device";
 import { deviceConfig } from "/config";
+import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { GlobalState } from "/state";
 import { TimerUtils, applyDefaultsFactory, createElements } from "/util";
@@ -107,6 +108,12 @@ export class MainDevice extends Device {
             down: makeButton,
           },
         },
+      },
+
+      displayLeds: {
+        smpte: () => new Lamp(surface),
+        beats: () => new Lamp(surface),
+        solo: () => new Lamp(surface),
       },
 
       expressionPedal: () =>
