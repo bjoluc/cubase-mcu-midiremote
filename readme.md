@@ -26,9 +26,9 @@ Feel free to open a discussion on GitHub if you would like your MCU-like device 
 
 - [TL;DR](#tldr)
 - [Motivation](#motivation)
-- [About this Script](#about-this-script)
 - [Setup](#setup)
 - [Setup with multiple devices](#setup-with-multiple-devices)
+- [Mapping](#mapping)
 - [Configuration Options](#configuration-options)
 - [Drawbacks](#drawbacks)
 - [Troubleshooting](#troubleshooting)
@@ -59,7 +59,39 @@ Moreover, some controllers have features that are not available with the default
 For instance, the Behringer X-Touch has an individual, generously padded, RGB backlit scribble strip display per channel, as well as integrated LEDs in most buttons.
 A MIDI Remote API script can illuminate these scribble strips according to their tracks' colors, avoid unnecessary display padding characters, and light up buttons while they are being pressed.
 
-## About this Script
+## Setup
+
+- Make sure the firmware of your device(s) is up to date ([iCON QCon Pro G2](https://iconproaudio.com/product/qcon-pro-g2/) >= 1.13, [Behringer X-Touch](https://www.youtube.com/watch?v=Q4ZKXVXQP8g) >= v1.22 or scribble strip colors will not work)
+- If your devices have multiple operation modes, select Mackie Control mode ([here's](https://www.youtube.com/watch?v=LrVWRgJbSyw&t=68s) how to do it on the X-Touch).
+- Open up Cubase and ensure you are running version 12.0.52 or later
+- In the studio setup window, remove any Mackie Control remote devices (don't forget to take screenshots of your command assignments). If you don't feel comfortable removing the devices, it is also fine to select "Not Connected" for their ports.
+- Open the [latest GitHub release page](https://github.com/bjoluc/cubase-xtouch-midiremote/releases/latest) and in the "Assets" section, download the script (.js) that is named like your device.
+- Open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` (Windows) or `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/Local` (MacOS).
+- The filename of the script you downloaded has the form `<Device>_<Vendor>.js`. Cubase expects scripts to be nested in subdirectories named precisely after the script's vendor and device. So within the `Local` folder, create the subdirectories `<Device>/<Vendor>` according to the device and vendor portions of the script's filename. For instance, if you downloaded `behringer_xtouch.js`, the subdirectories would need to be `behringer\xtouch`.
+
+  > [!IMPORTANT]
+  > Directory names matter. Make sure your subdirectory names precisely match the device and vendor components of the script filename, or Cubase might not recognize the script.
+
+- Finally, move the script file into the newly created subdirectory and restart Cubase to pick up the script.
+
+Cubase should automatically detect your device and enable it as a MIDI Remote.
+If it doesn't, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
+
+## Setup with multiple devices
+
+To use a combination of standalone and extender devices, follow the same steps as above, but edit the script file before restarting Cubase:
+For instance, to use a main unit and an extender unit, open the script file with a text editor and in the configuration options at the top of the file, replace `devices: ["main"]` with `devices: ["extender", "main"]` (or `devices: ["main", "extender"]` if you have your extender on the right side of the main device).
+
+Then restart Cubase.
+If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically detect your devices' MIDI ports.
+Otherwise, manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
+
+> [!NOTE]
+> Cubase does not expect scripts to change their port definitions over time – which is what happens when you edit the `devices` config option.
+> If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive.
+> In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
+
+## Mapping
 
 The MIDI Remote Scripts developed in this repository serve as full replacements for the default Mackie Control setup.
 The mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf), with the following exceptions:
@@ -105,38 +137,6 @@ The table below summarizes all available encoder assignments:
 
 - The main fader controls the Control Room volume unless the `mapMainFaderToControlRoom` [config option](#configuration-options) is set to `false`.
 - In zoom mode, the jog wheel zooms in and out instead of moving the locator
-
-## Setup
-
-- Make sure the firmware of your device(s) is up to date ([iCON QCon Pro G2](https://iconproaudio.com/product/qcon-pro-g2/) >= 1.13, [Behringer X-Touch](https://www.youtube.com/watch?v=Q4ZKXVXQP8g) >= v1.22 or scribble strip colors will not work)
-- If your devices have multiple operation modes, select Mackie Control mode ([here's](https://www.youtube.com/watch?v=LrVWRgJbSyw&t=68s) how to do it on the X-Touch).
-- Open up Cubase and ensure you are running version 12.0.52 or later
-- In the studio setup window, remove any Mackie Control remote devices (don't forget to take screenshots of your command assignments). If you don't feel comfortable removing the devices, it is also fine to select "Not Connected" for their ports.
-- Open the [latest GitHub release page](https://github.com/bjoluc/cubase-xtouch-midiremote/releases/latest) and in the "Assets" section, download the script (.js) that is named like your device.
-- Open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` (Windows) or `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/Local` (MacOS).
-- The filename of the script you downloaded has the form `<Device>_<Vendor>.js`. Cubase expects scripts to be nested in subdirectories named precisely after the script's vendor and device. So within the `Local` folder, create the subdirectories `<Device>/<Vendor>` according to the device and vendor portions of the script's filename. For instance, if you downloaded `behringer_xtouch.js`, the subdirectories would need to be `behringer\xtouch`.
-
-  > [!IMPORTANT]
-  > Directory names matter. Make sure your subdirectory names precisely match the device and vendor components of the script filename, or Cubase might not recognize the script.
-
-- Finally, move the script file into the newly created subdirectory and restart Cubase to pick up the script.
-
-Cubase should automatically detect your device and enable it as a MIDI Remote.
-If it doesn't, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
-
-## Setup with multiple devices
-
-To use a combination of standalone and extender devices, follow the same steps as above, but edit the script file before restarting Cubase:
-For instance, to use a main unit and an extender unit, open the script file with a text editor and in the configuration options at the top of the file, replace `devices: ["main"]` with `devices: ["extender", "main"]` (or `devices: ["main", "extender"]` if you have your extender on the right side of the main device).
-
-Then restart Cubase.
-If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically detect your devices' MIDI ports.
-Otherwise, manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
-
-> [!NOTE]
-> Cubase does not expect scripts to change their port definitions over time – which is what happens when you edit the `devices` config option.
-> If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive.
-> In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
 
 ## Configuration Options
 
