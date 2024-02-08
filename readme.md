@@ -27,7 +27,6 @@ Feel free to open a discussion on GitHub if you would like your MCU-like device 
 - [TL;DR](#tldr)
 - [Motivation](#motivation)
 - [Setup](#setup)
-- [Setup with multiple devices](#setup-with-multiple-devices)
 - [Mapping](#mapping)
 - [Configuration Options](#configuration-options)
 - [Drawbacks](#drawbacks)
@@ -69,27 +68,32 @@ A MIDI Remote API script can illuminate these scribble strips according to their
 - Open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` (Windows) or `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/Local` (MacOS).
 - The filename of the script you downloaded has the form `<Device>_<Vendor>.js`. Cubase expects scripts to be nested in subdirectories named precisely after the script's vendor and device. So within the `Local` folder, create the subdirectories `<Device>/<Vendor>` according to the device and vendor portions of the script's filename. For instance, if you downloaded `behringer_xtouch.js`, the subdirectories would need to be `behringer\xtouch`.
 
-  > [!IMPORTANT]
-  > Directory names matter. Make sure your subdirectory names precisely match the device and vendor components of the script filename, or Cubase might not recognize the script.
+  > **Note**
+  > Directory names matter.
+  > Make sure your subdirectory names precisely match the device and vendor components of the script filename, or Cubase might not recognize the script.
 
-- Finally, move the script file into the newly created subdirectory and restart Cubase to pick up the script.
+- Move the script file into the newly created subdirectory.
+- <details>
+  <summary>If you're using multiple devices, e.g., a combination of standalone and extender devices, click here to expand additional setup instructions.</summary>
 
-Cubase should automatically detect your device and enable it as a MIDI Remote.
-If it doesn't, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
+  By default, the script only integrates a single device.
+  However – just like the default Cubase MCU integration – you can configure it to work with multiple devices (i.e., extenders or additional standalone devices).
 
-## Setup with multiple devices
+  To use a combination of multiple devices, open the script file with a text editor and find the line reading `devices: ["main"]` at the top of the script.
+  This is where you can configure your devices.
+  For instance, to use a main unit and an extender unit, replace `devices: ["main"]` with `devices: ["extender", "main"]` (or `devices: ["main", "extender"]` if you have your extender on the right side of the main device) and save the file.
 
-To use a combination of standalone and extender devices, follow the same steps as above, but edit the script file before restarting Cubase:
-For instance, to use a main unit and an extender unit, open the script file with a text editor and in the configuration options at the top of the file, replace `devices: ["main"]` with `devices: ["extender", "main"]` (or `devices: ["main", "extender"]` if you have your extender on the right side of the main device).
+  > **Note** Cubase does not expect scripts to change their port definitions over time – which is what happens when you edit the `devices` config option.
+  > If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive.
+  > In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
 
-Then restart Cubase.
-If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically detect your devices' MIDI ports.
-Otherwise, manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
+  </details>
 
-> [!NOTE]
-> Cubase does not expect scripts to change their port definitions over time – which is what happens when you edit the `devices` config option.
-> If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive.
-> In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
+- Finally, restart Cubase to make it pick up the script.
+
+The script detects your device(s) based on MIDI port names.
+If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically detect your devices and set them up as a MIDI Remote.
+Alternatively, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane and selecting vendor, device, and input/output ports yourself.
 
 ## Mapping
 
