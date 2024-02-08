@@ -17,11 +17,7 @@ export function createDevices(
   let nextDeviceXPosition = 0;
 
   const devices = config.devices.map((deviceType, deviceIndex) => {
-    const device = new (deviceType === "main"
-      ? MainDevice
-      : deviceConfig.createExtenderSurface
-        ? ExtenderDevice
-        : MainDevice)(
+    const device = new (deviceType === "main" ? MainDevice : ExtenderDevice)(
       driver,
       surface,
       globalState,
