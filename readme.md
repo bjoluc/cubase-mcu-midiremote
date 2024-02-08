@@ -22,6 +22,19 @@ The following devices are explicitly supported:
 Other MCU-compatible devices may work with any of these scripts, but their device surface is not explicitly displayed in Cubase.
 Feel free to open a discussion on GitHub if you would like your MCU-like device to be supported.
 
+<!-- TOC depthfrom:2 depthto:2 -->
+
+- [TL;DR](#tldr)
+- [Motivation](#motivation)
+- [About this Script](#about-this-script)
+- [Setup](#setup)
+- [Setup with multiple devices](#setup-with-multiple-devices)
+- [Configuration Options](#configuration-options)
+- [Drawbacks](#drawbacks)
+- [Troubleshooting](#troubleshooting)
+
+<!-- /TOC -->
+
 ## TL;DR
 
 The Cubase MIDI Remote Scripts developed in this repository replace the default Mackie Control device setup for various MCU-like devices.
