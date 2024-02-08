@@ -64,7 +64,7 @@ A MIDI Remote API script can illuminate these scribble strips according to their
 The MIDI Remote Scripts developed in this repository serve as full replacements for the default Mackie Control setup.
 The mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf), with the following exceptions:
 
-> **Note**
+> [!NOTE]
 > In the rest of this document, all buttons except the six encoder assign buttons are referred to by their Cubase MCU mapping labels.
 > I recommend using a Cubase overlay for your device, unless your device already has the Cubase labels printed on it, like the iCON QCon Pro G2.
 > Alternatively, page 7 of [Cubase's remote control devices documentation](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf) provides a Mackie MCU Pro overlay which you can use to figure out the Cubase button labels for your device.
@@ -116,7 +116,8 @@ The table below summarizes all available encoder assignments:
 - Open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` (Windows) or `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/Local` (MacOS).
 - The filename of the script you downloaded has the form `<Device>_<Vendor>.js`. Cubase expects scripts to be nested in subdirectories named precisely after the script's vendor and device. So within the `Local` folder, create the subdirectories `<Device>/<Vendor>` according to the device and vendor portions of the script's filename. For instance, if you downloaded `behringer_xtouch.js`, the subdirectories would need to be `behringer\xtouch`.
 
-  > **Note** Directory names matter. Make sure your subdirectory names precisely match the device and vendor components of the script filename, or Cubase might not recognize the script.
+  > [!IMPORTANT]
+  > Directory names matter. Make sure your subdirectory names precisely match the device and vendor components of the script filename, or Cubase might not recognize the script.
 
 - Finally, move the script file into the newly created subdirectory and restart Cubase to pick up the script.
 
@@ -132,7 +133,10 @@ Then restart Cubase.
 If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically detect your devices' MIDI ports.
 Otherwise, manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane.
 
-> **Note** Cubase does not expect scripts to change their port definitions over time – which is what happens when you edit the `devices` config option. If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive. In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
+> [!NOTE]
+> Cubase does not expect scripts to change their port definitions over time – which is what happens when you edit the `devices` config option.
+> If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive.
+> In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
 
 ## Configuration Options
 
