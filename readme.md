@@ -27,8 +27,8 @@ Feel free to open a discussion on GitHub if you would like your MCU-like device 
 - [TL;DR](#tldr)
 - [Motivation](#motivation)
 - [Setup](#setup)
-- [Mapping](#mapping)
 - [Configuration Options](#configuration-options)
+- [Mapping](#mapping)
 - [Drawbacks](#drawbacks)
 - [Troubleshooting](#troubleshooting)
 
@@ -95,9 +95,15 @@ The script detects your device(s) based on MIDI port names.
 If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically detect your devices and set them up as a MIDI Remote.
 Alternatively, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane and selecting vendor, device, and input/output ports yourself.
 
+## Configuration Options
+
+The very top of the MIDI Remote script file declares a number of configuration options.
+You can edit these options with a text editor to match your preferences.
+Each option is documented in a comment above it.
+For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L28-L115).
+
 ## Mapping
 
-The MIDI Remote Scripts developed in this repository serve as full replacements for the default Mackie Control setup.
 The mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://download.steinberg.net/downloads_software/documentation/Remote_Control_Devices.pdf), with the following exceptions:
 
 > [!NOTE]
@@ -141,13 +147,6 @@ The table below summarizes all available encoder assignments:
 
 - The main fader controls the Control Room volume unless the `mapMainFaderToControlRoom` [config option](#configuration-options) is set to `false`.
 - In zoom mode, the jog wheel zooms in and out instead of moving the locator
-
-## Configuration Options
-
-The very top of the MIDI Remote script file declares a number of configuration options.
-You can edit these options to match your preferences.
-Each option is documented in a comment above it.
-For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L28-L106).
 
 ## Drawbacks
 
