@@ -92,8 +92,8 @@ A MIDI Remote API script can illuminate these scribble strips according to their
 - Finally, restart Cubase to make it pick up the script.
 
 The script detects your device(s) based on MIDI port names.
-If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically detect your devices and set them up as a MIDI Remote.
-Alternatively, you can manually configure the MIDI Remote by clicking the "+" button in the lower zone's MIDI Remote pane and selecting vendor, device, and input/output ports yourself.
+If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically set up the MIDI Remote.
+Alternatively, you can manually add it by clicking the "+" button in the lower zone's MIDI Remote pane and selecting vendor, device, and input/output ports yourself.
 
 ## Configuration Options
 
