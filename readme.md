@@ -30,6 +30,7 @@ Feel free to open a discussion on GitHub if you would like your MCU-like device 
 - [Configuration Options](#configuration-options)
 - [Mapping](#mapping)
 - [Drawbacks](#drawbacks)
+- [Supplementary Remarks for Individual Scripts](#supplementary-remarks-for-individual-scripts)
 - [Troubleshooting](#troubleshooting)
 
 <!-- /TOC -->
@@ -162,6 +163,16 @@ Current limitations of the MIDI Remote API:
 - Channel visibility presets do not yet affect channel assignments since the `MixerBankZone` of the MIDI Remote API doesn't respect channel visibility presets (["`.setFollowVisibility()` is a teaser for future updates"](https://forums.steinberg.net/t/820531/2)).
 - The function buttons F1-F8 can only have one assignment per button, no matter whether "Shift" is held or not ("Shift" activates a sub page and the Mapping Assistant doesn't consider sub pages)
 - When controlling under-the-cursor values, the encoder's LED ring is not updated to single-dot mode but remains in whatever mode the currently active encoder assignment demands (blocked by https://forums.steinberg.net/t/831123).
+
+## Supplementary Remarks for Individual Scripts
+
+<details>
+<summary>X-Touch One</summary>
+
+- The X-Touch One script does not provide a `devices` config option. If you want to use an X-Touch One with an extender, please use the X-Touch One script and the X-Touch script separately.
+- Since the X-Touch One does not have encoder assign buttons, the push encoder always controls the selected channel's panorama (unless overridden by user mappings).
+
+</details>
 
 ## Troubleshooting
 
