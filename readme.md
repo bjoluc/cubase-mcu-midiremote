@@ -15,7 +15,9 @@ Cubase 12 MIDI Remote Scripts for DAW Controllers using the MCU Protocol
 
 The following devices are explicitly supported:
 
-- Behringer X-Touch / X-Touch Extender
+- Behringer:
+  - X-Touch / X-Touch Extender
+  - X-Touch One
 - iCON QCon Pro G2 / QCon EX G2
 - Mackie Control Universal (Pro) / XT (Pro)
 
