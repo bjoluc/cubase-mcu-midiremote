@@ -62,4 +62,6 @@ export class LedPushEncoder extends LedPushEncoderDecorator {
 }
 
 // TS merges this declaration with the `LedPushEncoder` class above
-export interface LedPushEncoder extends MR_PushEncoder {}
+export interface LedPushEncoder extends MR_PushEncoder {
+  setControlLayer(controlLayer: MR_ControlLayer): LedPushEncoder;
+}

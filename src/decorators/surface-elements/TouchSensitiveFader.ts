@@ -92,4 +92,8 @@ export class TouchSensitiveMotorFader extends TouchSensitiveMotorFaderDecorator 
 }
 
 // TS merges this declaration with the `TouchSensitiveFader` class above
-export interface TouchSensitiveMotorFader extends MR_Fader {}
+export interface TouchSensitiveMotorFader extends MR_Fader {
+  setTypeVertical(): TouchSensitiveMotorFader;
+  setTypeHorizontal(): TouchSensitiveMotorFader;
+  setControlLayer(controlLayer: MR_ControlLayer): TouchSensitiveMotorFader;
+}

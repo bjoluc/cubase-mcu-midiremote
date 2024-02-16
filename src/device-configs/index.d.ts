@@ -190,7 +190,7 @@ export interface DeviceConfig {
    * Creates and returns all surface elements of an extender device, starting at the provided `x`
    * position.
    */
-  createExtenderSurface(surface: MR_DeviceSurface, x: number): DeviceSurface;
+  createExtenderSurface?(surface: MR_DeviceSurface, x: number): DeviceSurface;
 
   enhanceMapping?(mappingDependencies: {
     driver: MR_DeviceDriver;
