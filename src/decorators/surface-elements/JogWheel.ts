@@ -1,5 +1,7 @@
+import { RelativeSignedBitCCHandler } from "/midi/RelativeSignedBitCCHandler";
+
 class JogWheelDecorator {
-  private mProxyValue = this.surface.makeCustomValueVariable("jogWheelProxy");
+  private differenceReceiver = new RelativeSignedBitCCHandler(this.surface);
 
   constructor(
     private surface: MR_DeviceSurface,
@@ -11,30 +13,9 @@ class JogWheelDecorator {
   mJogLeftValue = this.surface.makeCustomValueVariable("jogWheelJogLeft");
 
   bindToControlChange = (input: MR_DeviceMidiInput, controlChangeNumber: number) => {
-    this.mProxyValue.mMidiBinding
-      .setInputPort(input)
-      .bindToControlChange(0, controlChangeNumber)
-      .setTypeRelativeSignedBit();
+    this.differenceReceiver.bindToCC(input, controlChangeNumber);
 
-    this.mProxyValue.mOnProcessValueChange = (context, value, difference) => {
-      const jumpOffset = 0.4;
-
-      // Prevent value from reaching its limits
-      if (value < 0.5 - jumpOffset) {
-        this.mProxyValue.setProcessValue(context, value + jumpOffset);
-      } else if (value > 0.5 + jumpOffset) {
-        this.mProxyValue.setProcessValue(context, value - jumpOffset);
-      }
-
-      // Compensate for the difference value offsets introduced above
-      if (Math.abs(difference) >= jumpOffset - 0.1) {
-        if (difference > 0) {
-          difference -= jumpOffset;
-        } else {
-          difference += jumpOffset;
-        }
-      }
-
+    this.differenceReceiver.onDifferenceReceived = (context, difference, integerDifference) => {
       if (this.mKnobModeEnabledValue.getProcessValue(context)) {
         this.knob.mSurfaceValue.setProcessValue(
           context,
@@ -42,8 +23,8 @@ class JogWheelDecorator {
         );
       } else {
         // Handle jog events
-        if (difference !== 0) {
-          if (difference < 0) {
+        if (integerDifference !== 0) {
+          if (integerDifference < 0) {
             this.mJogLeftValue.setProcessValue(context, 1);
           } else {
             this.mJogRightValue.setProcessValue(context, 1);
