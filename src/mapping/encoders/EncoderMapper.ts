@@ -1,8 +1,30 @@
 import { EncoderPage, EncoderPageConfig } from "./EncoderPage";
+import { LedButton } from "/decorators/surface-elements/LedButton";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "/device-configs";
 import { Device, MainDevice } from "/devices";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
+
+/**
+ * The joint configuration for all "encoder assignments". Each encoder assignment maps a number of
+ * encoder pages to a specified button. Each encoder page specifies host mappings ("assignments")
+ * for an arbitrary number of encoders.
+ */
+export type EncoderMappingConfig = Array<{
+  /**
+   * A function that – given a `MainDevice` – returns the device's button that will be mapped to the
+   * provided encoder pages.
+   */
+  activatorButtonSelector: (device: MainDevice) => LedButton;
+
+  pages: EncoderPageConfig[];
+
+  /**
+   * An optional function that receives the created {@link EncoderPage} objects and an array with
+   * each device's activator button. It can be used to add additional host mappings.
+   */
+  enhanceMapping?: (pages: EncoderPage[], activatorButtons: LedButton[]) => void;
+}>;
 
 export class EncoderMapper {
   private readonly channelElements: ChannelSurfaceElements[];
@@ -10,9 +32,11 @@ export class EncoderMapper {
   /** An array containing the control buttons of each main device */
   private readonly deviceButtons: ControlSectionSurfaceElements["buttons"][];
 
+  private readonly mainDevices: MainDevice[];
+
   private readonly subPageArea: MR_SubPageArea;
 
-  public activeEncoderPage?: EncoderPage;
+  private activeEncoderPage?: EncoderPage;
 
   constructor(
     private readonly page: MR_FactoryMappingPage,
@@ -22,9 +46,11 @@ export class EncoderMapper {
     private readonly globalState: GlobalState,
   ) {
     this.channelElements = devices.flatMap((device) => device.channelElements);
-    this.deviceButtons = devices
-      .filter((device) => device instanceof MainDevice)
-      .map((device) => (device as MainDevice).controlSectionElements.buttons);
+    this.mainDevices = devices.filter((device) => device instanceof MainDevice) as MainDevice[];
+    this.deviceButtons = this.mainDevices.map(
+      (device) => (device as MainDevice).controlSectionElements.buttons,
+    );
+
     this.subPageArea = page.makeSubPageArea("Encoders");
   }
 
@@ -52,13 +78,16 @@ export class EncoderMapper {
     });
   }
 
-  bindEncoderPagesToAssignButton(assignmentButtonIndex: number, pageConfigs: EncoderPageConfig[]) {
+  private bindEncoderPagesToAssignButton(
+    activatorButtons: LedButton[],
+    pageConfigs: EncoderPageConfig[],
+  ) {
     pageConfigs = this.splitEncoderPageConfigs(pageConfigs);
     const pages = pageConfigs.map((pageConfig, pageIndex) => {
       return new EncoderPage(
         this,
         pageConfig,
-        assignmentButtonIndex,
+        activatorButtons,
         pageIndex,
         pageConfigs.length,
         this.page,
@@ -72,20 +101,20 @@ export class EncoderMapper {
     });
 
     // Bind encoder assign buttons to cycle through sub pages in a round-robin fashion
-    for (const buttons of this.deviceButtons) {
-      const encoderAssignButtonValue = buttons.encoderAssign[assignmentButtonIndex].mSurfaceValue;
+    for (const activatorButton of activatorButtons) {
+      const activatorButtonValue = activatorButton.mSurfaceValue;
       this.page.makeActionBinding(
-        encoderAssignButtonValue,
+        activatorButtonValue,
         pages[0].subPages.default.mAction.mActivate,
       );
 
       let previousSubPages = pages[0].subPages;
       for (const { subPages: currentSubPages } of pages) {
         this.page
-          .makeActionBinding(encoderAssignButtonValue, currentSubPages.default.mAction.mActivate)
+          .makeActionBinding(activatorButtonValue, currentSubPages.default.mAction.mActivate)
           .setSubPage(previousSubPages.default);
         this.page
-          .makeActionBinding(encoderAssignButtonValue, currentSubPages.default.mAction.mActivate)
+          .makeActionBinding(activatorButtonValue, currentSubPages.default.mAction.mActivate)
           .setSubPage(previousSubPages.flip);
 
         previousSubPages = currentSubPages;
@@ -93,5 +122,32 @@ export class EncoderMapper {
     }
 
     return pages;
+  }
+
+  applyEncoderMappingConfig(config: EncoderMappingConfig) {
+    for (const mappingConfig of config) {
+      const activatorButtons = this.mainDevices.map(mappingConfig.activatorButtonSelector);
+      const encoderPages = this.bindEncoderPagesToAssignButton(
+        activatorButtons,
+        mappingConfig.pages,
+      );
+
+      if (mappingConfig.enhanceMapping) {
+        mappingConfig.enhanceMapping(encoderPages, activatorButtons);
+      }
+    }
+  }
+
+  /**
+   * This is invoked by an {@link EncoderPage} when one of its subpages gets activated. It keeps
+   * track of the currently active `EncoderPage` and runs the {@link EncoderPage.onActivated()} and
+   * {@link EncoderPage.onDeactivated()} callbacks.
+   */
+  onEncoderPageSubPageActivated(context: MR_ActiveDevice, encoderPage: EncoderPage) {
+    if (this.activeEncoderPage !== encoderPage) {
+      this.activeEncoderPage?.onDeactivated(context);
+      this.activeEncoderPage = encoderPage;
+      this.activeEncoderPage.onActivated(context);
+    }
   }
 }

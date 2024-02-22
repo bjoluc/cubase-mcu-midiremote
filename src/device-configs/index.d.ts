@@ -5,6 +5,7 @@ import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
 import { Device } from "/devices";
+import { EncoderMappingConfig } from "/mapping/encoders/EncoderMapper";
 import { ActivationCallbacks } from "/midi/connection";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
@@ -191,6 +192,15 @@ export interface DeviceConfig {
    * position.
    */
   createExtenderSurface?(surface: MR_DeviceSurface, x: number): DeviceSurface;
+
+  /**
+   * This optional function receives the default {@link EncoderMappingConfig} and returns an
+   * `EncoderMappingConfig` that will be applied instead of the default.
+   */
+  configureEncoderAssignments?(
+    defaultEncoderMapping: EncoderMappingConfig,
+    page: MR_FactoryMappingPage,
+  ): EncoderMappingConfig;
 
   enhanceMapping?(mappingDependencies: {
     driver: MR_DeviceDriver;

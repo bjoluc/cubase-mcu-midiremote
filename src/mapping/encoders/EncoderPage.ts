@@ -1,7 +1,9 @@
 import type { EncoderMapper } from "./EncoderMapper";
 import { config } from "/config";
+import { LedButton } from "/decorators/surface-elements/LedButton";
 import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ChannelSurfaceElements, ControlSectionButtons } from "/device-configs";
+import { MainDevice } from "/devices";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
 
@@ -50,12 +52,13 @@ export class EncoderPage implements EncoderPageConfig {
   public readonly assignments: EncoderAssignmentConfig[];
   public readonly areAssignmentsChannelRelated: boolean;
 
+  private isActive = false;
   private lastSubPageActivationTime = 0;
 
   constructor(
     private readonly encoderMapper: EncoderMapper,
     pageConfig: EncoderPageConfig,
-    public readonly assignmentButtonIndex: number,
+    public readonly activatorButtons: LedButton[],
     public readonly index: number,
     public readonly pagesCount: number,
 
@@ -131,7 +134,7 @@ export class EncoderPage implements EncoderPageConfig {
 
     this.globalState.isShiftModeActive.addOnChangeCallback(
       (context, isShiftModeActive, mapping) => {
-        if (this.isActive()) {
+        if (this.isActive) {
           const isFlipModeActive = this.globalState.isFlipModeActive.get(context);
 
           const nextSubPage = [
@@ -239,13 +242,21 @@ export class EncoderPage implements EncoderPageConfig {
     }
   }
 
-  private onActivated(context: MR_ActiveDevice) {
+  private setActivatorButtonLeds(context: MR_ActiveDevice, value: number) {
+    for (const button of this.activatorButtons) {
+      button.mLedValue.setProcessValue(context, value);
+    }
+  }
+
+  public onActivated(context: MR_ActiveDevice) {
+    this.isActive = true;
+
     this.segmentDisplayManager.setAssignment(
       context,
       this.pagesCount === 1 ? "  " : `${this.index + 1}.${this.pagesCount}`,
     );
 
-    this.globalState.activeEncoderAssignmentId.set(context, this.assignmentButtonIndex);
+    this.setActivatorButtonLeds(context, 1);
 
     for (const [encoderIndex, { encoder }] of this.channelElements.entries()) {
       encoder.displayMode.set(
@@ -257,17 +268,15 @@ export class EncoderPage implements EncoderPageConfig {
     this.globalState.isValueDisplayModeActive.set(context, false);
   }
 
-  private isActive() {
-    return this.encoderMapper.activeEncoderPage === this;
+  public onDeactivated(context: MR_ActiveDevice) {
+    this.isActive = false;
+    this.setActivatorButtonLeds(context, 0);
   }
 
   private onSubPageActivated(flip: boolean, shift: boolean, context: MR_ActiveDevice) {
     this.lastSubPageActivationTime = performance.now();
 
-    if (!this.isActive()) {
-      this.encoderMapper.activeEncoderPage = this;
-      this.onActivated(context);
-    }
+    this.encoderMapper.onEncoderPageSubPageActivated(context, this);
 
     if (this.globalState.isFlipModeActive.get(context) !== flip) {
       this.globalState.isFlipModeActive.set(context, flip);
