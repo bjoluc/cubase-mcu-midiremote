@@ -139,14 +139,15 @@ export const deviceConfig: DeviceConfig = {
           display: upperTransportButtons[4],
 
           timeMode: softKeys[0][3],
-          encoderAssign: [
-            softKeys[2][0],
-            channelSoftKey,
-            softKeys[0][1],
-            softKeys[0][0],
-            softKeys[1][0],
-            softKeys[0][2],
-          ],
+          encoderAssign: {
+            track: softKeys[2][0],
+            pan: channelSoftKey,
+            eq: softKeys[0][1],
+            send: softKeys[0][0],
+            plugin: softKeys[1][0],
+            instrument: softKeys[0][2],
+          },
+
           function: [...softKeys[6], ...softKeys[7]],
           number: [...softKeys[8], ...softKeys[9]],
 
