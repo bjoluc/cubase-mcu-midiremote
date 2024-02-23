@@ -56,11 +56,20 @@ export default defineConfig(
     clean: true,
     external: ["midiremote_api_v1"],
     onSuccess: async () => {
-      // Remove all config options that have a `@device` pragma for a different device
+      // Remove all config options with a non-matching `@devices` pragma
       const deviceSpecificScriptConfig = scriptConfig.replace(
-        /(?:\r?\n|\r)\s*\/\*\*\s*(?:\r?\n|\r)(?:[^\*]|(?:\*(?!\/)))*@device ([\S ]+)(?:\r?\n|\r)\s+\*\/(?:\r?\n|\r)[\S ]+/gm,
-        (match, devicePragma) => {
-          return devicePragma === device.device ? match : "";
+        /(?:\r?\n|\r)\s*\/\*\*\s*(?:\r?\n|\r)(?:[^\*]|(?:\*(?!\/)))*@devices ([\S ]+)(?:\r?\n|\r)\s+\*\/(?:\r?\n|\r)[\S ]+/gm,
+        (match, devicesPragma: string) => {
+          // Remove devices pragma from match
+          match = match.replace(/\*(\r?\n|\r)([\S ]+)(\r?\n|\r)*@devices [\S ]+(\r?\n|\r)\s+/, "");
+
+          const supportedDevices = devicesPragma.split(", ");
+          if (devicesPragma.includes("!")) {
+            // Negative mode – include everything *but* the specified device(s)
+            return supportedDevices.includes("!" + device.device) ? "" : match;
+          }
+
+          return supportedDevices.includes(device.device) ? match : "";
         },
       );
 

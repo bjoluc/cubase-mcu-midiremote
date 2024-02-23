@@ -110,6 +110,10 @@ export const deviceConfig: DeviceConfig = {
     const channelElements = makeChannelElements(surface, x);
     x += channelElementsWidth;
 
+    const encoderAssignButtons = createElements(6, (index) =>
+      makeSquareButton(surface, x + 2 + index * 2.55, 3.5),
+    );
+
     surface.makeBlindPanel(x + 1, 6.4, 25.1, 4.5); // Time display
 
     const miscControlButtons = createElements(21, (index) =>
@@ -140,9 +144,15 @@ export const deviceConfig: DeviceConfig = {
           flip: new LedButton(surface, { position: [x + 2, 18, 2, 1.5] }),
           scrub: makeSquareButton(surface, x + 23.85, 31.75),
 
-          encoderAssign: createElements(6, (index) =>
-            makeSquareButton(surface, x + 2 + index * 2.55, 3.5),
-          ),
+          encoderAssign: {
+            track: encoderAssignButtons[0],
+            pan: encoderAssignButtons[1],
+            eq: encoderAssignButtons[2],
+            send: encoderAssignButtons[3],
+            plugin: encoderAssignButtons[4],
+            instrument: encoderAssignButtons[5],
+          },
+
           number: createElements(8, (index) =>
             makeSquareButton(surface, x + 6 + index * 2.55, 11.75),
           ),

@@ -12,7 +12,7 @@ export class ExtenderDevice extends Device {
     firstChannelIndex: number,
     surfaceXPosition: number,
   ) {
-    const deviceSurface = deviceConfig.createExtenderSurface(surface, surfaceXPosition);
+    const deviceSurface = deviceConfig.createExtenderSurface!(surface, surfaceXPosition);
     super(driver, firstChannelIndex, deviceSurface, globalState, timerUtils, true);
   }
 }

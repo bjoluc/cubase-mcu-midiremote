@@ -112,6 +112,10 @@ export const deviceConfig: DeviceConfig = {
     // Direction buttons black circle
     surface.makeBlindPanel(x + 8, 50.25, 6.5, 5).setShapeCircle();
 
+    const encoderAssignButtons = createElements(6, (index) =>
+      makeControlButton(surface, x + 0.75 + (index < 3 ? 0 : 2.5), 16.25 + (index % 3) * 2.5),
+    );
+
     const miscControlButtons = createElements(21, (index) =>
       makeControlButton(
         surface,
@@ -145,9 +149,15 @@ export const deviceConfig: DeviceConfig = {
             position: [x + 24.25, 50.25, 2.5, 2.5],
           }).setShapeCircle(),
 
-          encoderAssign: createElements(6, (index) =>
-            makeControlButton(surface, x + 0.75 + (index < 3 ? 0 : 2.5), 16.25 + (index % 3) * 2.5),
-          ),
+          encoderAssign: {
+            track: encoderAssignButtons[0],
+            pan: encoderAssignButtons[1],
+            eq: encoderAssignButtons[2],
+            send: encoderAssignButtons[3],
+            plugin: encoderAssignButtons[4],
+            instrument: encoderAssignButtons[5],
+          },
+
           number: createElements(8, (index) =>
             makeSmallButton(surface, x + 7 + index * 2.575, 26.25),
           ),

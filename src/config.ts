@@ -6,17 +6,21 @@ import { deviceConfig as sourceDeviceConfig } from "current-device";
 
 export const deviceConfig = sourceDeviceConfig as DeviceConfig;
 
-export type DevicesConfiguration = Array<"main" | "extender">;
-
 export type ScriptConfiguration = Simplify<
-  Except<typeof CONFIGURATION, "devices"> & {
-    devices: DevicesConfiguration;
+  Except<typeof CONFIGURATION, "devices" | "displayColorMode"> & {
+    devices: Array<"main" | "extender">;
     displayColorMode: "encoders" | "channels" | "none";
   }
 >;
 
-// @ts-expect-error
-export const config = CONFIGURATION as ScriptConfiguration;
+export const config: ScriptConfiguration = {
+  // Set defaults for config options that do not apply to all devices
+  devices: ["main"],
+  displayColorMode: "encoders",
+
+  // @ts-expect-error `CONFIGURATION` is not yet assigned in this source file
+  ...(CONFIGURATION as any),
+};
 
 // Everything below "BEGIN JS" is copied directly to the top of the build file (with some values
 // being replaced).
@@ -37,6 +41,8 @@ var CONFIGURATION = {
    * Surface" dialog reflects this order for input and output ports, i.e., the first input and the
    * first output port belong to the leftmost device while the last input and the last output port
    * belong to the rightmost device.
+   *
+   * @devices !X-Touch One
    */
   devices: ["main"],
 
@@ -101,7 +107,7 @@ var CONFIGURATION = {
    *    always be white unless a display's channel and encoder is unassigned, in which case the
    *    display will revert to black.
    *
-   * @device X-Touch
+   * @devices X-Touch, X-Touch One
    */
   displayColorMode: "encoders",
 
@@ -110,7 +116,7 @@ var CONFIGURATION = {
    * make the SMPTE/Beats button toggle metering modes by default and switch between time formats
    * only when the Shift button is held.
    *
-   * @device MCU Pro
+   * @devices MCU Pro
    */
   toggleMeteringModeWithoutShift: false,
 };

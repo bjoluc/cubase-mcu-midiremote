@@ -47,7 +47,15 @@ export class MainDevice extends Device {
         flip: makeButton,
         scrub: makeButton,
 
-        encoderAssign: () => createElements(6, () => new LedButton(surface)),
+        encoderAssign: {
+          track: makeButton,
+          pan: makeButton,
+          eq: makeButton,
+          send: makeButton,
+          plugin: makeButton,
+          instrument: makeButton,
+        },
+
         number: () => createElements(8, () => new LedButton(surface)),
         function: () => createElements(8, () => new LedButton(surface)),
 
