@@ -244,7 +244,7 @@ export class EncoderPage implements EncoderPageConfig {
 
   private setActivatorButtonLeds(context: MR_ActiveDevice, value: number) {
     for (const button of this.activatorButtons) {
-      button.mLedValue.setProcessValue(context, value);
+      button.setLedValue(context, value);
     }
   }
 

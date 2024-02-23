@@ -1,5 +1,5 @@
 import { MidiPortPair } from "/midi/MidiPortPair";
-import { makeCallbackCollection } from "/util";
+import { ContextStateVariable, makeCallbackCollection } from "/util";
 
 interface LedButtonOptions {
   /**
@@ -20,6 +20,10 @@ class LedButtonDecorator {
    * `shadowValue` variable that is bound to the same note.
    */
   private shadowValue = this.surface.makeCustomValueVariable("LedButtonProxy");
+  private ledValue = new ContextStateVariable(0);
+
+  private ports?: MidiPortPair;
+  private note?: number;
 
   constructor(
     private surface: MR_DeviceSurface,
@@ -29,17 +33,21 @@ class LedButtonDecorator {
 
   onSurfaceValueChange = makeCallbackCollection(this.button.mSurfaceValue, "mOnProcessValueChange");
 
-  mLedValue = this.surface.makeCustomValueVariable("LedButtonLed");
+  setLedValue = (context: MR_ActiveDevice, value: number) => {
+    this.ledValue.set(context, value);
+    if (this.ports && typeof this.note !== "undefined") {
+      this.ports.output.sendNoteOn(context, this.note, value);
+    }
+  };
 
   bindToNote = (ports: MidiPortPair, note: number) => {
+    this.ports = ports;
+    this.note = note;
+
     this.button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
     this.onSurfaceValueChange.addCallback((context, newValue) => {
-      ports.output.sendNoteOn(context, note, newValue || this.mLedValue.getProcessValue(context));
+      ports.output.sendNoteOn(context, note, newValue || this.ledValue.get(context));
     });
-
-    this.mLedValue.mOnProcessValueChange = (context, newValue) => {
-      ports.output.sendNoteOn(context, note, newValue);
-    };
 
     // Binding the button's mSurfaceValue to a host function may alter it to not change when the
     // button is pressed. Hence, `shadowValue` is used to make the button light up while it's
@@ -51,7 +59,7 @@ class LedButtonDecorator {
         note,
         newValue ||
           this.button.mSurfaceValue.getProcessValue(context) ||
-          this.mLedValue.getProcessValue(context),
+          this.ledValue.get(context),
       );
     };
 
@@ -69,7 +77,7 @@ class LedButtonDecorator {
 /**
  * An extension to MR_Button that
  *
- *  * provides an `mLedValue` property which can be used to enable or disable the button's LED
+ *  * provides a `setLedValue` method which can be used to enable or disable the button's LED
  *    independently of the button's `mSurfaceValue`.
  *  * always lights up the button's LED while the button is being held down
  *  * can be configured to be invisible
