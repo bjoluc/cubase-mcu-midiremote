@@ -332,10 +332,10 @@ export function bindControlSection(
   page.makeActionBinding(channel.left.mSurfaceValue, mixerBankZone.mAction.mShiftLeft);
   page.makeActionBinding(channel.right.mSurfaceValue, mixerBankZone.mAction.mShiftRight);
 
-  // Jogwheel
-  const jogWheelSubPageArea = page.makeSubPageArea("jogWeel");
-  const scrubSubPage = jogWheelSubPageArea.makeSubPage("scrub");
-  const jogSubPage = jogWheelSubPageArea.makeSubPage("jog");
+  // Jog Wheel
+  const jogWheelSubPageArea = page.makeSubPageArea("Jog Wheel");
+  const scrubSubPage = jogWheelSubPageArea.makeSubPage("Scrub");
+  const jogSubPage = jogWheelSubPageArea.makeSubPage("Jog");
 
   const scrubButton = controlSectionElements.buttons.scrub;
 
