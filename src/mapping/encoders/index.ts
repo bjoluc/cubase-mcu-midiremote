@@ -23,8 +23,8 @@ export function bindEncoders(
     globalState,
   );
 
-  const makeEncoderAssignButtonSelector = (buttonIndex: number) => (device: MainDevice) =>
-    device.controlSectionElements.buttons.encoderAssign[buttonIndex];
+  const selectAssignButtons = (device: MainDevice) =>
+    device.controlSectionElements.buttons.encoderAssign;
 
   const mMixerChannel = page.mHostAccess.mTrackSelection.mMixerChannel;
   const mChannelEQ = mMixerChannel.mChannelEQ;
@@ -38,7 +38,7 @@ export function bindEncoders(
   let encoderMappingConfig: EncoderMappingConfig = [
     // Pan (Defining Pan first so it is activated by default)
     {
-      activatorButtonSelector: makeEncoderAssignButtonSelector(1),
+      activatorButtonSelector: (device) => selectAssignButtons(device).pan,
       pages: [
         {
           name: "Pan",
@@ -60,7 +60,7 @@ export function bindEncoders(
 
     // Track
     {
-      activatorButtonSelector: makeEncoderAssignButtonSelector(0),
+      activatorButtonSelector: (device) => selectAssignButtons(device).track,
       pages: [
         {
           name: "Monitor",
@@ -125,7 +125,7 @@ export function bindEncoders(
 
     // EQ
     {
-      activatorButtonSelector: makeEncoderAssignButtonSelector(2),
+      activatorButtonSelector: (device) => selectAssignButtons(device).eq,
       pages: [
         {
           name: "EQ",
@@ -174,7 +174,7 @@ export function bindEncoders(
 
     // Send
     {
-      activatorButtonSelector: makeEncoderAssignButtonSelector(3),
+      activatorButtonSelector: (device) => selectAssignButtons(device).send,
       pages: [
         {
           name: "Sends",
@@ -205,7 +205,7 @@ export function bindEncoders(
 
     // Plug-In
     {
-      activatorButtonSelector: makeEncoderAssignButtonSelector(4),
+      activatorButtonSelector: (device) => selectAssignButtons(device).plugin,
       pages: [
         {
           name: "Plugin",
@@ -236,9 +236,9 @@ export function bindEncoders(
       },
     },
 
-    // Inst
+    // Instrument
     {
-      activatorButtonSelector: makeEncoderAssignButtonSelector(5),
+      activatorButtonSelector: (device) => selectAssignButtons(device).instrument,
       pages: [
         {
           name: "VST Quick Controls",

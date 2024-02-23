@@ -167,7 +167,13 @@ export function bindDeviceToMidi(
     elements.mainFader.bindToMidi(ports, 8, globalState);
 
     for (const [index, button] of [
-      ...[0, 3, 1, 4, 2, 5].map((index) => buttons.encoderAssign[index]),
+      buttons.encoderAssign.track,
+      buttons.encoderAssign.send,
+      buttons.encoderAssign.pan,
+      buttons.encoderAssign.plugin,
+      buttons.encoderAssign.eq,
+      buttons.encoderAssign.instrument,
+
       buttons.navigation.bank.left,
       buttons.navigation.bank.right,
       buttons.navigation.channel.left,

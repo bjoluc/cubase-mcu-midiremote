@@ -69,7 +69,15 @@ export interface PartialControlSectionButtons {
   flip?: LedButton;
   scrub?: LedButton;
 
-  encoderAssign?: LedButton[];
+  encoderAssign?: {
+    track?: LedButton;
+    pan?: LedButton;
+    eq?: LedButton;
+    send?: LedButton;
+    plugin?: LedButton;
+    instrument?: LedButton;
+  };
+
   number?: LedButton[];
   function?: LedButton[];
 
