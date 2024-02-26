@@ -1,16 +1,73 @@
-import { ActivationCallbacks } from "./connection";
 import { RgbColor } from "./managers/ColorManager";
+import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 import { config, deviceConfig } from "/config";
 import { Device, MainDevice } from "/devices";
 import { GlobalState } from "/state";
-import { ContextStateVariable } from "/util";
+import { ContextVariable, LifecycleCallbacks } from "/util";
 
-export function bindDeviceToMidi(
-  device: Device,
+export function bindDevicesToMidi(
+  devices: Device[],
   globalState: GlobalState,
-  activationCallbacks: ActivationCallbacks,
+  lifecycleCallbacks: LifecycleCallbacks,
 ) {
+  const segmentDisplayManager = new SegmentDisplayManager(devices);
+
+  lifecycleCallbacks.addDeactivationCallback((context) => {
+    segmentDisplayManager.clearAssignment(context);
+    segmentDisplayManager.clearTime(context);
+  });
+
+  for (const device of devices) {
+    bindLifecycleEvents(device, lifecycleCallbacks);
+    bindChannelElements(device, globalState);
+
+    if (device instanceof MainDevice) {
+      bindControlSectionElements(device, globalState);
+    }
+  }
+
+  return { segmentDisplayManager };
+}
+
+function bindLifecycleEvents(device: Device, lifecycleCallbacks: LifecycleCallbacks) {
+  const output = device.ports.output;
+
+  const resetLeds = (context: MR_ActiveDevice) => {
+    for (let note = 0; note < 0x76; note++) {
+      output.sendNoteOn(context, note, 0);
+    }
+  };
+
+  lifecycleCallbacks.addActivationCallback((context) => {
+    resetLeds(context);
+
+    // Send an initial (all-black by default) color message to the device. Otherwise, in projects
+    // without enough channels for each device, devices without channels assigned to them would
+    // not receive a color update at all, leaving their displays white although they should be
+    // black.
+    device.colorManager?.sendColors(context);
+  });
+
+  lifecycleCallbacks.addDeactivationCallback((context) => {
+    device.colorManager?.resetColors(context);
+    device.lcdManager.clearDisplays(context);
+
+    // Reset faders
+    for (let faderIndex = 0; faderIndex < 9; faderIndex++) {
+      output.sendMidi(context, [0xe0 + faderIndex, 0, 0]);
+    }
+
+    resetLeds(context);
+
+    // Reset encoder LED rings
+    for (let encoderIndex = 0; encoderIndex < 8; encoderIndex++) {
+      output.sendMidi(context, [0xb0, 0x30 + encoderIndex, 0]);
+    }
+  });
+}
+
+function bindChannelElements(device: Device, globalState: GlobalState) {
   const ports = device.ports;
 
   for (const [channelIndex, channel] of device.channelElements.entries()) {
@@ -19,13 +76,13 @@ export function bindDeviceToMidi(
 
     // Display colors – only supported by the X-Touch
     if (deviceConfig.channelColorSupport === "behringer") {
-      const encoderColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
+      const encoderColor = new ContextVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
       channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
         encoderColor.set(context, { isAssigned, r, g, b });
         updateColor(context);
       };
 
-      const channelColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
+      const channelColor = new ContextVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
       channel.scribbleStrip.trackTitle.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
         channelColor.set(context, { isAssigned, r, g, b });
         updateColor(context);
@@ -77,6 +134,11 @@ export function bindDeviceToMidi(
       }
     };
 
+    /** Clears the channel meter's overload indicator */
+    const clearOverload = (context: MR_ActiveDevice) => {
+      sendMeterLevel(context, ports.output, channelIndex, 0xf);
+    };
+
     // VU Meter
     let lastMeterUpdateTime = 0;
     channel.vuMeter.mOnProcessValueChange = (context, newValue) => {
@@ -94,19 +156,12 @@ export function bindDeviceToMidi(
       }
     };
 
-    if (DEVICE_NAME === "MCU Pro") {
-      globalState.areChannelMetersEnabled.addOnChangeCallback(
-        (context, areMetersEnabled) => {
-          sendChannelMeterMode(context, ports.output, channelIndex, areMetersEnabled);
-        },
-        0, // priority = 0: Disable channel meters *before* updating the lower display row
-      );
-    }
-
-    /** Clears the channel meter's overload indicator */
-    const clearOverload = (context: MR_ActiveDevice) => {
-      sendMeterLevel(context, ports.output, channelIndex, 0xf);
-    };
+    globalState.areChannelMetersEnabled.addOnChangeCallback(
+      (context, areMetersEnabled) => {
+        sendChannelMeterMode(context, ports.output, channelIndex, areMetersEnabled);
+      },
+      0, // priority = 0: Disable channel meters *before* updating the lower display row
+    );
 
     globalState.shouldMeterOverloadsBeCleared.addOnChangeCallback(
       (context, shouldOverloadsBeCleared) => {
@@ -131,120 +186,98 @@ export function bindDeviceToMidi(
     channel.fader.bindToMidi(ports, channelIndex, globalState);
   }
 
-  if (DEVICE_NAME === "MCU Pro") {
-    // Handle metering mode changes (globally)
-    globalState.isGlobalLcdMeterModeVertical.addOnChangeCallback((context, isMeterModeVertical) => {
-      sendGlobalMeterModeOrientation(context, ports.output, isMeterModeVertical);
-    });
+  // Handle metering mode changes (globally)
+  globalState.isGlobalLcdMeterModeVertical.addOnChangeCallback((context, isMeterModeVertical) => {
+    sendGlobalMeterModeOrientation(context, ports.output, isMeterModeVertical);
+  });
+}
+
+function bindControlSectionElements(device: MainDevice, globalState: GlobalState) {
+  const ports = device.ports;
+
+  const elements = device.controlSectionElements;
+  const buttons = elements.buttons;
+
+  elements.mainFader.bindToMidi(ports, 8, globalState);
+
+  for (const [index, button] of [
+    buttons.encoderAssign.track,
+    buttons.encoderAssign.send,
+    buttons.encoderAssign.pan,
+    buttons.encoderAssign.plugin,
+    buttons.encoderAssign.eq,
+    buttons.encoderAssign.instrument,
+
+    buttons.navigation.bank.left,
+    buttons.navigation.bank.right,
+    buttons.navigation.channel.left,
+    buttons.navigation.channel.right,
+
+    buttons.flip,
+    buttons.edit,
+    buttons.display,
+    buttons.timeMode,
+
+    ...buttons.function,
+    ...buttons.number,
+
+    buttons.modify.undo,
+    buttons.modify.redo,
+    buttons.modify.save,
+    buttons.modify.revert,
+
+    buttons.automation.read,
+    buttons.automation.write,
+    buttons.automation.sends,
+    buttons.automation.project,
+    buttons.automation.mixer,
+    buttons.automation.motor,
+
+    buttons.utility.instrument,
+    buttons.utility.main,
+    buttons.utility.soloDefeat,
+    buttons.utility.shift,
+
+    buttons.transport.left,
+    buttons.transport.right,
+    buttons.transport.cycle,
+    buttons.transport.punch,
+
+    buttons.transport.markers.previous,
+    buttons.transport.markers.add,
+    buttons.transport.markers.next,
+
+    buttons.transport.rewind,
+    buttons.transport.forward,
+    buttons.transport.stop,
+    buttons.transport.play,
+    buttons.transport.record,
+
+    buttons.navigation.directions.up,
+    buttons.navigation.directions.down,
+    buttons.navigation.directions.left,
+    buttons.navigation.directions.right,
+    buttons.navigation.directions.center,
+
+    buttons.scrub,
+  ].entries()) {
+    button.bindToNote(ports, 40 + index);
   }
 
-  if (deviceConfig.channelColorSupport === "behringer") {
-    // Send an initial (all-black by default) color message to the device. Otherwise, in projects
-    // without enough channels for each device, devices without channels assigned to them would not
-    // receive a color update at all, leaving their displays white although they should be black.
-    activationCallbacks.addCallback((context) => {
-      device.colorManager?.sendColors(context);
-    });
-  }
+  // Segment Display - handled by the SegmentDisplayManager, except for the individual LEDs:
+  const { smpte, beats, solo } = elements.displayLeds;
+  [smpte, beats, solo].forEach((lamp, index) => {
+    lamp.bindToNote(ports.output, 0x71 + index);
+  });
 
-  // Control Section (main devices only)
-  if (device instanceof MainDevice) {
-    const elements = device.controlSectionElements;
-    const buttons = elements.buttons;
+  // Jog wheel
+  elements.jogWheel.bindToControlChange(ports.input, 0x3c);
 
-    activationCallbacks.addCallback((context) => {
-      // Workaround for https://forums.steinberg.net/t/831123:
-      ports.output.sendNoteOn(context, 0x4f, 1);
-
-      // Workaround for encoder assign buttons not being enabled on activation
-      // (https://forums.steinberg.net/t/831123):
-      ports.output.sendNoteOn(context, 0x2a, 1);
-      for (const note of [0x28, 0x29, 0x2b, 0x2c, 0x2d]) {
-        ports.output.sendNoteOn(context, note, 0);
-      }
-    });
-
-    elements.mainFader.bindToMidi(ports, 8, globalState);
-
-    for (const [index, button] of [
-      buttons.encoderAssign.track,
-      buttons.encoderAssign.send,
-      buttons.encoderAssign.pan,
-      buttons.encoderAssign.plugin,
-      buttons.encoderAssign.eq,
-      buttons.encoderAssign.instrument,
-
-      buttons.navigation.bank.left,
-      buttons.navigation.bank.right,
-      buttons.navigation.channel.left,
-      buttons.navigation.channel.right,
-
-      buttons.flip,
-      buttons.edit,
-      buttons.display,
-      buttons.timeMode,
-
-      ...buttons.function,
-      ...buttons.number,
-
-      buttons.modify.undo,
-      buttons.modify.redo,
-      buttons.modify.save,
-      buttons.modify.revert,
-
-      buttons.automation.read,
-      buttons.automation.write,
-      buttons.automation.sends,
-      buttons.automation.project,
-      buttons.automation.mixer,
-      buttons.automation.motor,
-
-      buttons.utility.instrument,
-      buttons.utility.main,
-      buttons.utility.soloDefeat,
-      buttons.utility.shift,
-
-      buttons.transport.left,
-      buttons.transport.right,
-      buttons.transport.cycle,
-      buttons.transport.punch,
-
-      buttons.transport.markers.previous,
-      buttons.transport.markers.add,
-      buttons.transport.markers.next,
-
-      buttons.transport.rewind,
-      buttons.transport.forward,
-      buttons.transport.stop,
-      buttons.transport.play,
-      buttons.transport.record,
-
-      buttons.navigation.directions.up,
-      buttons.navigation.directions.down,
-      buttons.navigation.directions.left,
-      buttons.navigation.directions.right,
-      buttons.navigation.directions.center,
-
-      buttons.scrub,
-    ].entries()) {
-      button.bindToNote(ports, 40 + index);
-    }
-
-    // Segment Display - handled by the SegmentDisplayManager, except for the individual LEDs:
-    const { smpte, beats, solo } = elements.displayLeds;
-    [smpte, beats, solo].forEach((lamp, index) => {
-      lamp.bindToNote(ports.output, 0x71 + index);
-    });
-
-    // Jog wheel
-    elements.jogWheel.bindToControlChange(ports.input, 0x3c);
-
-    // Foot control
-    elements.footSwitch1.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x66);
-    elements.footSwitch2.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x67);
-    elements.expressionPedal.mSurfaceValue.mMidiBinding
-      .setInputPort(ports.input)
-      .bindToControlChange(0, 0x2e)
-      .setTypeAbsolute();
-  }
+  // Foot control
+  elements.footSwitch1.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x66);
+  elements.footSwitch2.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, 0x67);
+  elements.expressionPedal.mSurfaceValue.mMidiBinding
+    .setInputPort(ports.input)
+    .bindToControlChange(0, 0x2e)
+    .setTypeAbsolute();
 }

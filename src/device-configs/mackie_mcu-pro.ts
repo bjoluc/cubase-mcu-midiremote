@@ -9,7 +9,7 @@ import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
-import { createElements, getArrayElements } from "/util";
+import { createElements } from "/util";
 
 const channelWidth = 4;
 const channelElementsWidth = 8 * channelWidth;
@@ -246,9 +246,9 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  enhanceMapping({ activationCallbacks, globalState, page }) {
+  enhanceMapping({ lifecycleCallbacks, globalState, page }) {
     // Initially disable LCD channel metering for all devices
-    activationCallbacks.addCallback((context) => {
+    lifecycleCallbacks.addActivationCallback((context) => {
       globalState.isGlobalLcdMeterModeVertical.set(context, true);
       globalState.areChannelMetersEnabled.set(context, false);
     });

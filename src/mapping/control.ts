@@ -21,7 +21,7 @@ function setShiftableButtonsLedValues(
     buttons.transport.right,
     buttons.navigation.bank.left,
   ]) {
-    button.mLedValue.setProcessValue(context, value);
+    button.setLedValue(context, value);
   }
 }
 
@@ -36,11 +36,11 @@ function bindCursorValueControlButton(
   const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
 
   activeSubpage.mOnActivate = (context) => {
-    button.mLedValue.setProcessValue(context, 1);
+    button.setLedValue(context, 1);
     jogWheel.mKnobModeEnabledValue.setProcessValue(context, 1);
   };
   inactiveSubpage.mOnActivate = (context) => {
-    button.mLedValue.setProcessValue(context, 0);
+    button.setLedValue(context, 0);
     jogWheel.mKnobModeEnabledValue.setProcessValue(context, 0);
   };
 
@@ -83,7 +83,7 @@ export function bindControlSection(
 
   // Flip button
   globalState.isFlipModeActive.addOnChangeCallback((context, value) => {
-    buttons.flip.mLedValue.setProcessValue(context, +value);
+    buttons.flip.setLedValue(context, +value);
   });
 
   // Display mode button
@@ -236,7 +236,7 @@ export function bindControlSection(
     }
   };
   globalState.areMotorsActive.addOnChangeCallback((context, value) => {
-    buttons.automation.motor.mLedValue.setProcessValue(context, +value);
+    buttons.automation.motor.setLedValue(context, +value);
   });
 
   // Instrument
@@ -332,20 +332,20 @@ export function bindControlSection(
   page.makeActionBinding(channel.left.mSurfaceValue, mixerBankZone.mAction.mShiftLeft);
   page.makeActionBinding(channel.right.mSurfaceValue, mixerBankZone.mAction.mShiftRight);
 
-  // Jogwheel
-  const jogWheelSubPageArea = page.makeSubPageArea("jogWeel");
-  const scrubSubPage = jogWheelSubPageArea.makeSubPage("scrub");
-  const jogSubPage = jogWheelSubPageArea.makeSubPage("jog");
+  // Jog Wheel
+  const jogWheelSubPageArea = page.makeSubPageArea("Jog Wheel");
+  const scrubSubPage = jogWheelSubPageArea.makeSubPage("Scrub");
+  const jogSubPage = jogWheelSubPageArea.makeSubPage("Jog");
 
   const scrubButton = controlSectionElements.buttons.scrub;
 
   page.makeActionBinding(scrubButton.mSurfaceValue, jogWheelSubPageArea.mAction.mNext);
 
   jogSubPage.mOnActivate = (context) => {
-    scrubButton.mLedValue.setProcessValue(context, 1);
+    scrubButton.setLedValue(context, 1);
   };
   scrubSubPage.mOnActivate = (context) => {
-    scrubButton.mLedValue.setProcessValue(context, 0);
+    scrubButton.setLedValue(context, 0);
   };
 
   const { mJogLeftValue: jogLeft, mJogRightValue: jogRight } = controlSectionElements.jogWheel;
@@ -360,10 +360,10 @@ export function bindControlSection(
   const zoomSubPage = subPageArea.makeSubPage("Zoom");
 
   zoomSubPage.mOnActivate = (context) => {
-    buttons.navigation.directions.center.mLedValue.setProcessValue(context, 1);
+    buttons.navigation.directions.center.setLedValue(context, 1);
   };
   navigateSubPage.mOnActivate = (context) => {
-    buttons.navigation.directions.center.mLedValue.setProcessValue(context, 0);
+    buttons.navigation.directions.center.setLedValue(context, 0);
   };
 
   const directions = buttons.navigation.directions;

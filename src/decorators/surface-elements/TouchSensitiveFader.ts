@@ -1,6 +1,6 @@
 import { MidiPortPair } from "/midi/MidiPortPair";
 import { GlobalState } from "/state";
-import { ContextStateVariable } from "/util";
+import { ContextVariable } from "/util";
 
 class TouchSensitiveMotorFaderDecorator {
   // Workaround because `filterByValue` in the encoder bindings hides zero values from
@@ -45,7 +45,7 @@ class TouchSensitiveMotorFaderDecorator {
       }
     });
 
-    const previousSurfaceValue = new ContextStateVariable(0);
+    const previousSurfaceValue = new ContextVariable(0);
     const onSurfaceValueChange = (context: MR_ActiveDevice, value: number) => {
       // The builtin `difference` parameter is zero in the beginning and when a fader was previously
       // unassigned. It's also not available when manually triggering this function, so we revert to

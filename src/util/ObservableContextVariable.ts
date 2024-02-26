@@ -1,10 +1,10 @@
-import { ContextStateVariable } from "./ContextStateVariable";
+import { ContextVariable } from "./ContextVariable";
 
-export class ObservableContextStateVariable<
+export class ObservableContextVariable<
   ValueType,
   AdditionalCallbackParameterType extends any[] = [],
 > {
-  private variable: ContextStateVariable<ValueType>;
+  private variable: ContextVariable<ValueType>;
   private onChangeCallbacks: Array<{
     callback: (
       context: MR_ActiveDevice,
@@ -16,7 +16,7 @@ export class ObservableContextStateVariable<
   private areCallbacksSorted = true;
 
   constructor(initialValue: ValueType) {
-    this.variable = new ContextStateVariable<ValueType>(initialValue);
+    this.variable = new ContextVariable<ValueType>(initialValue);
     this.get = this.variable.get.bind(this.variable);
   }
 
@@ -47,5 +47,5 @@ export class ObservableContextStateVariable<
     }
   }
 
-  get: ContextStateVariable<ValueType>["get"];
+  get: ContextVariable<ValueType>["get"];
 }
