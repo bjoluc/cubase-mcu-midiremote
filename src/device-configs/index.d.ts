@@ -204,6 +204,8 @@ export interface DeviceConfig {
   /**
    * This optional function receives the default {@link EncoderMappingConfig} and returns an
    * `EncoderMappingConfig` that will be applied instead of the default.
+   *
+   * The default config is defined in {@link file://./../mapping/encoders/index.ts}
    */
   configureEncoderAssignments?(
     defaultEncoderMapping: EncoderMappingConfig,

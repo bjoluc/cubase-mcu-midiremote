@@ -42,7 +42,7 @@ var CONFIGURATION = {
    * first output port belong to the leftmost device while the last input and the last output port
    * belong to the rightmost device.
    *
-   * @devices !X-Touch One
+   * @devices !X-Touch One, !UF1
    */
   devices: ["main"],
 
