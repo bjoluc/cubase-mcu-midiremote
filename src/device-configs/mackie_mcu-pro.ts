@@ -9,7 +9,7 @@ import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
-import { createElements, getArrayElements } from "/util";
+import { createElements } from "/util";
 
 const channelWidth = 4;
 const channelElementsWidth = 8 * channelWidth;
