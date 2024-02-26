@@ -1,5 +1,5 @@
 import { MidiPortPair } from "/midi/MidiPortPair";
-import { ContextStateVariable, makeCallbackCollection } from "/util";
+import { CallbackCollection, ContextStateVariable } from "/util";
 
 interface LedButtonOptions {
   /**
@@ -31,7 +31,7 @@ class LedButtonDecorator {
     private readonly options: LedButtonOptions,
   ) {}
 
-  onSurfaceValueChange = makeCallbackCollection(this.button.mSurfaceValue, "mOnProcessValueChange");
+  onSurfaceValueChange = new CallbackCollection(this.button.mSurfaceValue, "mOnProcessValueChange");
 
   setLedValue = (context: MR_ActiveDevice, value: number) => {
     this.ledValue.set(context, value);

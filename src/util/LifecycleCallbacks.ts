@@ -1,11 +1,8 @@
-import { CallbackCollection, makeCallbackCollection } from "./callback-collection";
+import { CallbackCollection } from "./CallbackCollection";
 
 export class LifecycleCallbacks {
-  addActivationCallback: CallbackCollection<[MR_ActiveDevice]>["addCallback"];
-  addDeactivationCallback: CallbackCollection<[MR_ActiveDevice]>["addCallback"];
+  addActivationCallback = new CallbackCollection(this.driver, "mOnActivate").addCallback;
+  addDeactivationCallback = new CallbackCollection(this.driver, "mOnDeactivate").addCallback;
 
-  constructor(driver: MR_DeviceDriver) {
-    this.addActivationCallback = makeCallbackCollection(driver, "mOnActivate").addCallback;
-    this.addDeactivationCallback = makeCallbackCollection(driver, "mOnDeactivate").addCallback;
-  }
+  constructor(private driver: MR_DeviceDriver) {}
 }
