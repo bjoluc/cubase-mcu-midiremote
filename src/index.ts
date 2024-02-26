@@ -15,9 +15,8 @@ Reflect.get = undefined;
 import midiremoteApi from "midiremote_api_v1";
 import { createDevices } from "/devices";
 import { makeHostMapping } from "/mapping";
-import { bindDeviceToMidi } from "/midi";
-import { setupDeviceConnection } from "/midi/connection";
-import { makeTimerUtils } from "/util";
+import { bindDevicesToMidi } from "/midi";
+import { LifecycleCallbacks, makeTimerUtils } from "/util";
 import { createGlobalState } from "/state";
 import { deviceConfig } from "./config";
 
@@ -32,25 +31,20 @@ const timerUtils = makeTimerUtils(driver, page, surface);
 // Create devices, i.e., midi ports, managers, and surface elements for each physical device
 const devices = createDevices(driver, surface, globalState, timerUtils);
 
-const { activationCallbacks, segmentDisplayManager } = setupDeviceConnection(driver, devices);
-activationCallbacks.addCallback(() => {
+const lifecycleCallbacks = new LifecycleCallbacks(driver);
+
+lifecycleCallbacks.addActivationCallback((context) => {
   console.log("Activating cubase-mcu-midiremote v" + SCRIPT_VERSION);
   console.log(
     "A newer version may be available at https://github.com/bjoluc/cubase-mcu-midiremote/releases",
   );
 });
 
-activationCallbacks.addCallback((context) => {
-  globalState.areMotorsActive.set(context, true);
-});
+// Bind device elements to MIDI
+const { segmentDisplayManager } = bindDevicesToMidi(devices, globalState, lifecycleCallbacks);
 
-// Bind elements to MIDI
-for (const device of devices) {
-  bindDeviceToMidi(device, globalState, activationCallbacks);
-}
-
-// Map elements to host functions
-makeHostMapping(page, devices, segmentDisplayManager, globalState, activationCallbacks);
+// Map device elements to host functions
+makeHostMapping(page, devices, segmentDisplayManager, globalState, lifecycleCallbacks);
 
 if (deviceConfig.enhanceMapping) {
   deviceConfig.enhanceMapping({
@@ -59,6 +53,6 @@ if (deviceConfig.enhanceMapping) {
     devices,
     segmentDisplayManager,
     globalState,
-    activationCallbacks,
+    lifecycleCallbacks,
   });
 }

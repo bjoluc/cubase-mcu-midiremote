@@ -6,9 +6,9 @@ import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
 import { Device } from "/devices";
 import { EncoderMappingConfig } from "/mapping/encoders/EncoderMapper";
-import { ActivationCallbacks } from "/midi/connection";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
+import { LifecycleCallbacks } from "/util";
 
 type SurfaceElement = LedButton | TouchSensitiveMotorFader | Lamp | JogWheel | MR_Knob;
 
@@ -216,6 +216,6 @@ export interface DeviceConfig {
     devices: Device[];
     segmentDisplayManager: SegmentDisplayManager;
     globalState: GlobalState;
-    activationCallbacks: ActivationCallbacks;
+    lifecycleCallbacks: LifecycleCallbacks;
   }): void;
 }

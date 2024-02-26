@@ -2,17 +2,16 @@ import { bindControlSection, bindFootControl } from "./control";
 import { bindEncoders } from "./encoders";
 import { config } from "/config";
 import { Device, MainDevice } from "/devices";
-import { ActivationCallbacks } from "/midi/connection";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
-import { ContextStateVariable } from "/util";
+import { ContextStateVariable, LifecycleCallbacks } from "/util";
 
 export function makeHostMapping(
   page: MR_FactoryMappingPage,
   devices: Device[],
   segmentDisplayManager: SegmentDisplayManager,
   globalState: GlobalState,
-  activationCallbacks: ActivationCallbacks,
+  lifecycleCallbacks: LifecycleCallbacks,
 ) {
   // Mixer channels
   const mixerBankZone = page.mHostAccess.mMixConsole.makeMixerBankZone();
@@ -98,13 +97,17 @@ export function makeHostMapping(
     }
   }
 
+  lifecycleCallbacks.addActivationCallback((context) => {
+    globalState.areMotorsActive.set(context, true);
+  });
+
   // The `mTransportLocator.mOnChange` callback is first invoked before the device driver is
-  // activated. The workaround below defers the first time display update until the driver is
-  // activated.
+  // activated. The workaround below defers the first time display update to when the driver has
+  // been activated.
   const isDriverActivated = new ContextStateVariable(false);
   const initialTransportLocatorPosition = new ContextStateVariable({ time: "", timeFormat: "" });
 
-  activationCallbacks.addCallback((context) => {
+  lifecycleCallbacks.addActivationCallback((context) => {
     isDriverActivated.set(context, true);
 
     const { time, timeFormat } = initialTransportLocatorPosition.get(context);

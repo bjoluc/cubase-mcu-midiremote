@@ -246,9 +246,9 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  enhanceMapping({ activationCallbacks, globalState, page }) {
+  enhanceMapping({ lifecycleCallbacks, globalState, page }) {
     // Initially disable LCD channel metering for all devices
-    activationCallbacks.addCallback((context) => {
+    lifecycleCallbacks.addActivationCallback((context) => {
       globalState.isGlobalLcdMeterModeVertical.set(context, true);
       globalState.areChannelMetersEnabled.set(context, false);
     });

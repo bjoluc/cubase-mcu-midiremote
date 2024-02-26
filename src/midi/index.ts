@@ -1,17 +1,59 @@
-import { ActivationCallbacks } from "./connection";
 import { RgbColor } from "./managers/ColorManager";
+import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 import { config, deviceConfig } from "/config";
 import { Device, MainDevice } from "/devices";
 import { GlobalState } from "/state";
-import { ContextStateVariable } from "/util";
+import { ContextStateVariable, LifecycleCallbacks } from "/util";
 
-export function bindDeviceToMidi(
+export function bindDevicesToMidi(
+  devices: Device[],
+  globalState: GlobalState,
+  lifecycleCallbacks: LifecycleCallbacks,
+) {
+  const segmentDisplayManager = new SegmentDisplayManager(devices);
+
+  lifecycleCallbacks.addDeactivationCallback((context) => {
+    segmentDisplayManager.clearAssignment(context);
+    segmentDisplayManager.clearTime(context);
+  });
+
+  for (const device of devices) {
+    bindDeviceToMidi(device, globalState, lifecycleCallbacks);
+  }
+
+  return { segmentDisplayManager };
+}
+
+function bindDeviceToMidi(
   device: Device,
   globalState: GlobalState,
-  activationCallbacks: ActivationCallbacks,
+  lifecycleCallbacks: LifecycleCallbacks,
 ) {
   const ports = device.ports;
+
+  // Lifecycle
+  lifecycleCallbacks.addDeactivationCallback((context) => {
+    device.colorManager?.resetColors(context);
+    device.lcdManager.clearDisplays(context);
+
+    const output = ports.output;
+
+    // Reset faders
+    for (let faderIndex = 0; faderIndex < 9; faderIndex++) {
+      output.sendMidi(context, [0xe0 + faderIndex, 0, 0]);
+    }
+
+    // Reset LEDs
+    for (let note = 0; note < 0x76; note++) {
+      output.sendNoteOn(context, note, 0);
+    }
+
+    // Reset encoder LED rings
+    for (let encoderIndex = 0; encoderIndex < 8; encoderIndex++) {
+      output.sendMidi(context, [0xb0, 0x30 + encoderIndex, 0]);
+    }
+  });
 
   for (const [channelIndex, channel] of device.channelElements.entries()) {
     // Push Encoder
@@ -142,7 +184,7 @@ export function bindDeviceToMidi(
     // Send an initial (all-black by default) color message to the device. Otherwise, in projects
     // without enough channels for each device, devices without channels assigned to them would not
     // receive a color update at all, leaving their displays white although they should be black.
-    activationCallbacks.addCallback((context) => {
+    lifecycleCallbacks.addActivationCallback((context) => {
       device.colorManager?.sendColors(context);
     });
   }
@@ -152,7 +194,7 @@ export function bindDeviceToMidi(
     const elements = device.controlSectionElements;
     const buttons = elements.buttons;
 
-    activationCallbacks.addCallback((context) => {
+    lifecycleCallbacks.addActivationCallback((context) => {
       // Workaround for https://forums.steinberg.net/t/831123:
       ports.output.sendNoteOn(context, 0x4f, 1);
 
