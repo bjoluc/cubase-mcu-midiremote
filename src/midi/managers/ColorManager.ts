@@ -1,6 +1,6 @@
 import { closest as determineClosestColor } from "color-diff";
 import { Device } from "/devices";
-import { ContextStateVariable, createElements } from "/util";
+import { ContextVariable, createElements } from "/util";
 
 export enum ScribbleStripColor {
   black = 0x00,
@@ -38,10 +38,10 @@ export class ColorManager {
     ).code;
   }
 
-  private colors: Array<ContextStateVariable<number>>;
+  private colors: Array<ContextVariable<number>>;
 
   constructor(private device: Device) {
-    this.colors = createElements(8, () => new ContextStateVariable(ScribbleStripColor.black));
+    this.colors = createElements(8, () => new ContextVariable(ScribbleStripColor.black));
   }
 
   /**

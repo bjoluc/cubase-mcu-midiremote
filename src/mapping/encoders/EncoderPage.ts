@@ -5,7 +5,7 @@ import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements
 import { ChannelSurfaceElements, ControlSectionButtons } from "/device-configs";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
-import { ContextStateVariable } from "/util";
+import { ContextVariable } from "/util";
 
 export interface EncoderAssignmentConfig {
   encoderValue?: MR_HostValue;
@@ -52,7 +52,7 @@ export class EncoderPage implements EncoderPageConfig {
   public readonly assignments: EncoderAssignmentConfig[];
   public readonly areAssignmentsChannelRelated: boolean;
 
-  private isActive = new ContextStateVariable(false);
+  private isActive = new ContextVariable(false);
   private lastSubPageActivationTime = 0;
 
   constructor(

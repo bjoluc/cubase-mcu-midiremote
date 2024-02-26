@@ -1,8 +1,8 @@
-import { ObservableContextStateVariable } from "./ObservableContextStateVariable";
+import { ObservableContextVariable } from "./ObservableContextVariable";
 
-export class BooleanContextStateVariable<
+export class BooleanContextVariable<
   AdditionalCallbackParameterType extends any[],
-> extends ObservableContextStateVariable<boolean, AdditionalCallbackParameterType> {
+> extends ObservableContextVariable<boolean, AdditionalCallbackParameterType> {
   constructor(initialValue = false) {
     super(initialValue);
   }

@@ -1,9 +1,9 @@
 import { Device, MainDevice } from "/devices";
-import { ContextStateVariable, createElements } from "/util";
+import { ContextVariable, createElements } from "/util";
 
 export class SegmentDisplayManager {
   private devices: MainDevice[];
-  private segmentValues = createElements(12, () => new ContextStateVariable(0x00));
+  private segmentValues = createElements(12, () => new ContextVariable(0x00));
 
   private updateSegment(
     context: MR_ActiveDevice,
@@ -47,7 +47,7 @@ export class SegmentDisplayManager {
     this.devices = devices.filter((device) => device instanceof MainDevice) as MainDevice[];
   }
 
-  private lastTimeFormat = new ContextStateVariable("");
+  private lastTimeFormat = new ContextVariable("");
 
   /**
    * Update the 7-segment displays to show the provided `time` string – a string consisting of

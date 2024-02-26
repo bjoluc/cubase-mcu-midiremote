@@ -1,5 +1,5 @@
 import { MidiPortPair } from "/midi/MidiPortPair";
-import { CallbackCollection, ContextStateVariable } from "/util";
+import { CallbackCollection, ContextVariable } from "/util";
 
 interface LedButtonOptions {
   /**
@@ -20,7 +20,7 @@ class LedButtonDecorator {
    * `shadowValue` variable that is bound to the same note.
    */
   private shadowValue = this.surface.makeCustomValueVariable("LedButtonProxy");
-  private ledValue = new ContextStateVariable(0);
+  private ledValue = new ContextVariable(0);
 
   private ports?: MidiPortPair;
   private note?: number;

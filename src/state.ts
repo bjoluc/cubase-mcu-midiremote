@@ -1,22 +1,22 @@
-import { BooleanContextStateVariable, ObservableContextStateVariable } from "/util";
+import { BooleanContextVariable, ObservableContextVariable } from "/util";
 
 /** Declares some global context-dependent variables that (may) affect multiple devices */
 export const createGlobalState = () => ({
-  areMotorsActive: new BooleanContextStateVariable(),
+  areMotorsActive: new BooleanContextVariable(),
 
-  isValueDisplayModeActive: new BooleanContextStateVariable(),
+  isValueDisplayModeActive: new BooleanContextVariable(),
 
-  areDisplayRowsFlipped: new BooleanContextStateVariable(),
+  areDisplayRowsFlipped: new BooleanContextVariable(),
 
-  isFlipModeActive: new BooleanContextStateVariable(),
+  isFlipModeActive: new BooleanContextVariable(),
 
-  isShiftModeActive: new BooleanContextStateVariable<[MR_ActiveMapping]>(),
+  isShiftModeActive: new BooleanContextVariable<[MR_ActiveMapping]>(),
 
-  areChannelMetersEnabled: new BooleanContextStateVariable(),
+  areChannelMetersEnabled: new BooleanContextVariable(),
 
-  isGlobalLcdMeterModeVertical: new BooleanContextStateVariable(),
+  isGlobalLcdMeterModeVertical: new BooleanContextVariable(),
 
-  shouldMeterOverloadsBeCleared: new BooleanContextStateVariable(true),
+  shouldMeterOverloadsBeCleared: new BooleanContextVariable(true),
 });
 
 export type GlobalState = ReturnType<typeof createGlobalState>;

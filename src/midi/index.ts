@@ -4,7 +4,7 @@ import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } 
 import { config, deviceConfig } from "/config";
 import { Device, MainDevice } from "/devices";
 import { GlobalState } from "/state";
-import { ContextStateVariable, LifecycleCallbacks } from "/util";
+import { ContextVariable, LifecycleCallbacks } from "/util";
 
 export function bindDevicesToMidi(
   devices: Device[],
@@ -76,13 +76,13 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
 
     // Display colors – only supported by the X-Touch
     if (deviceConfig.channelColorSupport === "behringer") {
-      const encoderColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
+      const encoderColor = new ContextVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
       channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
         encoderColor.set(context, { isAssigned, r, g, b });
         updateColor(context);
       };
 
-      const channelColor = new ContextStateVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
+      const channelColor = new ContextVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
       channel.scribbleStrip.trackTitle.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
         channelColor.set(context, { isAssigned, r, g, b });
         updateColor(context);

@@ -4,7 +4,7 @@ import { config } from "/config";
 import { Device, MainDevice } from "/devices";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
-import { ContextStateVariable, LifecycleCallbacks } from "/util";
+import { ContextVariable, LifecycleCallbacks } from "/util";
 
 export function makeHostMapping(
   page: MR_FactoryMappingPage,
@@ -104,8 +104,8 @@ export function makeHostMapping(
   // The `mTransportLocator.mOnChange` callback is first invoked before the device driver is
   // activated. The workaround below defers the first time display update to when the driver has
   // been activated.
-  const isDriverActivated = new ContextStateVariable(false);
-  const initialTransportLocatorPosition = new ContextStateVariable({ time: "", timeFormat: "" });
+  const isDriverActivated = new ContextVariable(false);
+  const initialTransportLocatorPosition = new ContextVariable({ time: "", timeFormat: "" });
 
   lifecycleCallbacks.addActivationCallback((context) => {
     isDriverActivated.set(context, true);

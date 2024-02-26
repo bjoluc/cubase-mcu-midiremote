@@ -1,5 +1,5 @@
 import { MidiPortPair } from "/midi/MidiPortPair";
-import { CallbackCollection, ObservableContextStateVariable } from "/util";
+import { CallbackCollection, ObservableContextVariable } from "/util";
 
 export enum EncoderDisplayMode {
   SingleDot = 0,
@@ -14,7 +14,7 @@ class LedPushEncoderDecorator {
     private encoder: MR_PushEncoder,
   ) {}
 
-  displayMode = new ObservableContextStateVariable(EncoderDisplayMode.SingleDot);
+  displayMode = new ObservableContextVariable(EncoderDisplayMode.SingleDot);
 
   mOnEncoderValueTitleChange = new CallbackCollection(this.encoder.mEncoderValue, "mOnTitleChange");
 
