@@ -33,24 +33,20 @@ export function bindDevicesToMidi(
 function bindLifecycleEvents(device: Device, lifecycleCallbacks: LifecycleCallbacks) {
   const output = device.ports.output;
 
-  lifecycleCallbacks.addActivationCallback((context) => {
-    // Workaround for https://forums.steinberg.net/t/831123:
-    output.sendNoteOn(context, 0x4f, 1);
-
-    // Workaround for encoder assign buttons not being enabled on activation
-    // (https://forums.steinberg.net/t/831123):
-    output.sendNoteOn(context, 0x2a, 1);
-    for (const note of [0x28, 0x29, 0x2b, 0x2c, 0x2d]) {
+  const resetLeds = (context: MR_ActiveDevice) => {
+    for (let note = 0; note < 0x76; note++) {
       output.sendNoteOn(context, note, 0);
     }
+  };
 
-    if (deviceConfig.channelColorSupport === "behringer") {
-      // Send an initial (all-black by default) color message to the device. Otherwise, in projects
-      // without enough channels for each device, devices without channels assigned to them would
-      // not receive a color update at all, leaving their displays white although they should be
-      // black.
-      device.colorManager?.sendColors(context);
-    }
+  lifecycleCallbacks.addActivationCallback((context) => {
+    resetLeds(context);
+
+    // Send an initial (all-black by default) color message to the device. Otherwise, in projects
+    // without enough channels for each device, devices without channels assigned to them would
+    // not receive a color update at all, leaving their displays white although they should be
+    // black.
+    device.colorManager?.sendColors(context);
   });
 
   lifecycleCallbacks.addDeactivationCallback((context) => {
@@ -62,10 +58,7 @@ function bindLifecycleEvents(device: Device, lifecycleCallbacks: LifecycleCallba
       output.sendMidi(context, [0xe0 + faderIndex, 0, 0]);
     }
 
-    // Reset LEDs
-    for (let note = 0; note < 0x76; note++) {
-      output.sendNoteOn(context, note, 0);
-    }
+    resetLeds(context);
 
     // Reset encoder LED rings
     for (let encoderIndex = 0; encoderIndex < 8; encoderIndex++) {
