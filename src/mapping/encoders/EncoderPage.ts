@@ -3,9 +3,9 @@ import { config } from "/config";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ChannelSurfaceElements, ControlSectionButtons } from "/device-configs";
-import { MainDevice } from "/devices";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
+import { ContextVariable } from "/util";
 
 export interface EncoderAssignmentConfig {
   encoderValue?: MR_HostValue;
@@ -52,7 +52,7 @@ export class EncoderPage implements EncoderPageConfig {
   public readonly assignments: EncoderAssignmentConfig[];
   public readonly areAssignmentsChannelRelated: boolean;
 
-  private isActive = false;
+  private isActive = new ContextVariable(false);
   private lastSubPageActivationTime = 0;
 
   constructor(
@@ -134,7 +134,7 @@ export class EncoderPage implements EncoderPageConfig {
 
     this.globalState.isShiftModeActive.addOnChangeCallback(
       (context, isShiftModeActive, mapping) => {
-        if (this.isActive) {
+        if (this.isActive.get(context)) {
           const isFlipModeActive = this.globalState.isFlipModeActive.get(context);
 
           const nextSubPage = [
@@ -244,12 +244,12 @@ export class EncoderPage implements EncoderPageConfig {
 
   private setActivatorButtonLeds(context: MR_ActiveDevice, value: number) {
     for (const button of this.activatorButtons) {
-      button.mLedValue.setProcessValue(context, value);
+      button.setLedValue(context, value);
     }
   }
 
   public onActivated(context: MR_ActiveDevice) {
-    this.isActive = true;
+    this.isActive.set(context, true);
 
     this.segmentDisplayManager.setAssignment(
       context,
@@ -269,7 +269,7 @@ export class EncoderPage implements EncoderPageConfig {
   }
 
   public onDeactivated(context: MR_ActiveDevice) {
-    this.isActive = false;
+    this.isActive.set(context, false);
     this.setActivatorButtonLeds(context, 0);
   }
 

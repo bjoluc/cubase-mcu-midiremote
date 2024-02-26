@@ -6,11 +6,3 @@ export function createElements<E>(count: number, factoryFunction: (index: number
 
   return elements;
 }
-
-/**
- * Given an array and a list of array indices, returns a new array consisting of the elements at the
- * original indices specified by the `indices` list.
- */
-export function getArrayElements<T>(array: T[], indices: number[]) {
-  return indices.map((index) => array[index]);
-}

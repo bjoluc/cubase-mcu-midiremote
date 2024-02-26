@@ -3,7 +3,7 @@ import abbreviate from "abbreviate";
 import { LcdManager } from "./LcdManager";
 import { deviceConfig } from "/config";
 import { GlobalState } from "/state";
-import { ContextStateVariable, TimerUtils } from "/util";
+import { ContextVariable, TimerUtils } from "/util";
 
 /**
  * Handles the LCD display text of a single channel
@@ -116,10 +116,10 @@ export class ChannelTextManager {
   /** A unique number for each `ChannelTextManager` so it can set uniquely identified timeouts */
   private uniqueManagerId = ChannelTextManager.nextManagerId++;
 
-  private parameterName = new ContextStateVariable("");
-  private parameterValue = new ContextStateVariable("");
-  private channelName = new ContextStateVariable("");
-  private isLocalValueModeActive = new ContextStateVariable(false);
+  private parameterName = new ContextVariable("");
+  private parameterValue = new ContextVariable("");
+  private channelName = new ContextVariable("");
+  private isLocalValueModeActive = new ContextVariable(false);
 
   constructor(
     private globalState: GlobalState,

@@ -4,6 +4,7 @@ import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "/device-c
 import { Device, MainDevice } from "/devices";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
+import { ContextVariable } from "/util";
 
 /**
  * The joint configuration for all "encoder assignments". Each encoder assignment maps a number of
@@ -36,7 +37,7 @@ export class EncoderMapper {
 
   private readonly subPageArea: MR_SubPageArea;
 
-  private activeEncoderPage?: EncoderPage;
+  private activeEncoderPage = new ContextVariable<EncoderPage | undefined>(undefined);
 
   constructor(
     private readonly page: MR_FactoryMappingPage,
@@ -144,10 +145,11 @@ export class EncoderMapper {
    * {@link EncoderPage.onDeactivated()} callbacks.
    */
   onEncoderPageSubPageActivated(context: MR_ActiveDevice, encoderPage: EncoderPage) {
-    if (this.activeEncoderPage !== encoderPage) {
-      this.activeEncoderPage?.onDeactivated(context);
-      this.activeEncoderPage = encoderPage;
-      this.activeEncoderPage.onActivated(context);
+    const lastActiveEncoderPage = this.activeEncoderPage.get(context);
+    if (lastActiveEncoderPage !== encoderPage) {
+      lastActiveEncoderPage?.onDeactivated(context);
+      this.activeEncoderPage.set(context, encoderPage);
+      encoderPage.onActivated(context);
     }
   }
 }
