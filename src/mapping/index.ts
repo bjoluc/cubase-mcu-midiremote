@@ -66,8 +66,6 @@ export function makeHostMapping(
       return channel;
     });
 
-  bindEncoders(page, devices, mixerBankChannels, segmentDisplayManager, globalState);
-
   for (const device of devices) {
     if (device instanceof MainDevice) {
       const controlSectionElements = device.controlSectionElements;
@@ -96,6 +94,8 @@ export function makeHostMapping(
       bindFootControl(page, controlSectionElements);
     }
   }
+
+  bindEncoders(page, devices, mixerBankChannels, segmentDisplayManager, globalState);
 
   lifecycleCallbacks.addActivationCallback((context) => {
     globalState.areMotorsActive.set(context, true);

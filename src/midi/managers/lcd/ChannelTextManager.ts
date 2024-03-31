@@ -117,6 +117,7 @@ export class ChannelTextManager {
   private uniqueManagerId = ChannelTextManager.nextManagerId++;
 
   private parameterName = new ContextVariable("");
+  private parameterNameOverride = new ContextVariable<string | undefined>(undefined);
   private parameterValue = new ContextVariable("");
   private channelName = new ContextVariable("");
   private isLocalValueModeActive = new ContextVariable(false);
@@ -175,7 +176,7 @@ export class ChannelTextManager {
       this.isLocalValueModeActive.get(context) ||
         this.globalState.isValueDisplayModeActive.get(context)
         ? this.parameterValue.get(context)
-        : this.parameterName.get(context),
+        : this.parameterNameOverride.get(context) ?? this.parameterName.get(context),
     );
   }
 
@@ -213,6 +214,21 @@ export class ChannelTextManager {
     );
 
     this.updateNameValueDisplay(context);
+  }
+
+  /**
+   * Sets a parameter name string that replaces the one set via `setParameterName()` until
+   * `clearParameterNameOverride()` is invoked.
+   */
+  setParameterNameOverride(context: MR_ActiveDevice, name: string) {
+    this.parameterNameOverride.set(
+      context,
+      ChannelTextManager.centerString(ChannelTextManager.abbreviateString(name)),
+    );
+  }
+
+  clearParameterNameOverride(context: MR_ActiveDevice) {
+    this.parameterNameOverride.set(context, undefined);
   }
 
   setParameterValue(context: MR_ActiveDevice, value: string) {
