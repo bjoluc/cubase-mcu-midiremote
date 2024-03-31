@@ -4,11 +4,18 @@ import { LedButton } from "/decorators/surface-elements/LedButton";
 import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ChannelSurfaceElements, ControlSectionButtons } from "/device-configs";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
+import { ChannelTextManager } from "/midi/managers/lcd/ChannelTextManager";
 import { GlobalState } from "/state";
 import { ContextVariable } from "/util";
 
 export interface EncoderAssignmentConfig {
   encoderValue?: MR_HostValue;
+
+  /**
+   * A custom string to display as the encoder's title instead of the one provided by Cubase
+   */
+  encoderValueName?: string;
+
   displayMode: EncoderDisplayMode;
   pushToggleValue?: MR_HostValue;
 
@@ -67,6 +74,7 @@ export class EncoderPage implements EncoderPageConfig {
     private readonly deviceButtons: ControlSectionButtons[],
     private readonly channelElements: ChannelSurfaceElements[],
     private readonly mixerBankChannels: MR_MixerBankChannel[],
+    private readonly channelTextManagers: ChannelTextManager[],
     private readonly segmentDisplayManager: SegmentDisplayManager,
     private readonly globalState: GlobalState,
   ) {
@@ -259,10 +267,16 @@ export class EncoderPage implements EncoderPageConfig {
     this.setActivatorButtonLeds(context, 1);
 
     for (const [encoderIndex, { encoder }] of this.channelElements.entries()) {
-      encoder.displayMode.set(
-        context,
-        this.assignments[encoderIndex]?.displayMode ?? EncoderDisplayMode.SingleDot,
-      );
+      const assignment = this.assignments[encoderIndex] as EncoderAssignmentConfig | undefined;
+      encoder.displayMode.set(context, assignment?.displayMode ?? EncoderDisplayMode.SingleDot);
+      if (assignment?.encoderValueName) {
+        this.channelTextManagers[encoderIndex].setParameterNameOverride(
+          context,
+          assignment.encoderValueName,
+        );
+      } else {
+        this.channelTextManagers[encoderIndex].clearParameterNameOverride(context);
+      }
     }
 
     this.globalState.isValueDisplayModeActive.set(context, false);

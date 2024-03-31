@@ -7,7 +7,7 @@ import { DeviceConfig } from ".";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
-import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
+import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
 import { createElements } from "/util";
 
@@ -161,5 +161,41 @@ export const deviceConfig: DeviceConfig = {
         footSwitch1: surface.makeButton(x + 11.375, 0.5, 1.5, 1.5).setShapeCircle(),
       },
     };
+  },
+
+  configureEncoderAssignments(defaultEncoderMapping, page) {
+    return [
+      // Pan, Monitor, Gain, LC, HC (F1)
+      {
+        activatorButtonSelector: (device) => device.controlSectionElements.buttons.function[0],
+        pages: [
+          ...[...defaultEncoderMapping[0].pages, ...defaultEncoderMapping[1].pages].filter((page) =>
+            ["Pan", "Monitor", "Input Gain", "Low Cut", "High Cut"].includes(page.name),
+          ),
+        ],
+      },
+
+      // Sends 1-3 (F2)
+      {
+        activatorButtonSelector: (device) => device.controlSectionElements.buttons.function[1],
+        pages: createElements(3, (slotId) => {
+          return {
+            name: `Send Slot`,
+            assignments: (channel) => {
+              const sendSlot = channel.mSends.getByIndex(slotId);
+
+              return {
+                encoderValue: sendSlot.mLevel,
+                encoderValueName: `Send ${slotId + 1}`,
+                displayMode: EncoderDisplayMode.SingleDot,
+                encoderValueDefault: 0.7890865802764893,
+                pushToggleValue: sendSlot.mOn,
+              };
+            },
+            areAssignmentsChannelRelated: true,
+          };
+        }),
+      },
+    ];
   },
 };
