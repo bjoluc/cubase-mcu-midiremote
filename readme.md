@@ -20,6 +20,7 @@ The following devices are explicitly supported:
   - X-Touch One
 - iCON QCon Pro G2 / QCon EX G2
 - Mackie Control Universal (Pro) / XT (Pro)
+- SSL UF1
 
 Other MCU-compatible devices may work with any of these scripts, but their device surface is not explicitly displayed in Cubase.
 Feel free to open a discussion on GitHub if you would like your MCU-like device to be supported.
@@ -175,6 +176,14 @@ Current limitations of the MIDI Remote API:
 - The X-Touch One does not have encoder assign buttons. To make up for this, the F1 and F2 buttons are mapped to cycle through the following encoder assignments:
   - F1: Pan, Monitor, Pre Gain, Low-Cut Frequency / Enabled, High-Cut Frequency / Enabled
   - F2: Send levels/active 1-3
+
+</details>
+
+<details>
+<summary>SSL UF1</summary>
+
+- The UF1 script does not provide a `devices` config option.
+- The first encoder page of the "STRIP" encoder assignment ("Instrument" in the encoder assignment table above) maps the V-Pots to the Focus Quick Controls instead of the selected track's instrument. It is enabled by default to assign a consistent and useful function to the four V-Pots out of the box.
 
 </details>
 
