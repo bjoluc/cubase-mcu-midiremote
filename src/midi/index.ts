@@ -116,7 +116,7 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
     }
 
     // Scribble Strip
-    const channelTextManager = device.lcdManager.getChannelTextManager(channelIndex);
+    const channelTextManager = device.lcdManager.channelTextManagers[channelIndex];
 
     channel.encoder.mOnEncoderValueTitleChange.addCallback((context, _title1, title2) => {
       channelTextManager.setParameterName(context, title2);

@@ -16,14 +16,14 @@ export class LcdManager {
     return Array(length + 1).join(" ");
   }
 
-  private channels: ChannelTextManager[];
+  channelTextManagers: ChannelTextManager[];
 
   constructor(
     private device: Device,
     globalState: GlobalState,
     timerUtils: TimerUtils,
   ) {
-    this.channels = createElements(
+    this.channelTextManagers = createElements(
       8,
       (channelIndex) =>
         new ChannelTextManager(
@@ -49,10 +49,6 @@ export class LcdManager {
       text += " ";
     }
     this.sendText(context, row * 56 + (channelIndex % 8) * 7, text);
-  }
-
-  getChannelTextManager(channelIndex: number) {
-    return this.channels[channelIndex];
   }
 
   clearDisplays(context: MR_ActiveDevice) {

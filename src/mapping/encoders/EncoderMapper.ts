@@ -3,6 +3,7 @@ import { LedButton } from "/decorators/surface-elements/LedButton";
 import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "/device-configs";
 import { Device, MainDevice } from "/devices";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
+import { ChannelTextManager } from "/midi/managers/lcd/ChannelTextManager";
 import { GlobalState } from "/state";
 import { ContextVariable } from "/util";
 
@@ -29,6 +30,7 @@ export type EncoderMappingConfig = Array<{
 
 export class EncoderMapper {
   private readonly channelElements: ChannelSurfaceElements[];
+  private readonly channelTextManagers: ChannelTextManager[];
 
   /** An array containing the control buttons of each main device */
   private readonly deviceButtons: ControlSectionSurfaceElements["buttons"][];
@@ -47,6 +49,7 @@ export class EncoderMapper {
     private readonly globalState: GlobalState,
   ) {
     this.channelElements = devices.flatMap((device) => device.channelElements);
+    this.channelTextManagers = devices.flatMap((device) => device.lcdManager.channelTextManagers);
     this.mainDevices = devices.filter((device) => device instanceof MainDevice) as MainDevice[];
     this.deviceButtons = this.mainDevices.map(
       (device) => (device as MainDevice).controlSectionElements.buttons,
@@ -96,6 +99,7 @@ export class EncoderMapper {
         this.deviceButtons,
         this.channelElements,
         this.mixerBankChannels,
+        this.channelTextManagers,
         this.segmentDisplayManager,
         this.globalState,
       );

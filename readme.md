@@ -173,7 +173,9 @@ Current limitations of the MIDI Remote API:
 <summary>X-Touch One</summary>
 
 - The X-Touch One script does not provide a `devices` config option. If you want to use an X-Touch One with an extender, please use the X-Touch One script and the X-Touch script separately.
-- Since the X-Touch One does not have encoder assign buttons, the push encoder always controls the selected channel's panorama (unless overridden by user mappings).
+- The X-Touch One does not have encoder assign buttons. To make up for this, the F1 and F2 buttons are mapped to cycle through the following encoder assignments:
+  - F1: Pan, Monitor, Pre Gain, Low-Cut Frequency / Enabled, High-Cut Frequency / Enabled
+  - F2: Send levels/active 1-3
 
 </details>
 
