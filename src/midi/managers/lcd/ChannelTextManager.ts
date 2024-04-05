@@ -193,7 +193,12 @@ export class ChannelTextManager {
       return;
     }
 
-    this.sendText(context, row, this.channelName.get(context));
+    const channelName = this.channelName.get(context);
+    this.sendText(context, row, channelName);
+
+    if (deviceConfig.hasSecondaryScribbleStrips) {
+      this.sendText(context, 2, channelName);
+    }
   }
 
   setParameterName(context: MR_ActiveDevice, name: string) {

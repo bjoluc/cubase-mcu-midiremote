@@ -1,4 +1,4 @@
-import { Except } from "type-fest";
+import { Class, Except } from "type-fest";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
@@ -7,6 +7,7 @@ import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSens
 import { Device } from "/devices";
 import { EncoderMappingConfig } from "/mapping/encoders/EncoderMapper";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
+import { ColorManager } from "/midi/managers/colors/ColorManager";
 import { GlobalState } from "/state";
 import { LifecycleCallbacks } from "/util";
 
@@ -165,15 +166,34 @@ export type ControlSectionSurfaceElementsDefaultsFactory =
   DefaultElementsFactory<PartialControlSectionSurfaceElements>;
 
 export interface DeviceConfig {
-  channelColorSupport?: "behringer";
+  colorManager?: Class<ColorManager>;
+
+  /**
+   * If the maximum meter value (sent on clip) should derive from the default (0xe), specify it here.
+   */
+  maximumMeterValue?: number;
 
   /**
    * Whether the device has per-channel scribble strip displays, i.e. no display padding characters
    * are needed between channels.
    *
-   * @default {false}
+   * @default false
    */
   hasIndividualScribbleStrips?: boolean;
+
+  /**
+   * Whether the device has additional secondary scribble strip displays.
+   *
+   * @default false
+   */
+  hasSecondaryScribbleStrips?: boolean;
+
+  /**
+   * Whether the device has a stereo VU meter for the main channel.
+   *
+   * @default false
+   */
+  hasMainMeters?: boolean;
 
   detectionUnits: Array<{
     /**

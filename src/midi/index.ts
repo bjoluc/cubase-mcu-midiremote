@@ -1,4 +1,4 @@
-import { RgbColor } from "./managers/ColorManager";
+import { RgbColor } from "./managers/colors/ColorManager";
 import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 import { config, deviceConfig } from "/config";
@@ -74,8 +74,8 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
     // Push Encoder
     channel.encoder.bindToMidi(ports, channelIndex);
 
-    // Display colors – only supported by the X-Touch
-    if (deviceConfig.channelColorSupport === "behringer") {
+    // Display colors
+    if (deviceConfig.colorManager) {
       const encoderColor = new ContextVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
       channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
         encoderColor.set(context, { isAssigned, r, g, b });
@@ -149,7 +149,9 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
 
         // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
         const meterLevel = Math.ceil(
-          (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) * 0xe - 0.25,
+          (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) *
+            (deviceConfig.maximumMeterValue ?? 0xe) -
+            0.25,
         );
 
         sendMeterLevel(context, ports.output, channelIndex, meterLevel);
