@@ -1,4 +1,4 @@
-import { Class, Except } from "type-fest";
+import { Class, Except, SetRequired } from "type-fest";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
@@ -143,27 +143,43 @@ export interface PartialControlSectionButtons {
 
 export type ControlSectionButtons = RequireAllElements<PartialControlSectionButtons>;
 
+interface PartialDisplayLeds {
+  smpte?: Lamp;
+  beats?: Lamp;
+  solo?: Lamp;
+}
+
+type DispalyLeds = RequireAllElements<PartialDisplayLeds>;
+
 export interface PartialControlSectionSurfaceElements {
   mainFader: TouchSensitiveMotorFader;
+  mainVuMeters?: {
+    left: MR_SurfaceCustomValueVariable;
+    right: MR_SurfaceCustomValueVariable;
+  };
+
   jogWheel: JogWheel;
   buttons?: PartialControlSectionButtons;
 
-  displayLeds?: {
-    smpte?: Lamp;
-    beats?: Lamp;
-    solo?: Lamp;
-  };
+  displayLeds?: PartialDisplayLEDs;
 
   expressionPedal?: MR_Knob;
   footSwitch1?: MR_Button;
   footSwitch2?: MR_Button;
 }
 
-export type ControlSectionSurfaceElements =
-  RequireAllElements<PartialControlSectionSurfaceElements>;
+export interface ControlSectionSurfaceElements
+  extends SetRequired<
+    PartialControlSectionSurfaceElements,
+    "expressionPedal" | "footSwitch1" | "footSwitch2"
+  > {
+  buttons: RequireAllElements<PartialControlSectionButtons>;
+  displayLeds: RequireAllElements<PartialDisplayLeds>;
+}
 
-export type ControlSectionSurfaceElementsDefaultsFactory =
-  DefaultElementsFactory<PartialControlSectionSurfaceElements>;
+export type ControlSectionSurfaceElementsDefaultsFactory = DefaultElementsFactory<
+  Except<PartialControlSectionSurfaceElements, "mainVuMeters">
+>;
 
 export interface DeviceConfig {
   colorManager?: Class<ColorManager>;
@@ -187,13 +203,6 @@ export interface DeviceConfig {
    * @default false
    */
   hasSecondaryScribbleStrips?: boolean;
-
-  /**
-   * Whether the device has a stereo VU meter for the main channel.
-   *
-   * @default false
-   */
-  hasMainMeters?: boolean;
 
   detectionUnits: Array<{
     /**

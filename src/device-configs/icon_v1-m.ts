@@ -5,7 +5,6 @@
 
 import { ChannelSurfaceElements, DeviceConfig } from ".";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
-import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
@@ -78,7 +77,6 @@ export const deviceConfig: DeviceConfig = {
   maximumMeterValue: 0xc,
   hasIndividualScribbleStrips: true,
   hasSecondaryScribbleStrips: true,
-  hasMainMeters: true,
 
   detectionUnits: [
     {
@@ -170,6 +168,10 @@ export const deviceConfig: DeviceConfig = {
       channelElements,
       controlSectionElements: {
         mainFader: new TouchSensitiveMotorFader(surface, x + 1, 24.5, 1.5, 11),
+        mainVuMeters: {
+          left: surface.makeCustomValueVariable("Main VU Meter L"),
+          right: surface.makeCustomValueVariable("Main VU Meter R"),
+        },
 
         jogWheel: new JogWheel(surface, x + 6.675, 29, 7, 7),
 

@@ -2,6 +2,7 @@ import { RgbColor } from "./managers/colors/ColorManager";
 import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 import { config, deviceConfig } from "/config";
+import { MidiOutputPort } from "/decorators/MidiOutputPort";
 import { Device, MainDevice } from "/devices";
 import { GlobalState } from "/state";
 import { ContextVariable, LifecycleCallbacks } from "/util";
@@ -65,6 +66,31 @@ function bindLifecycleEvents(device: Device, lifecycleCallbacks: LifecycleCallba
       output.sendMidi(context, [0xb0, 0x30 + encoderIndex, 0]);
     }
   });
+}
+
+function bindVuMeter(
+  vuMeter: MR_SurfaceCustomValueVariable,
+  outputPort: MidiOutputPort,
+  meterId: number,
+  midiChannel = 0,
+) {
+  let lastMeterUpdateTime = 0;
+  vuMeter.mOnProcessValueChange = (context, newValue) => {
+    const now: number = performance.now(); // ms
+
+    if (now - lastMeterUpdateTime > 125) {
+      lastMeterUpdateTime = now;
+
+      // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
+      const meterLevel = Math.ceil(
+        (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) *
+          (deviceConfig.maximumMeterValue ?? 0xe) -
+          0.25,
+      );
+
+      sendMeterLevel(context, outputPort, meterId, meterLevel, midiChannel);
+    }
+  };
 }
 
 function bindChannelElements(device: Device, globalState: GlobalState) {
@@ -140,23 +166,7 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
     };
 
     // VU Meter
-    let lastMeterUpdateTime = 0;
-    channel.vuMeter.mOnProcessValueChange = (context, newValue) => {
-      const now: number = performance.now(); // ms
-
-      if (now - lastMeterUpdateTime > 125) {
-        lastMeterUpdateTime = now;
-
-        // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
-        const meterLevel = Math.ceil(
-          (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) *
-            (deviceConfig.maximumMeterValue ?? 0xe) -
-            0.25,
-        );
-
-        sendMeterLevel(context, ports.output, channelIndex, meterLevel);
-      }
-    };
+    bindVuMeter(channel.vuMeter, ports.output, channelIndex);
 
     globalState.areChannelMetersEnabled.addOnChangeCallback(
       (context, areMetersEnabled) => {
@@ -282,4 +292,10 @@ function bindControlSectionElements(device: MainDevice, globalState: GlobalState
     .setInputPort(ports.input)
     .bindToControlChange(0, 0x2e)
     .setTypeAbsolute();
+
+  // Main VU Meters
+  if (elements.mainVuMeters) {
+    bindVuMeter(elements.mainVuMeters.left, ports.output, 0, 1);
+    bindVuMeter(elements.mainVuMeters.right, ports.output, 1, 1);
+  }
 }
