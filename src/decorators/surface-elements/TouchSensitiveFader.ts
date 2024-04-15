@@ -1,11 +1,21 @@
 import { MidiPortPair } from "/midi/MidiPortPair";
 import { GlobalState } from "/state";
-import { ContextVariable } from "/util";
+import { CallbackCollection, ContextVariable } from "/util";
 
 class TouchSensitiveMotorFaderDecorator {
   // Workaround because `filterByValue` in the encoder bindings hides zero values from
   // `mOnProcessValueChange`
   private mTouchedShadowValue = this.surface.makeCustomValueVariable("faderTouchedShadow");
+
+  public onTouchedValueChangeCallbacks = new CallbackCollection(
+    this.mTouchedShadowValue,
+    "mOnProcessValueChange",
+  );
+
+  public onTitleChangeCallbacks = new CallbackCollection(
+    this.fader.mSurfaceValue,
+    "mOnTitleChange",
+  );
 
   constructor(
     private surface: MR_DeviceSurface,
@@ -33,11 +43,11 @@ class TouchSensitiveMotorFaderDecorator {
       ports.output.sendMidi(context, [0xe0 + channelIndex, value & 0x7f, value >> 7]);
     };
 
-    this.mTouchedShadowValue.mOnProcessValueChange = (context, isFaderTouched) => {
+    this.onTouchedValueChangeCallbacks.addCallback((context, isFaderTouched) => {
       if (!isFaderTouched) {
         sendValue(context, surfaceValue.getProcessValue(context));
       }
-    };
+    });
 
     areMotorsActive.addOnChangeCallback((context, areMotorsActive) => {
       if (areMotorsActive) {
@@ -70,14 +80,14 @@ class TouchSensitiveMotorFaderDecorator {
     surfaceValue.mOnProcessValueChange = onSurfaceValueChange;
 
     // Send fader down when unassigned
-    surfaceValue.mOnTitleChange = (context, _title1, title2) => {
+    this.onTitleChangeCallbacks.addCallback((context, _title1, title2) => {
       if (title2 === "") {
         surfaceValue.setProcessValue(context, 0);
         // `mOnProcessValueChange` isn't run on `setProcessValue()` when the fader is not assigned
         // to a mixer channel, so we manually trigger the update:
         onSurfaceValueChange(context, 0);
       }
-    };
+    });
   };
 }
 

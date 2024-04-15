@@ -160,6 +160,24 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
       }
     };
 
+    if (deviceConfig.hasSecondaryScribbleStrips && channel.scribbleStrip.meterPeakLevel) {
+      channel.scribbleStrip.meterPeakLevel.mOnDisplayValueChange = (context, value) => {
+        channelTextManager.setMeterPeakLevel(context, value);
+      };
+
+      channel.fader.mSurfaceValue.mOnDisplayValueChange = (context, value) => {
+        channelTextManager.setFaderParameterValue(context, value);
+      };
+
+      channel.fader.mSurfaceValue.mOnTitleChange = (context, _title, parameterName) => {
+        channelTextManager.setFaderParameterName(context, parameterName);
+      };
+
+      channel.fader.onTouchedValueChangeCallbacks.addCallback((context, isFaderTouched) => {
+        channelTextManager.setIsFaderTouched(context, Boolean(isFaderTouched));
+      });
+    }
+
     /** Clears the channel meter's overload indicator */
     const clearOverload = (context: MR_ActiveDevice) => {
       sendMeterLevel(context, ports.output, channelIndex, 0xf);

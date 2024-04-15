@@ -52,6 +52,12 @@ export interface ChannelSurfaceElements {
   encoder: LedPushEncoder;
   scribbleStrip: {
     trackTitle: MR_SurfaceCustomValueVariable;
+
+    /**
+     * An optional custom value variable to show meter peak levels on devices with secondary
+     * scribble strips
+     **/
+    meterPeakLevel?: MR_SurfaceCustomValueVariable;
   };
   vuMeter: MR_SurfaceCustomValueVariable;
   buttons: {
@@ -185,7 +191,8 @@ export interface DeviceConfig {
   colorManager?: Class<ColorManager>;
 
   /**
-   * If the maximum meter value (sent on clip) should derive from the default (0xe), specify it here.
+   * If the maximum meter value (sent on clip) should derive from the default (0xe), specify it
+   * here.
    */
   maximumMeterValue?: number;
 

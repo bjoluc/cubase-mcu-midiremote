@@ -57,9 +57,10 @@ function makeChannelElements(surface: MR_DeviceSurface, x: number): ChannelSurfa
       index,
       encoder,
       scribbleStrip: {
-        trackTitle: surface.makeCustomValueVariable("scribbleStripTrackTitle"),
+        trackTitle: surface.makeCustomValueVariable("Track Title"),
+        meterPeakLevel: surface.makeCustomValueVariable("Meter Peak Level"),
       },
-      vuMeter: surface.makeCustomValueVariable("vuMeter"),
+      vuMeter: surface.makeCustomValueVariable("VU Meter"),
       buttons: {
         record: recordButton,
         solo: soloButton,

@@ -24,15 +24,12 @@ export class ChannelTextManager {
    * Given a <= `ChannelTextManager.channelWidth` characters long string, returns a left-padded
    * version of it that appears centered on an `ChannelTextManager.channelWidth`-character display.
    */
-  private static centerString(input: string) {
-    if (input.length >= ChannelTextManager.channelWidth) {
+  private static centerString(input: string, width = ChannelTextManager.channelWidth) {
+    if (input.length >= width) {
       return input;
     }
 
-    return (
-      LcdManager.makeSpaces(Math.floor((ChannelTextManager.channelWidth - input.length) / 2)) +
-      input
-    );
+    return LcdManager.makeSpaces(Math.floor((width - input.length) / 2)) + input;
   }
 
   /**
@@ -119,8 +116,13 @@ export class ChannelTextManager {
   private parameterName = new ContextVariable("");
   private parameterNameOverride = new ContextVariable<string | undefined>(undefined);
   private parameterValue = new ContextVariable("");
-  private channelName = new ContextVariable("");
   private isLocalValueModeActive = new ContextVariable(false);
+
+  private channelName = new ContextVariable("");
+  private meterPeakLevel = new ContextVariable("");
+  private faderParameterValue = new ContextVariable("");
+  private faderParameterName = new ContextVariable("");
+  private isFaderTouched = new ContextVariable(false);
 
   constructor(
     private globalState: GlobalState,
@@ -193,12 +195,8 @@ export class ChannelTextManager {
       return;
     }
 
-    const channelName = this.channelName.get(context);
-    this.sendText(context, row, channelName);
-
-    if (deviceConfig.hasSecondaryScribbleStrips) {
-      this.sendText(context, 2, channelName);
-    }
+    this.sendText(context, row, this.channelName.get(context));
+    this.updateSecondaryTrackTitleDisplay(context);
   }
 
   setParameterName(context: MR_ActiveDevice, name: string) {
@@ -265,5 +263,76 @@ export class ChannelTextManager {
       ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(name)),
     );
     this.updateTrackTitleDisplay(context);
+  }
+
+  /**
+   * Updates the track title displayed on the first row of the channel's secondary display, if the
+   * device has secondary displays.
+   */
+  private updateSecondaryTrackTitleDisplay(context: MR_ActiveDevice) {
+    if (deviceConfig.hasSecondaryScribbleStrips) {
+      this.sendText(
+        context,
+        2,
+        ChannelTextManager.centerString(
+          this.isFaderTouched.get(context)
+            ? this.faderParameterName.get(context)
+            : this.channelName.get(context),
+        ),
+      );
+    }
+  }
+
+  /**
+   * Updates the string displayed on the second row of the channel's secondary display, if the
+   * device has secondary displays.
+   */
+  private updateSupplementaryInfo(context: MR_ActiveDevice) {
+    if (deviceConfig.hasSecondaryScribbleStrips) {
+      this.sendText(
+        context,
+        3,
+        ChannelTextManager.centerString(
+          ChannelTextManager.abbreviateString(
+            this.isFaderTouched.get(context)
+              ? this.faderParameterValue.get(context)
+              : this.meterPeakLevel.get(context),
+          ),
+        ),
+      );
+    }
+  }
+
+  setMeterPeakLevel(context: MR_ActiveDevice, level: string) {
+    this.meterPeakLevel.set(context, level);
+    if (!this.isFaderTouched.get(context)) {
+      this.updateSupplementaryInfo(context);
+    }
+  }
+
+  setFaderParameterValue(context: MR_ActiveDevice, value: string) {
+    this.faderParameterValue.set(context, ChannelTextManager.stripNonAsciiCharacters(value));
+    if (this.isFaderTouched.get(context)) {
+      this.updateSupplementaryInfo(context);
+    }
+  }
+
+  setFaderParameterName(context: MR_ActiveDevice, name: string) {
+    this.faderParameterName.set(
+      context,
+      ChannelTextManager.abbreviateString(
+        ChannelTextManager.stripNonAsciiCharacters(ChannelTextManager.translateParameterName(name)),
+      ),
+    );
+
+    if (this.isFaderTouched.get(context)) {
+      this.updateSecondaryTrackTitleDisplay(context);
+    }
+  }
+
+  setIsFaderTouched(context: MR_ActiveDevice, isFaderTouched: boolean) {
+    this.isFaderTouched.set(context, isFaderTouched);
+    this.updateSecondaryTrackTitleDisplay(context);
+    this.updateSupplementaryInfo(context);
   }
 }

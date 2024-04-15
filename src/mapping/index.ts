@@ -61,6 +61,14 @@ export function makeHostMapping(
 
         // Fader
         page.makeValueBinding(channelElements.fader.mSurfaceValue, channel.mValue.mVolume);
+
+        // Peak level display
+        if (channelElements.scribbleStrip.meterPeakLevel) {
+          page.makeValueBinding(
+            channelElements.scribbleStrip.meterPeakLevel,
+            channel.mValue.mVUMeterPeak,
+          );
+        }
       }
 
       return channel;
