@@ -183,9 +183,31 @@ export const deviceConfig: DeviceConfig = {
           },
           flip: lowerButtonMatrix[0][4],
 
+          display: buttonMatrix[0][0][4],
+          timeMode: buttonMatrix[0][0][5],
+          scrub: buttonMatrix[0][1][4],
+          edit: buttonMatrix[0][0][2],
+
+          modify: {
+            undo: buttonMatrix[0][2][0],
+            redo: buttonMatrix[0][2][1],
+            save: buttonMatrix[0][3][0],
+            revert: buttonMatrix[0][3][1],
+          },
+
           automation: {
             read: lowerButtonMatrix[1][1],
             write: lowerButtonMatrix[1][3],
+            motor: buttonMatrix[0][1][5],
+            mixer: buttonMatrix[0][0][0],
+            project: buttonMatrix[0][0][1],
+          },
+
+          utility: {
+            instrument: buttonMatrix[0][1][0],
+            main: buttonMatrix[0][1][1],
+            soloDefeat: buttonMatrix[0][2][2],
+            shift: buttonMatrix[0][3][5],
           },
 
           transport: {
@@ -195,6 +217,15 @@ export const deviceConfig: DeviceConfig = {
             stop: transportButtons[3],
             play: transportButtons[4],
             record: transportButtons[5],
+
+            punch: buttonMatrix[0][1][3],
+            markers: {
+              previous: buttonMatrix[0][2][3],
+              add: buttonMatrix[0][2][4],
+              next: buttonMatrix[0][2][5],
+            },
+            left: buttonMatrix[0][3][3],
+            right: buttonMatrix[0][3][4],
           },
         },
 
