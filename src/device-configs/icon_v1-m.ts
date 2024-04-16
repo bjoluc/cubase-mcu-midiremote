@@ -3,11 +3,12 @@
  * @device V1-M
  */
 
-import { ChannelSurfaceElements, DeviceConfig } from ".";
+import { ChannelSurfaceElements, DeviceConfig, MainDeviceSurface } from ".";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
+import { MainDevice } from "/devices";
 import { IconColorManager } from "/midi/managers/colors/IconColorManager";
 import { createElements } from "/util";
 
@@ -16,9 +17,16 @@ const channelElementsWidth = 8 * channelWidth;
 const surfaceHeight = 38;
 const deviceFramePaddingWidth = 0.8;
 
+/**
+ * Additional surface elements for main devices
+ */
+interface MainDeviceCustomElements {
+  buttonMatrix: LedButton[][][];
+}
+
 function makeChannelElements(surface: MR_DeviceSurface, x: number): ChannelSurfaceElements[] {
   // Secondary scribble strip frame
-  surface.makeBlindPanel(x + deviceFramePaddingWidth, 20 - 0.25, channelElementsWidth, 2.5);
+  // surface.makeBlindPanel(x + deviceFramePaddingWidth, 20 - 0.25, channelElementsWidth, 2.5);
 
   return createElements(8, (index) => {
     const currentChannelXPosition = x + deviceFramePaddingWidth + index * channelWidth;
@@ -104,7 +112,7 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  createMainSurface(surface, x) {
+  createMainSurface(surface, x): MainDeviceSurface<MainDeviceCustomElements> {
     const surfaceWidth = channelElementsWidth + 19;
 
     // Device frame
@@ -129,7 +137,7 @@ export const deviceConfig: DeviceConfig = {
 
     // Button matrix
     const buttonMatrixControlLayerZone = surface.makeControlLayerZone("Touch Buttons");
-    const buttonMatrix = createElements(5, (layerIndex) => {
+    const buttonMatrix = createElements(3, (layerIndex) => {
       const controlLayer = buttonMatrixControlLayerZone.makeControlLayer(
         "Layer " + (layerIndex < 3 ? layerIndex + 1 : "U" + (layerIndex - 3)),
       );
@@ -232,6 +240,54 @@ export const deviceConfig: DeviceConfig = {
         // footSwitch1: surface.makeButton(x + 22.1, 3.5, 1.5, 1.5).setShapeCircle(),
         // footSwitch2: surface.makeButton(x + 22.1 + 2, 3.5, 1.5, 1.5).setShapeCircle(),
       },
+
+      customElements: {
+        buttonMatrix,
+      },
     };
+  },
+
+  enhanceMapping({ devices, page }) {
+    const mainDevices = devices.filter(
+      (device) => device instanceof MainDevice,
+    ) as MainDevice<MainDeviceCustomElements>[];
+
+    // Map remaining button matrix buttons for each main device
+    for (const device of mainDevices) {
+      const { ports } = device;
+      const buttonMatrix = device.customElements.buttonMatrix;
+
+      // MIDI Bindings
+      // Remaining buttons in Layer 1
+      buttonMatrix[0][0][3].bindToNote(ports, 3, 1);
+      buttonMatrix[0][1][2].bindToNote(ports, 8, 1);
+      buttonMatrix[0][3][2].bindToNote(ports, 20, 1);
+
+      // Layer 2 & 3
+      for (const [layerId, layer] of buttonMatrix.slice(1).entries()) {
+        for (const [rowId, row] of layer.entries()) {
+          for (const [columnId, button] of row.entries()) {
+            button.bindToNote(ports, (layerId + 1) * 24 + rowId * 6 + columnId, 1); // Channel 2
+          }
+        }
+      }
+
+      // Host mappings
+      // Edit instrument
+      page
+        .makeValueBinding(
+          buttonMatrix[0][0][3].mSurfaceValue,
+          page.mHostAccess.mTrackSelection.mMixerChannel.mValue.mInstrumentOpen,
+        )
+        .setTypeToggle();
+
+      // Click
+      page
+        .makeValueBinding(
+          buttonMatrix[0][3][2].mSurfaceValue,
+          page.mHostAccess.mTransport.mValue.mMetronomeActive,
+        )
+        .setTypeToggle();
+    }
   },
 };

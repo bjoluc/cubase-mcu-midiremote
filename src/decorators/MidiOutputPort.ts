@@ -16,8 +16,13 @@ class MidiOutputDecorator {
     ]);
   };
 
-  sendNoteOn = (context: MR_ActiveDevice, pitch: number, velocity: number | boolean) => {
-    this.port.sendMidi(context, [0x90, pitch, +Boolean(velocity) * 0x7f]);
+  sendNoteOn = (
+    context: MR_ActiveDevice,
+    pitch: number,
+    velocity: number | boolean,
+    channelNumber = 0,
+  ) => {
+    this.port.sendMidi(context, [0x90 + channelNumber, pitch, +Boolean(velocity) * 0x7f]);
   };
 }
 

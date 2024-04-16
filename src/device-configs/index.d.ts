@@ -43,8 +43,10 @@ export interface DeviceSurface {
   channelElements: ChannelSurfaceElements[];
 }
 
-export interface MainDeviceSurface extends DeviceSurface {
+export interface MainDeviceSurface<MainDeviceCustomElements extends Record<string, any> = {}>
+  extends DeviceSurface {
   controlSectionElements: PartialControlSectionSurfaceElements;
+  customElements?: MainDeviceCustomElements;
 }
 
 export interface ChannelSurfaceElements {

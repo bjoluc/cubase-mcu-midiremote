@@ -23,7 +23,18 @@ class LedButtonDecorator {
   private ledValue = new ContextVariable(0);
 
   private ports?: MidiPortPair;
+  private channelNumber?: number;
   private note?: number;
+
+  private sendNoteOn(context: MR_ActiveDevice, velocity: number | boolean) {
+    if (
+      this.ports &&
+      typeof this.channelNumber !== "undefined" &&
+      typeof this.note !== "undefined"
+    ) {
+      this.ports.output.sendNoteOn(context, this.note, velocity, this.channelNumber);
+    }
+  }
 
   constructor(
     private surface: MR_DeviceSurface,
@@ -35,28 +46,28 @@ class LedButtonDecorator {
 
   setLedValue = (context: MR_ActiveDevice, value: number) => {
     this.ledValue.set(context, value);
-    if (this.ports && typeof this.note !== "undefined") {
-      this.ports.output.sendNoteOn(context, this.note, value);
-    }
+    this.sendNoteOn(context, value);
   };
 
-  bindToNote = (ports: MidiPortPair, note: number) => {
+  bindToNote = (ports: MidiPortPair, note: number, channelNumber = 0) => {
     this.ports = ports;
+    this.channelNumber = channelNumber;
     this.note = note;
 
-    this.button.mSurfaceValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
+    this.button.mSurfaceValue.mMidiBinding
+      .setInputPort(ports.input)
+      .bindToNote(channelNumber, note);
     this.onSurfaceValueChange.addCallback((context, newValue) => {
-      ports.output.sendNoteOn(context, note, newValue || this.ledValue.get(context));
+      this.sendNoteOn(context, newValue || this.ledValue.get(context));
     });
 
     // Binding the button's mSurfaceValue to a host function may alter it to not change when the
     // button is pressed. Hence, `shadowValue` is used to make the button light up while it's
     // pressed.
-    this.shadowValue.mMidiBinding.setInputPort(ports.input).bindToNote(0, note);
+    this.shadowValue.mMidiBinding.setInputPort(ports.input).bindToNote(channelNumber, note);
     this.shadowValue.mOnProcessValueChange = (context, newValue) => {
-      ports.output.sendNoteOn(
+      this.sendNoteOn(
         context,
-        note,
         newValue ||
           this.button.mSurfaceValue.getProcessValue(context) ||
           this.ledValue.get(context),
@@ -67,7 +78,7 @@ class LedButtonDecorator {
       // Turn the button's LED off when it becomes unassigned
       this.button.mSurfaceValue.mOnTitleChange = (context, title) => {
         if (title === "") {
-          ports.output.sendNoteOn(context, note, 0);
+          this.sendNoteOn(context, 0);
         }
       };
     }
