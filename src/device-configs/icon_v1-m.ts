@@ -282,6 +282,9 @@ export const deviceConfig: DeviceConfig = {
         )
         .setTypeToggle();
 
+      // Reset meters
+      page.makeCommandBinding(buttonMatrix[0][1][2].mSurfaceValue, "Mixer", "Meters: Reset");
+
       // Click
       page
         .makeValueBinding(
