@@ -240,15 +240,15 @@ export interface DeviceConfig {
   createExtenderSurface?(surface: MR_DeviceSurface, x: number): DeviceSurface;
 
   /**
-   * This optional function receives the default {@link EncoderMappingConfig} and returns an
-   * `EncoderMappingConfig` that will be applied instead of the default.
+   * This optional function receives the default list of {@link EncoderMappingConfig}s and returns
+   * a list of `EncoderMappingConfig`s that will be applied instead of the default.
    *
-   * The default config is defined in {@link file://./../mapping/encoders/index.ts}
+   * The default mappings are defined in {@link file://./../mapping/encoders/index.ts}
    */
-  configureEncoderAssignments?(
-    defaultEncoderMapping: EncoderMappingConfig,
+  configureEncoderMapping?(
+    defaultEncoderMappings: EncoderMappingConfig[],
     page: MR_FactoryMappingPage,
-  ): EncoderMappingConfig;
+  ): EncoderMappingConfig[];
 
   enhanceMapping?(mappingDependencies: {
     driver: MR_DeviceDriver;

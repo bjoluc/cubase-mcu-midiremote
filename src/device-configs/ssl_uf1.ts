@@ -217,10 +217,10 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  configureEncoderAssignments(defaultEncoderMapping, page) {
+  configureEncoderMapping(defaultEncoderMappings, page) {
     const focusedQuickControls = page.mHostAccess.mFocusedQuickControls;
 
-    const instrumentEncoderMapping = defaultEncoderMapping.pop()!;
+    const instrumentEncoderMapping = defaultEncoderMappings.pop()!;
 
     // Replace the instrument encoder assignment with quick controls
     instrumentEncoderMapping.pages[0] = {
@@ -235,6 +235,6 @@ export const deviceConfig: DeviceConfig = {
     };
 
     // Make it the default encoder mapping by defining it first
-    return [instrumentEncoderMapping, ...defaultEncoderMapping];
+    return [instrumentEncoderMapping, ...defaultEncoderMappings];
   },
 };

@@ -8,11 +8,10 @@ import { GlobalState } from "/state";
 import { ContextVariable } from "/util";
 
 /**
- * The joint configuration for all "encoder assignments". Each encoder assignment maps a number of
- * encoder pages to a specified button. Each encoder page specifies host mappings ("assignments")
- * for an arbitrary number of encoders.
+ * The configuration object for an encoder mapping. An encoder mapping maps a number of encoder
+ * pages to a specified button.
  */
-export type EncoderMappingConfig = Array<{
+export interface EncoderMappingConfig {
   /**
    * A function that – given a `MainDevice` – returns the device's button that will be mapped to the
    * provided encoder pages.
@@ -26,7 +25,7 @@ export type EncoderMappingConfig = Array<{
    * each device's activator button. It can be used to add additional host mappings.
    */
   enhanceMapping?: (pages: EncoderPage[], activatorButtons: LedButton[]) => void;
-}>;
+}
 
 export class EncoderMapper {
   private readonly channelElements: ChannelSurfaceElements[];
@@ -129,8 +128,8 @@ export class EncoderMapper {
     return pages;
   }
 
-  applyEncoderMappingConfig(config: EncoderMappingConfig) {
-    for (const mappingConfig of config) {
+  applyEncoderMappingConfigs(configs: EncoderMappingConfig[]) {
+    for (const mappingConfig of configs) {
       const activatorButtons = this.mainDevices.map(mappingConfig.activatorButtonSelector);
       const encoderPages = this.bindEncoderPagesToAssignButton(
         activatorButtons,

@@ -9,6 +9,7 @@ import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
 import { MainDevice } from "/devices";
+import * as pageConfigs from "/mapping/encoders/page-configs";
 import { IconColorManager } from "/midi/managers/colors/IconColorManager";
 import { createElements } from "/util";
 
@@ -289,5 +290,59 @@ export const deviceConfig: DeviceConfig = {
         )
         .setTypeToggle();
     }
+  },
+
+  configureEncoderMapping(defaultEncoderMapping, page) {
+    const makeActivatorButtonSelector = (row: number, column: number) => (device: MainDevice) =>
+      (device as MainDevice<MainDeviceCustomElements>).customElements.buttonMatrix[1][row][column];
+
+    const hostAccess = page.mHostAccess;
+    return [
+      ...[
+        pageConfigs.pan,
+        pageConfigs.monitor,
+        pageConfigs.inputGain,
+        pageConfigs.inputPhase,
+        pageConfigs.lowCut,
+        pageConfigs.highCut,
+      ].map((pageConfig, buttonColumn) => ({
+        pages: [pageConfig],
+        activatorButtonSelector: makeActivatorButtonSelector(0, buttonColumn),
+      })),
+
+      {
+        pages: [pageConfigs.eq(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(1, 0),
+      },
+      {
+        pages: [pageConfigs.sends(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(1, 1),
+      },
+      pageConfigs.pluginMappingConfig(page, makeActivatorButtonSelector(1, 2)),
+      {
+        activatorButtonSelector: makeActivatorButtonSelector(1, 3),
+        pages: [pageConfigs.vstQuickControls(hostAccess)],
+      },
+      {
+        activatorButtonSelector: makeActivatorButtonSelector(1, 4),
+        pages: [pageConfigs.trackQuickControls(hostAccess)],
+      },
+      {
+        activatorButtonSelector: makeActivatorButtonSelector(1, 5),
+        pages: [pageConfigs.focusedQuickControls(hostAccess)],
+      },
+
+      // Strip effects
+      ...[
+        pageConfigs.stripEffectGate(hostAccess),
+        pageConfigs.stripEffectCompressor(hostAccess),
+        pageConfigs.stripEffectTools(hostAccess),
+        pageConfigs.stripEffectSaturator(hostAccess),
+        pageConfigs.stripEffectLimiter(hostAccess),
+      ].map((pageConfig, buttonColumn) => ({
+        pages: [pageConfig],
+        activatorButtonSelector: makeActivatorButtonSelector(2, buttonColumn),
+      })),
+    ];
   },
 };
