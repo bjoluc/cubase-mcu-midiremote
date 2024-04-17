@@ -47,8 +47,8 @@ export class LcdManager {
       this.device.ports.output.sendMidi(context, [
         0xf0,
         0x00,
-        0x00,
-        0x67,
+        0x02,
+        0x4e,
         0x15,
         0x13,
         startIndex,
