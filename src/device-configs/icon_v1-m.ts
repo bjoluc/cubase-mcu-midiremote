@@ -260,15 +260,19 @@ export const deviceConfig: DeviceConfig = {
 
       // MIDI Bindings
       // Remaining buttons in Layer 1
-      buttonMatrix[0][0][3].bindToNote(ports, 3, 1);
-      buttonMatrix[0][1][2].bindToNote(ports, 8, 1);
-      buttonMatrix[0][3][2].bindToNote(ports, 20, 1);
+      buttonMatrix[0][0][3].bindToNote(ports, 119, 0);
+      buttonMatrix[0][1][2].bindToNote(ports, 120, 0);
+      buttonMatrix[0][3][2].bindToNote(ports, 121, 0);
 
       // Layer 2 & 3
       for (const [layerId, layer] of buttonMatrix.slice(1).entries()) {
         for (const [rowId, row] of layer.entries()) {
           for (const [columnId, button] of row.entries()) {
-            button.bindToNote(ports, (layerId + 1) * 24 + rowId * 6 + columnId, 1); // Channel 2
+            if (layerId === 0 && rowId === 0) {
+              button.bindToNote(ports, 122 + columnId);
+            } else {
+              button.bindToNote(ports, (layerId + 1) * 24 + rowId * 6 + columnId, 1); // Channel 2
+            }
           }
         }
       }
