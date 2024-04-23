@@ -1,6 +1,7 @@
 // Polyfills
 // organize-imports-ignore
 import "core-js/actual/array/iterator";
+import "core-js/actual/array/at";
 import "core-js/actual/array/from";
 import "core-js/actual/array/includes";
 import "core-js/actual/array/reverse";
