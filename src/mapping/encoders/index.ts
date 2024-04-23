@@ -35,7 +35,7 @@ export function bindEncoders(
     .followPluginWindowInFocus();
   const mStripEffects = mMixerChannel.mInsertAndStripEffects.mStripEffects;
 
-  let encoderMappingConfig: EncoderMappingConfig = [
+  let encoderMappingConfigs: EncoderMappingConfig[] = [
     // Pan (Defining Pan first so it is activated by default)
     {
       activatorButtonSelector: (device) => selectAssignButtons(device).pan,
@@ -276,8 +276,8 @@ export function bindEncoders(
   ];
 
   if (deviceConfig.configureEncoderAssignments) {
-    encoderMappingConfig = deviceConfig.configureEncoderAssignments(encoderMappingConfig, page);
+    encoderMappingConfigs = deviceConfig.configureEncoderAssignments(encoderMappingConfigs, page);
   }
 
-  encoderMapper.applyEncoderMappingConfig(encoderMappingConfig);
+  encoderMapper.applyEncoderMappingConfigs(encoderMappingConfigs);
 }
