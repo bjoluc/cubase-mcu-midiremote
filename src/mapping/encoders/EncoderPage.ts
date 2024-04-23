@@ -1,8 +1,10 @@
 import type { EncoderMapper } from "./EncoderMapper";
+import { EncoderPageGroup } from "./EncoderPageGroup";
 import { config } from "/config";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ChannelSurfaceElements, ControlSectionButtons } from "/device-configs";
+import { MainDevice } from "/devices";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { ChannelTextManager } from "/midi/managers/lcd/ChannelTextManager";
 import { GlobalState } from "/state";
@@ -57,6 +59,22 @@ interface SubPages {
   flipShift: MR_SubPage;
 }
 
+export interface EncoderMappingDependencies {
+  page: MR_FactoryMappingPage;
+  encoderSubPageArea: MR_SubPageArea;
+
+  mainDevices: MainDevice[];
+
+  /** An array containing the control buttons of each main device */
+  deviceButtons: ControlSectionButtons[];
+
+  channelElements: ChannelSurfaceElements[];
+  mixerBankChannels: MR_MixerBankChannel[];
+  channelTextManagers: ChannelTextManager[];
+  segmentDisplayManager: SegmentDisplayManager;
+  globalState: GlobalState;
+}
+
 export class EncoderPage implements EncoderPageConfig {
   public readonly subPages: SubPages;
   public readonly name: string;
@@ -67,20 +85,12 @@ export class EncoderPage implements EncoderPageConfig {
   private lastSubPageActivationTime = 0;
 
   constructor(
-    private readonly encoderMapper: EncoderMapper,
+    private readonly encoderPageGroup: EncoderPageGroup,
+    private dependencies: EncoderMappingDependencies,
     pageConfig: EncoderPageConfig,
     public readonly activatorButtons: LedButton[],
     public readonly index: number,
     public readonly pagesCount: number,
-
-    private readonly page: MR_FactoryMappingPage,
-    private readonly subPageArea: MR_SubPageArea,
-    private readonly deviceButtons: ControlSectionButtons[],
-    private readonly channelElements: ChannelSurfaceElements[],
-    private readonly mixerBankChannels: MR_MixerBankChannel[],
-    private readonly channelTextManagers: ChannelTextManager[],
-    private readonly segmentDisplayManager: SegmentDisplayManager,
-    private readonly globalState: GlobalState,
   ) {
     this.name = pageConfig.name;
     this.areAssignmentsChannelRelated = pageConfig.areAssignmentsChannelRelated;
@@ -88,7 +98,9 @@ export class EncoderPage implements EncoderPageConfig {
     const assignmentsConfig = pageConfig.assignments;
     this.assignments =
       typeof assignmentsConfig === "function"
-        ? mixerBankChannels.map((channel, channelIndex) => assignmentsConfig(channel, channelIndex))
+        ? dependencies.mixerBankChannels.map((channel, channelIndex) =>
+            assignmentsConfig(channel, channelIndex),
+          )
         : assignmentsConfig;
 
     for (const assignment of this.assignments) {
@@ -102,13 +114,14 @@ export class EncoderPage implements EncoderPageConfig {
   }
 
   private createSubPages(): SubPages {
+    const subPageArea = this.dependencies.encoderSubPageArea;
     const subPageName = `${this.name} ${this.index + 1}`;
 
     const subPages: SubPages = {
-      default: this.subPageArea.makeSubPage(subPageName),
-      defaultShift: this.subPageArea.makeSubPage(`${subPageName} Shift`),
-      flip: this.subPageArea.makeSubPage(`${subPageName} Flip`),
-      flipShift: this.subPageArea.makeSubPage(`${subPageName} Flip Shift`),
+      default: subPageArea.makeSubPage(subPageName),
+      defaultShift: subPageArea.makeSubPage(`${subPageName} Shift`),
+      flip: subPageArea.makeSubPage(`${subPageName} Flip`),
+      flipShift: subPageArea.makeSubPage(`${subPageName} Flip Shift`),
     };
 
     subPages.default.mOnActivate = this.onSubPageActivated.bind(this, false, false);
@@ -126,7 +139,7 @@ export class EncoderPage implements EncoderPageConfig {
     enhancer?: (binding: MR_ValueBinding) => void,
   ): MR_ValueBinding[] {
     const bindings = subPages.map((subPage) =>
-      this.page.makeValueBinding(surfaceValue, hostValue).setSubPage(subPage),
+      this.dependencies.page.makeValueBinding(surfaceValue, hostValue).setSubPage(subPage),
     );
     if (enhancer) {
       bindings.map(enhancer);
@@ -135,19 +148,19 @@ export class EncoderPage implements EncoderPageConfig {
   }
 
   private bindSubPages() {
-    for (const { flip: flipButton } of this.deviceButtons) {
-      this.page
+    for (const { flip: flipButton } of this.dependencies.deviceButtons) {
+      this.dependencies.page
         .makeActionBinding(flipButton.mSurfaceValue, this.subPages.flip.mAction.mActivate)
         .setSubPage(this.subPages.default);
-      this.page
+      this.dependencies.page
         .makeActionBinding(flipButton.mSurfaceValue, this.subPages.default.mAction.mActivate)
         .setSubPage(this.subPages.flip);
     }
 
-    this.globalState.isShiftModeActive.addOnChangeCallback(
+    this.dependencies.globalState.isShiftModeActive.addOnChangeCallback(
       (context, isShiftModeActive, mapping) => {
         if (this.isActive.get(context)) {
-          const isFlipModeActive = this.globalState.isFlipModeActive.get(context);
+          const isFlipModeActive = this.dependencies.globalState.isFlipModeActive.get(context);
 
           const nextSubPage = [
             // Flip mode inactive
@@ -167,12 +180,16 @@ export class EncoderPage implements EncoderPageConfig {
       },
     );
 
-    for (const [channelIndex, { encoder, fader }] of this.channelElements.entries()) {
-      const mSelected = this.mixerBankChannels[channelIndex].mValue.mSelected;
+    for (const [channelIndex, { encoder, fader }] of this.dependencies.channelElements.entries()) {
+      const mSelected = this.dependencies.mixerBankChannels[channelIndex].mValue.mSelected;
 
       const {
-        encoderValue = this.page.mCustom.makeHostValueVariable("unassignedEncoderValue"),
-        pushToggleValue = this.page.mCustom.makeHostValueVariable("unassignedEncoderPushValue"),
+        encoderValue = this.dependencies.page.mCustom.makeHostValueVariable(
+          "unassignedEncoderValue",
+        ),
+        pushToggleValue = this.dependencies.page.mCustom.makeHostValueVariable(
+          "unassignedEncoderPushValue",
+        ),
         onPush: pushAction,
         encoderValueDefault,
         onShiftPush: shiftPushAction,
@@ -234,7 +251,7 @@ export class EncoderPage implements EncoderPageConfig {
       // Shift bindings
       this.makeMultiSubPageValueBinding(
         encoder.mPushValue,
-        this.page.mCustom.makeHostValueVariable("defaultShiftEncoderPushValue"),
+        this.dependencies.page.mCustom.makeHostValueVariable("defaultShiftEncoderPushValue"),
         [this.subPages.defaultShift, this.subPages.flipShift],
         (binding) => {
           if (shiftPushAction || typeof encoderValueDefault !== "undefined") {
@@ -254,62 +271,53 @@ export class EncoderPage implements EncoderPageConfig {
     }
   }
 
-  private setActivatorButtonLeds(context: MR_ActiveDevice, value: number) {
-    for (const button of this.activatorButtons) {
-      button.setLedValue(context, value);
-    }
-  }
-
   public onActivated(context: MR_ActiveDevice) {
     this.isActive.set(context, true);
 
-    this.segmentDisplayManager.setAssignment(
+    this.dependencies.segmentDisplayManager.setAssignment(
       context,
       this.pagesCount === 1 ? "  " : `${this.index + 1}.${this.pagesCount}`,
     );
 
-    this.setActivatorButtonLeds(context, 1);
-
-    for (const [encoderIndex, { encoder }] of this.channelElements.entries()) {
+    for (const [encoderIndex, { encoder }] of this.dependencies.channelElements.entries()) {
       const assignment = this.assignments[encoderIndex] as EncoderAssignmentConfig | undefined;
       encoder.displayMode.set(context, assignment?.displayMode ?? EncoderDisplayMode.SingleDot);
       if (assignment?.encoderValueName) {
-        this.channelTextManagers[encoderIndex].setParameterNameOverride(
+        this.dependencies.channelTextManagers[encoderIndex].setParameterNameOverride(
           context,
           assignment.encoderValueName,
         );
       } else {
-        this.channelTextManagers[encoderIndex].clearParameterNameOverride(context);
+        this.dependencies.channelTextManagers[encoderIndex].clearParameterNameOverride(context);
       }
     }
 
-    this.globalState.isValueDisplayModeActive.set(context, false);
+    this.dependencies.globalState.isValueDisplayModeActive.set(context, false);
   }
 
   public onDeactivated(context: MR_ActiveDevice) {
     this.isActive.set(context, false);
-    this.setActivatorButtonLeds(context, 0);
   }
 
   private onSubPageActivated(flip: boolean, shift: boolean, context: MR_ActiveDevice) {
     this.lastSubPageActivationTime = performance.now();
 
-    this.encoderMapper.onEncoderPageSubPageActivated(context, this);
+    this.encoderPageGroup.onEncoderPageSubPageActivated(context, this);
 
-    if (this.globalState.isFlipModeActive.get(context) !== flip) {
-      this.globalState.isFlipModeActive.set(context, flip);
+    if (this.dependencies.globalState.isFlipModeActive.get(context) !== flip) {
+      this.dependencies.globalState.isFlipModeActive.set(context, flip);
     }
 
     if (shift) {
       // On shift sub pages, all encoder push values are bound to "undefined host values" and thus
       // keep whatever state they had in the previous binding, hence resetting them here to reliably
       // detect pushes via `mOnProcessValueChange`:
-      for (const { encoder } of this.channelElements) {
+      for (const { encoder } of this.dependencies.channelElements) {
         encoder.mPushValue.setProcessValue(context, 0);
       }
     } else {
       // If some encoder push values are bound to "undefined host values", reset them too:
-      for (const [channelIndex, { encoder }] of this.channelElements.entries()) {
+      for (const [channelIndex, { encoder }] of this.dependencies.channelElements.entries()) {
         if (
           channelIndex < this.assignments.length &&
           !this.assignments[channelIndex].pushToggleValue
