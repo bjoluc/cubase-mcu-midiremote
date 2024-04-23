@@ -169,9 +169,9 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
         channelTextManager.setFaderParameterValue(context, value);
       };
 
-      channel.fader.mSurfaceValue.mOnTitleChange = (context, _title, parameterName) => {
+      channel.fader.onTitleChangeCallbacks.addCallback((context, _title, parameterName) => {
         channelTextManager.setFaderParameterName(context, parameterName);
-      };
+      });
 
       channel.fader.onTouchedValueChangeCallbacks.addCallback((context, isFaderTouched) => {
         channelTextManager.setIsFaderTouched(context, Boolean(isFaderTouched));
