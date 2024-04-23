@@ -19,6 +19,7 @@ export class EncoderPageGroup {
       this.activatorButtons,
     );
     this.bindEncoderPagesToActivatorButtons(encoderPages);
+    this.bindEncoderPagesToChannelButtons(encoderPages);
 
     if (config.enhanceMapping) {
       config.enhanceMapping(encoderPages, this.activatorButtons);
@@ -66,8 +67,10 @@ export class EncoderPageGroup {
     });
   }
 
+  /**
+   * Maps the activator buttons to cycle through encoder pages in a round-robin fashion
+   */
   private bindEncoderPagesToActivatorButtons(encoderPages: EncoderPage[]) {
-    // Bind encoder assign buttons to cycle through sub pages in a round-robin fashion
     for (const activatorButton of this.activatorButtons) {
       const activatorButtonValue = activatorButton.mSurfaceValue;
       this.dependencies.page.makeActionBinding(
@@ -85,6 +88,52 @@ export class EncoderPageGroup {
           .setSubPage(previousSubPages.flip);
 
         previousSubPages = currentSubPages;
+      }
+    }
+  }
+
+  /**
+   * Maps the main devices' channel navigation buttons to navigate through encoder pages (if the
+   * group has multiple pages) when Shift is held.
+   */
+  private bindEncoderPagesToChannelButtons(encoderPages: EncoderPage[]) {
+    if (encoderPages.length > 1) {
+      for (const [index, encoderPage] of encoderPages.entries()) {
+        const nextEncoderPage = encoderPages.at(index + 1) ?? encoderPages[0];
+        const previousEncoderPage = encoderPages.at(index - 1)!;
+
+        for (const device of this.dependencies.mainDevices) {
+          const buttons = device.controlSectionElements.buttons.navigation.channel;
+
+          for (const subpage of [
+            encoderPage.subPages.defaultShift,
+            encoderPage.subPages.flipShift,
+          ]) {
+            this.dependencies.page
+              .makeActionBinding(
+                buttons.left.mSurfaceValue,
+                previousEncoderPage.subPages.defaultShift.mAction.mActivate,
+              )
+              .setSubPage(subpage);
+
+            this.dependencies.page
+              .makeActionBinding(
+                buttons.right.mSurfaceValue,
+                nextEncoderPage.subPages.defaultShift.mAction.mActivate,
+              )
+              .setSubPage(subpage);
+          }
+
+          // Light up channel navigation buttons in shift mode
+          this.dependencies.globalState.isShiftModeActive.addOnChangeCallback(
+            (context, isShiftModeActive) => {
+              if (EncoderPageGroup.activeInstance.get(context) === this) {
+                buttons.left.setLedValue(context, +isShiftModeActive);
+                buttons.right.setLedValue(context, +isShiftModeActive);
+              }
+            },
+          );
+        }
       }
     }
   }
