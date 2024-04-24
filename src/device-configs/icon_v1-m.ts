@@ -299,7 +299,7 @@ export const deviceConfig: DeviceConfig = {
     }
   },
 
-  configureEncoderMapping(defaultEncoderMapping, page) {
+  configureEncoderMappings(defaultEncoderMapping, page) {
     const makeActivatorButtonSelector = (row: number, column: number) => (device: MainDevice) =>
       (device as MainDevice<MainDeviceCustomElements>).customElements.buttonMatrix[1][row][column];
 
