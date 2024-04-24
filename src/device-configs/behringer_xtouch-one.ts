@@ -164,7 +164,7 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  configureEncoderMapping() {
+  configureEncoderMappings() {
     return [
       // Pan, Monitor, Gain, LC, HC (F1)
       {

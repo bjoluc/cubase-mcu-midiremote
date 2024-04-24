@@ -218,7 +218,7 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  configureEncoderMapping(defaultEncoderMappings, page) {
+  configureEncoderMappings(defaultEncoderMappings, page) {
     const instrumentEncoderMapping = defaultEncoderMappings.pop()!;
 
     // Replace the instrument encoder assignment with quick controls
