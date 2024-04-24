@@ -6,8 +6,9 @@
 import { DeviceConfig } from ".";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
-import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
+import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
+import { focusedQuickControls as makeFocusedQuickControlsEncoderPageConfig } from "/mapping/encoders/page-configs";
 import { createElements } from "/util";
 
 export const deviceConfig: DeviceConfig = {
@@ -217,24 +218,13 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  configureEncoderAssignments(defaultEncoderMapping, page) {
-    const focusedQuickControls = page.mHostAccess.mFocusedQuickControls;
-
-    const instrumentEncoderMapping = defaultEncoderMapping.pop()!;
+  configureEncoderMappings(defaultEncoderMappings, page) {
+    const instrumentEncoderMapping = defaultEncoderMappings.pop()!;
 
     // Replace the instrument encoder assignment with quick controls
-    instrumentEncoderMapping.pages[0] = {
-      name: "Quick Controls",
-      assignments: (_mixerChannel, channelIndex) => {
-        return {
-          encoderValue: focusedQuickControls.getByIndex(channelIndex),
-          displayMode: EncoderDisplayMode.SingleDot,
-        };
-      },
-      areAssignmentsChannelRelated: false,
-    };
+    instrumentEncoderMapping.pages[0] = makeFocusedQuickControlsEncoderPageConfig(page.mHostAccess);
 
     // Make it the default encoder mapping by defining it first
-    return [instrumentEncoderMapping, ...defaultEncoderMapping];
+    return [instrumentEncoderMapping, ...defaultEncoderMappings];
   },
 };

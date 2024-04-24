@@ -207,7 +207,7 @@ export interface DeviceConfig {
    *
    * The default config is defined in {@link file://./../mapping/encoders/index.ts}
    */
-  configureEncoderAssignments?(
+  configureEncoderMappings?(
     defaultEncoderMappings: EncoderMappingConfig[],
     page: MR_FactoryMappingPage,
   ): EncoderMappingConfig[];
