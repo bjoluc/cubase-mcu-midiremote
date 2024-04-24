@@ -309,3 +309,19 @@ export const focusedQuickControls = (hostAccess: MR_HostAccess): EncoderPageConf
   },
   areAssignmentsChannelRelated: false,
 });
+
+export const sendSlot = (slotId: number): EncoderPageConfig => ({
+  name: "Send Slot",
+  assignments: (channel) => {
+    const sendSlot = channel.mSends.getByIndex(slotId);
+
+    return {
+      encoderValue: sendSlot.mLevel,
+      encoderValueName: `Send ${slotId + 1}`,
+      displayMode: EncoderDisplayMode.Wrap,
+      encoderValueDefault: 0.7890865802764893,
+      pushToggleValue: sendSlot.mOn,
+    };
+  },
+  areAssignmentsChannelRelated: true,
+});

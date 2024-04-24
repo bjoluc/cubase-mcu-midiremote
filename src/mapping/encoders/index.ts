@@ -58,7 +58,7 @@ export function bindEncoders(
     },
 
     // Plug-In
-    pageConfigs.pluginMappingConfig(page, (device) => selectAssignButtons(device).send),
+    pageConfigs.pluginMappingConfig(page, (device) => selectAssignButtons(device).plugin),
 
     // Instrument
     {
