@@ -7,8 +7,9 @@ import { DeviceConfig } from ".";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
-import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
+import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
+import * as encoderPageConfigs from "/mapping/encoders/page-configs";
 import { createElements } from "/util";
 
 export const deviceConfig: DeviceConfig = {
@@ -163,38 +164,24 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  configureEncoderAssignments(defaultEncoderMapping, page) {
+  configureEncoderMapping() {
     return [
       // Pan, Monitor, Gain, LC, HC (F1)
       {
         activatorButtonSelector: (device) => device.controlSectionElements.buttons.function[0],
         pages: [
-          ...[...defaultEncoderMapping[0].pages, ...defaultEncoderMapping[1].pages].filter((page) =>
-            ["Pan", "Monitor", "Input Gain", "Low Cut", "High Cut"].includes(page.name),
-          ),
+          encoderPageConfigs.pan,
+          encoderPageConfigs.monitor,
+          encoderPageConfigs.inputGain,
+          encoderPageConfigs.lowCut,
+          encoderPageConfigs.highCut,
         ],
       },
 
       // Sends 1-3 (F2)
       {
         activatorButtonSelector: (device) => device.controlSectionElements.buttons.function[1],
-        pages: createElements(3, (slotId) => {
-          return {
-            name: `Send Slot`,
-            assignments: (channel) => {
-              const sendSlot = channel.mSends.getByIndex(slotId);
-
-              return {
-                encoderValue: sendSlot.mLevel,
-                encoderValueName: `Send ${slotId + 1}`,
-                displayMode: EncoderDisplayMode.SingleDot,
-                encoderValueDefault: 0.7890865802764893,
-                pushToggleValue: sendSlot.mOn,
-              };
-            },
-            areAssignmentsChannelRelated: true,
-          };
-        }),
+        pages: createElements(3, (slotId) => encoderPageConfigs.sendSlot(slotId)),
       },
     ];
   },
