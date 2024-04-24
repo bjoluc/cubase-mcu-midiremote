@@ -67,8 +67,8 @@ export function bindEncoders(
     },
   ];
 
-  if (deviceConfig.configureEncoderMapping) {
-    encoderMappingConfigs = deviceConfig.configureEncoderMapping(encoderMappingConfigs, page);
+  if (deviceConfig.configureEncoderMappings) {
+    encoderMappingConfigs = deviceConfig.configureEncoderMappings(encoderMappingConfigs, page);
   }
 
   encoderMapper.applyEncoderMappingConfigs(encoderMappingConfigs);
