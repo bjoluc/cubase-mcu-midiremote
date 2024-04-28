@@ -26,12 +26,11 @@ function setShiftableButtonsLedValues(
   }
 }
 
-function bindCursorValueControlButton(
-  page: MR_FactoryMappingPage,
-  button: LedButton,
-  encoder: LedPushEncoder,
-  jogWheel: JogWheel,
-) {
+export function bindCursorValueControl(page: MR_FactoryMappingPage, device: MainDevice) {
+  const button = device.controlSectionElements.buttons.automation.sends;
+  const encoder = device.channelElements[7].encoder;
+  const jogWheel = device.controlSectionElements.jogWheel;
+
   const subPageArea = page.makeSubPageArea("Cursor Value Control");
   const inactiveSubpage = subPageArea.makeSubPage("Cursor Value Control Inactive");
   const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
@@ -212,14 +211,6 @@ export function bindControlSection(
       host.mTrackSelection.mMixerChannel.mValue.mAutomationWrite,
     )
     .setTypeToggle();
-
-  // Sends (Control value under cursor)
-  bindCursorValueControlButton(
-    page,
-    buttons.automation.sends,
-    device.channelElements[7].encoder,
-    controlSectionElements.jogWheel,
-  );
 
   // Project
   page.makeCommandBinding(buttons.automation.project.mSurfaceValue, "Project", "Bring To Front");

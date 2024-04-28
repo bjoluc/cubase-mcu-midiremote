@@ -1,4 +1,4 @@
-import { bindControlSection, bindFootControl } from "./control";
+import { bindControlSection, bindCursorValueControl, bindFootControl } from "./control";
 import { bindEncoders } from "./encoders";
 import { config } from "/config";
 import { Device, MainDevice } from "/devices";
@@ -90,6 +90,14 @@ export function makeHostMapping(
   }
 
   bindEncoders(page, devices, mixerBankChannels, segmentDisplayManager, globalState);
+
+  // Sends button (control value under cursor) – this has to be bound after encoders, as it binds an
+  // encoder itself which would be masked by later encoder bindings otherwise.
+  for (const device of devices) {
+    if (device instanceof MainDevice) {
+      bindCursorValueControl(page, device);
+    }
+  }
 
   lifecycleCallbacks.addActivationCallback((context) => {
     globalState.areMotorsActive.set(context, true);
