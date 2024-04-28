@@ -54,6 +54,9 @@ export function bindCursorValueControl(page: MR_FactoryMappingPage, device: Main
   page
     .makeValueBinding(encoder.mEncoderValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
     .setSubPage(activeSubpage);
+  page
+    .makeValueBinding(encoder.mPushValue, page.mCustom.makeHostValueVariable("Undefined"))
+    .setSubPage(activeSubpage);
 
   const dummyHostVariable = page.mCustom.makeHostValueVariable("dummy");
   page.makeValueBinding(jogWheel.mSurfaceValue, dummyHostVariable).setSubPage(inactiveSubpage);
