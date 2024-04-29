@@ -238,8 +238,8 @@ export const deviceConfig: DeviceConfig = {
           },
         },
 
-        // footSwitch1: surface.makeButton(x + 22.1, 3.5, 1.5, 1.5).setShapeCircle(),
-        // footSwitch2: surface.makeButton(x + 22.1 + 2, 3.5, 1.5, 1.5).setShapeCircle(),
+        footSwitch1: surface.makeButton(x + 2.75 + 6 * 1.65, 1.25, 1.5, 1.5).setShapeCircle(),
+        footSwitch2: surface.makeButton(x + 2.75 + 7 * 1.65, 1.25, 1.5, 1.5).setShapeCircle(),
       },
 
       customElements: {
