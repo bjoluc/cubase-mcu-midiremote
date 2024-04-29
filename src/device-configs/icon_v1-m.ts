@@ -299,6 +299,11 @@ export const deviceConfig: DeviceConfig = {
     }
   },
 
+  getSupplementaryShiftButtons(device: MainDevice<MainDeviceCustomElements>) {
+    const buttonMatrix = device.customElements.buttonMatrix;
+    return [buttonMatrix[1][3][5], buttonMatrix[2][3][5]];
+  },
+
   configureEncoderMappings(defaultEncoderMapping, page) {
     const makeActivatorButtonSelector = (row: number, column: number) => (device: MainDevice) =>
       (device as MainDevice<MainDeviceCustomElements>).customElements.buttonMatrix[1][row][column];
