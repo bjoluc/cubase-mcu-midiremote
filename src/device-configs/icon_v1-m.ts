@@ -195,7 +195,7 @@ export const deviceConfig: DeviceConfig = {
           display: buttonMatrix[0][0][4],
           timeMode: buttonMatrix[0][0][5],
           scrub: buttonMatrix[0][1][4],
-          edit: buttonMatrix[0][0][2],
+          edit: buttonMatrix[0][0][0],
 
           modify: {
             undo: buttonMatrix[0][2][0],
@@ -208,8 +208,8 @@ export const deviceConfig: DeviceConfig = {
             read: lowerButtonMatrix[1][1],
             write: lowerButtonMatrix[1][3],
             motor: buttonMatrix[0][1][5],
-            mixer: buttonMatrix[0][0][0],
-            project: buttonMatrix[0][0][1],
+            mixer: buttonMatrix[0][0][2],
+            project: buttonMatrix[0][0][3],
           },
 
           utility: {
@@ -260,7 +260,7 @@ export const deviceConfig: DeviceConfig = {
 
       // MIDI Bindings
       // Remaining buttons in Layer 1
-      buttonMatrix[0][0][3].bindToNote(ports, 119, 0);
+      buttonMatrix[0][0][1].bindToNote(ports, 119, 0);
       buttonMatrix[0][1][2].bindToNote(ports, 120, 0);
       buttonMatrix[0][3][2].bindToNote(ports, 121, 0);
 
@@ -281,7 +281,7 @@ export const deviceConfig: DeviceConfig = {
       // Edit instrument
       page
         .makeValueBinding(
-          buttonMatrix[0][0][3].mSurfaceValue,
+          buttonMatrix[0][0][1].mSurfaceValue,
           page.mHostAccess.mTrackSelection.mMixerChannel.mValue.mInstrumentOpen,
         )
         .setTypeToggle();
