@@ -1,8 +1,9 @@
-import { config } from "/config";
+import { config, deviceConfig } from "/config";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
-import { ChannelSurfaceElements, ControlSectionSurfaceElements } from "/device-configs";
+import { ControlSectionSurfaceElements } from "/device-configs";
+import { MainDevice } from "/devices";
 import { GlobalState } from "/state";
 
 function setShiftableButtonsLedValues(
@@ -25,12 +26,11 @@ function setShiftableButtonsLedValues(
   }
 }
 
-function bindCursorValueControlButton(
-  page: MR_FactoryMappingPage,
-  button: LedButton,
-  encoder: LedPushEncoder,
-  jogWheel: JogWheel,
-) {
+export function bindCursorValueControl(page: MR_FactoryMappingPage, device: MainDevice) {
+  const button = device.controlSectionElements.buttons.automation.sends;
+  const encoder = device.channelElements[7].encoder;
+  const jogWheel = device.controlSectionElements.jogWheel;
+
   const subPageArea = page.makeSubPageArea("Cursor Value Control");
   const inactiveSubpage = subPageArea.makeSubPage("Cursor Value Control Inactive");
   const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
@@ -54,6 +54,9 @@ function bindCursorValueControlButton(
   page
     .makeValueBinding(encoder.mEncoderValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
     .setSubPage(activeSubpage);
+  page
+    .makeValueBinding(encoder.mPushValue, page.mCustom.makeHostValueVariable("Undefined"))
+    .setSubPage(activeSubpage);
 
   const dummyHostVariable = page.mCustom.makeHostValueVariable("dummy");
   page.makeValueBinding(jogWheel.mSurfaceValue, dummyHostVariable).setSubPage(inactiveSubpage);
@@ -64,12 +67,12 @@ function bindCursorValueControlButton(
 
 export function bindControlSection(
   page: MR_FactoryMappingPage,
-  controlSectionElements: ControlSectionSurfaceElements,
-  channelElements: ChannelSurfaceElements[],
+  device: MainDevice,
   mixerBankZone: MR_MixerBankZone,
   globalState: GlobalState,
 ) {
   const host = page.mHostAccess;
+  const controlSectionElements = device.controlSectionElements;
   const buttons = controlSectionElements.buttons;
 
   const buttonsSubPageArea = page.makeSubPageArea("Control Buttons");
@@ -212,14 +215,6 @@ export function bindControlSection(
     )
     .setTypeToggle();
 
-  // Sends (Control value under cursor)
-  bindCursorValueControlButton(
-    page,
-    buttons.automation.sends,
-    channelElements[7].encoder,
-    controlSectionElements.jogWheel,
-  );
-
   // Project
   page.makeCommandBinding(buttons.automation.project.mSurfaceValue, "Project", "Bring To Front");
 
@@ -260,14 +255,6 @@ export function bindControlSection(
   page
     .makeCommandBinding(buttons.utility.soloDefeat.mSurfaceValue, "Edit", "Unmute All")
     .setSubPage(shiftSubPage);
-
-  // Shift button
-  page.makeActionBinding(
-    buttons.utility.shift.mSurfaceValue,
-    shiftSubPage.mAction.mActivate,
-  ).mOnValueChange = (context, mapping, value) => {
-    globalState.isShiftModeActive.set(context, Boolean(value), mapping);
-  };
 
   // Transport buttons
   const mTransport = host.mTransport;
@@ -400,6 +387,22 @@ export function bindControlSection(
   page.makeCommandBinding(jogRight, "Zoom", "Zoom In").setSubPage(zoomSubPage);
 
   page.makeActionBinding(directions.center.mSurfaceValue, subPageArea.mAction.mNext);
+
+  // Shift button(s)
+  const shiftButtons = [buttons.utility.shift];
+  if (deviceConfig.getSupplementaryShiftButtons) {
+    shiftButtons.push(...deviceConfig.getSupplementaryShiftButtons(device));
+  }
+
+  for (const button of shiftButtons) {
+    page.makeActionBinding(button.mSurfaceValue, shiftSubPage.mAction.mActivate).mOnValueChange = (
+      context,
+      mapping,
+      value,
+    ) => {
+      globalState.isShiftModeActive.set(context, Boolean(value), mapping);
+    };
+  }
 }
 
 export function bindFootControl(

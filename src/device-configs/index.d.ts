@@ -4,7 +4,7 @@ import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
-import { Device } from "/devices";
+import { Device, MainDevice } from "/devices";
 import { EncoderMappingConfig } from "/mapping/encoders/EncoderMapper";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
@@ -200,6 +200,14 @@ export interface DeviceConfig {
    * position.
    */
   createExtenderSurface?(surface: MR_DeviceSurface, x: number): DeviceSurface;
+
+  /**
+   * In case a main device has no Shift button or more than one Shift button is required, this
+   * optional function can be used to configure supplementary Shift buttons. It is invoked with a
+   * `MainDevice` and returns a list of `LedButton`s of that device. Every button in that list will
+   * be mapped as an additional Shift button.
+   */
+  getSupplementaryShiftButtons?(device: MainDevice): LedButton[];
 
   /**
    * This optional function receives the default {@link EncoderMappingConfig} and returns an
