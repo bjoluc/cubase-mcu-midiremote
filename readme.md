@@ -17,17 +17,17 @@ The following devices are explicitly supported:
 
 - Behringer:
   - X-Touch / X-Touch Extender
-  - X-Touch One
+  - X-Touch One <sup>\*</sup>
 - iCON:
   - QCon Pro G2 / QCon EX G2
-  - V1-M / V1-X
+  - V1-M / V1-X <sup>\*</sup>
 - Mackie Control Universal (Pro) / XT (Pro)
-- SSL UF1
+- SSL UF1 <sup>\*</sup>
+
+<sup>\* See [Supplementary Remarks for Individual Scripts](#supplementary-remarks-for-individual-scripts)</sup>
 
 Other MCU-compatible devices may work with any of these scripts, but their device surface is not explicitly displayed in Cubase.
 Feel free to open a discussion on GitHub if you would like your MCU-like device to be supported.
-
-<!-- TOC depthfrom:2 depthto:2 -->
 
 - [TL;DR](#tldr)
 - [Motivation](#motivation)
@@ -37,8 +37,6 @@ Feel free to open a discussion on GitHub if you would like your MCU-like device 
 - [Drawbacks](#drawbacks)
 - [Supplementary Remarks for Individual Scripts](#supplementary-remarks-for-individual-scripts)
 - [Troubleshooting](#troubleshooting)
-
-<!-- /TOC -->
 
 ## TL;DR
 
@@ -172,7 +170,7 @@ Current limitations of the MIDI Remote API:
 ## Supplementary Remarks for Individual Scripts
 
 <details>
-<summary>X-Touch One</summary>
+<summary>Behringer X-Touch One</summary>
 
 - The X-Touch One script does not provide a `devices` config option. If you want to use an X-Touch One with an extender, please use the X-Touch One script and the X-Touch script separately.
 - The X-Touch One does not have encoder assign buttons. To make up for this, the F1 and F2 buttons are mapped to cycle through the following encoder assignments:
