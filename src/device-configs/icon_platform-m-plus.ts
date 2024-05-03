@@ -8,6 +8,7 @@ import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
+import * as encoderPageConfigs from "/mapping/encoders/page-configs";
 import { createElements } from "/util";
 
 const channelWidth = 5;
@@ -154,5 +155,35 @@ export const deviceConfig: DeviceConfig = {
         },
       },
     };
+  },
+
+  getSupplementaryShiftButtons(device) {
+    return [device.controlSectionElements.buttons.automation.mixer];
+  },
+
+  configureEncoderMappings(defaultEncoderMappings, page) {
+    const hostAccess = page.mHostAccess;
+    return [
+      {
+        // The Platform M+ doesn't have encoder assign buttons – hence just using one inexistent
+        // button here for all assignments. Switching between assignments can be done via Shift
+        // (Mixer) + Channel L/R.
+        activatorButtonSelector: (device) =>
+          device.controlSectionElements.buttons.encoderAssign.pan,
+
+        pages: [
+          encoderPageConfigs.pan,
+          encoderPageConfigs.monitor,
+          encoderPageConfigs.inputGain,
+          encoderPageConfigs.lowCut,
+          encoderPageConfigs.highCut,
+
+          encoderPageConfigs.focusedQuickControls(hostAccess),
+          encoderPageConfigs.eq(hostAccess),
+          encoderPageConfigs.sends(hostAccess),
+          encoderPageConfigs.stripEffects(hostAccess),
+        ],
+      },
+    ];
   },
 };
