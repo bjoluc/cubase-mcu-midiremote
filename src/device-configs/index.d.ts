@@ -193,7 +193,7 @@ export interface DeviceConfig {
   colorManager?: Class<ColorManager>;
 
   /**
-   * If the maximum meter value (sent on clip) should derive from the default (0xe), specify it
+   * If the maximum meter value (sent on clip) should deviate from the default (0xe), specify it
    * here.
    */
   maximumMeterValue?: number;
@@ -248,8 +248,8 @@ export interface DeviceConfig {
   getSupplementaryShiftButtons?(device: MainDevice): LedButton[];
 
   /**
-   * This optional function receives the default list of {@link EncoderMappingConfig}s and returns
-   * a list of `EncoderMappingConfig`s that will be applied instead of the default.
+   * This optional function receives the default list of {@link EncoderMappingConfig}s and returns a
+   * list of `EncoderMappingConfig`s that will be applied instead of the default.
    *
    * The default mappings are defined in {@link file://./../mapping/encoders/index.ts}
    */
