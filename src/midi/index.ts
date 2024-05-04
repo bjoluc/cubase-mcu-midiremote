@@ -2,6 +2,7 @@ import { RgbColor } from "./managers/ColorManager";
 import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 import { config, deviceConfig } from "/config";
+import { MidiOutputPort } from "/decorators/MidiOutputPort";
 import { Device, MainDevice } from "/devices";
 import { GlobalState } from "/state";
 import { ContextVariable, LifecycleCallbacks } from "/util";
@@ -67,6 +68,41 @@ function bindLifecycleEvents(device: Device, lifecycleCallbacks: LifecycleCallba
   });
 }
 
+function bindVuMeter(
+  vuMeter: MR_SurfaceCustomValueVariable,
+  outputPort: MidiOutputPort,
+  meterId: number,
+) {
+  const sendLevel = (context: MR_ActiveDevice, level: number) => {
+    sendMeterLevel(context, outputPort, meterId, level);
+  };
+
+  let lastMeterUpdateTime = 0;
+  let isMeterUnassigned = false;
+  vuMeter.mOnProcessValueChange = (context, newValue) => {
+    const now: number = performance.now(); // ms
+    if ((!isMeterUnassigned && now - lastMeterUpdateTime > 125) || newValue === 0) {
+      lastMeterUpdateTime = now;
+
+      // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
+      const meterLevel = Math.ceil(
+        (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) * 0xe - 0.25,
+      );
+
+      sendLevel(context, meterLevel);
+    }
+  };
+
+  const setIsMeterUnassigned = (context: MR_ActiveDevice, isUnassigned: boolean) => {
+    isMeterUnassigned = isUnassigned;
+    if (isUnassigned) {
+      sendLevel(context, 0);
+    }
+  };
+
+  return { setIsMeterUnassigned };
+}
+
 function bindChannelElements(device: Device, globalState: GlobalState) {
   const ports = device.ports;
 
@@ -126,12 +162,16 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
       channelTextManager.setParameterValue(context, value);
     };
 
-    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
+    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title, title2) => {
       channelTextManager.setChannelName(context, title);
 
       if (DEVICE_NAME === "MCU Pro") {
         clearOverload(context);
       }
+
+      // Reset the VU meter when the channels becomes unassigned (there's no way to reliably detect
+      // this just using `channel.vuMeter`).
+      setIsMeterUnassigned(context, title2 === "");
     };
 
     /** Clears the channel meter's overload indicator */
@@ -140,21 +180,7 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
     };
 
     // VU Meter
-    let lastMeterUpdateTime = 0;
-    channel.vuMeter.mOnProcessValueChange = (context, newValue) => {
-      const now: number = performance.now(); // ms
-
-      if (now - lastMeterUpdateTime > 125) {
-        lastMeterUpdateTime = now;
-
-        // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
-        const meterLevel = Math.ceil(
-          (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) * 0xe - 0.25,
-        );
-
-        sendMeterLevel(context, ports.output, channelIndex, meterLevel);
-      }
-    };
+    const { setIsMeterUnassigned } = bindVuMeter(channel.vuMeter, ports.output, channelIndex);
 
     globalState.areChannelMetersEnabled.addOnChangeCallback(
       (context, areMetersEnabled) => {
