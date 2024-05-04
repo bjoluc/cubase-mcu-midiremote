@@ -17,12 +17,14 @@ The following devices are explicitly supported:
 
 - Behringer:
   - X-Touch / X-Touch Extender
-  - X-Touch One
+  - X-Touch One <sup>\*</sup>
 - iCON:
-  - Platform M+ / X+
+  - Platform M+ / X+ <sup>\*</sup>
   - QCon Pro G2 / QCon EX G2
 - Mackie Control Universal (Pro) / XT (Pro)
-- SSL UF1
+- SSL UF1 <sup>\*</sup>
+
+<sup>\* See [Supplementary Remarks for Individual Scripts](#supplementary-remarks-for-individual-scripts)</sup>
 
 Other MCU-compatible devices may work with any of these scripts, but their device surface is not explicitly displayed in Cubase.
 Feel free to open a discussion on GitHub if you would like your MCU-like device to be supported.
