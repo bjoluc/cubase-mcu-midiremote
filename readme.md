@@ -7,7 +7,7 @@
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Support me on Ko-fi](https://img.shields.io/badge/%E2%98%95-Support%20me%20on%20Ko--fi-brown)](https://ko-fi.com/bjoluc)
 
-Cubase 12 MIDI Remote Scripts for DAW Controllers using the MCU Protocol
+Cubase MIDI Remote Scripts for DAW Controllers using the MCU Protocol
 
 <div align="center">
   <img alt="Surface Screenshot" width="800" src="./surface.png">
