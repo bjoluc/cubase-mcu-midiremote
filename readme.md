@@ -19,6 +19,7 @@ The following devices are explicitly supported:
   - X-Touch / X-Touch Extender
   - X-Touch One <sup>\*</sup>
 - iCON:
+  - Platform M+ / X+ <sup>\*</sup>
   - QCon Pro G2 / QCon EX G2
   - V1-M / V1-X <sup>\*</sup>
 - Mackie Control Universal (Pro) / XT (Pro)
@@ -179,6 +180,23 @@ Current limitations of the MIDI Remote API:
   - F2: Send levels/active 1-3
 - The F3 button turns the push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor – like the Steinberg CC121's AI knob.
 - The F4 button is mapped as "Shift".
+
+</details>
+
+<details>
+<summary>iCON Platform M+</summary>
+
+- The Mixer button is mapped as Shift
+- The Platform M+ does not have encoder assign buttons. Instead, pressing the Channel Left/Right buttons while holding Shift (Mixer) allows to navigate through a number of encoder assignments. Those are:
+  - Pan
+  - Monitor
+  - Pre Gain
+  - Low-Cut Frequency / Enabled
+  - High-Cut Frequency / Enabled
+  - Focused Quick Controls
+  - EQ Bands 1 & 2 (8 encoders), EQ Bands 3 & 4 (8 encoders)
+  - Send Levels / Enabled (8 encoders), Send Pre/Post (8 encoders)
+  - Channel Strip Gate (8 encoders), Compressor (8 encoders), Tools (8 encoders), Saturation (8 encoders), Limiter (8 encoders)
 
 </details>
 
