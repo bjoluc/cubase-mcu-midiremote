@@ -176,6 +176,7 @@ Current limitations of the MIDI Remote API:
 - The X-Touch One does not have encoder assign buttons. To make up for this, the F1 and F2 buttons are mapped to cycle through the following encoder assignments:
   - F1: Pan, Monitor, Pre Gain, Low-Cut Frequency / Enabled, High-Cut Frequency / Enabled
   - F2: Send levels/active 1-3
+- The F3 button turns the push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor – like the Steinberg CC121's AI knob.
 - The F4 button is mapped as "Shift".
 
 </details>

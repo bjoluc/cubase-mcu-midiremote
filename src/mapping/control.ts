@@ -26,15 +26,16 @@ function setShiftableButtonsLedValues(
   }
 }
 
-export function bindCursorValueControl(page: MR_FactoryMappingPage, device: MainDevice) {
-  const button = device.controlSectionElements.buttons.automation.sends;
-  const encoder = device.channelElements[7].encoder;
-  const jogWheel = device.controlSectionElements.jogWheel;
+export function bindMouseValueControl(page: MR_FactoryMappingPage, device: MainDevice) {
+  const button = deviceConfig.getMouseValueModeButton
+    ? deviceConfig.getMouseValueModeButton(device)
+    : device.controlSectionElements.buttons.automation.sends;
 
   const subPageArea = page.makeSubPageArea("Cursor Value Control");
   const inactiveSubpage = subPageArea.makeSubPage("Cursor Value Control Inactive");
   const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
 
+  const jogWheel = device.controlSectionElements.jogWheel;
   activeSubpage.mOnActivate = (context) => {
     button.setLedValue(context, 1);
     jogWheel.mKnobModeEnabledValue.setProcessValue(context, 1);
@@ -51,12 +52,17 @@ export function bindCursorValueControl(page: MR_FactoryMappingPage, device: Main
     .makeActionBinding(button.mSurfaceValue, inactiveSubpage.mAction.mActivate)
     .setSubPage(activeSubpage);
 
-  page
-    .makeValueBinding(encoder.mEncoderValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
-    .setSubPage(activeSubpage);
-  page
-    .makeValueBinding(encoder.mPushValue, page.mCustom.makeHostValueVariable("Undefined"))
-    .setSubPage(activeSubpage);
+  const encoders = deviceConfig.shallMouseValueModeMapAllEncoders
+    ? device.channelElements.map((channelElements) => channelElements.encoder)
+    : [device.channelElements[7].encoder];
+  for (const encoder of encoders) {
+    page
+      .makeValueBinding(encoder.mEncoderValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
+      .setSubPage(activeSubpage);
+    page
+      .makeValueBinding(encoder.mPushValue, page.mCustom.makeHostValueVariable("Undefined"))
+      .setSubPage(activeSubpage);
+  }
 
   const dummyHostVariable = page.mCustom.makeHostValueVariable("dummy");
   page.makeValueBinding(jogWheel.mSurfaceValue, dummyHostVariable).setSubPage(inactiveSubpage);

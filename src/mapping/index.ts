@@ -1,4 +1,4 @@
-import { bindControlSection, bindCursorValueControl, bindFootControl } from "./control";
+import { bindControlSection, bindFootControl, bindMouseValueControl } from "./control";
 import { bindEncoders } from "./encoders";
 import { config } from "/config";
 import { Device, MainDevice } from "/devices";
@@ -95,7 +95,7 @@ export function makeHostMapping(
   // encoder itself which would be masked by later encoder bindings otherwise.
   for (const device of devices) {
     if (device instanceof MainDevice) {
-      bindCursorValueControl(page, device);
+      bindMouseValueControl(page, device);
     }
   }
 
