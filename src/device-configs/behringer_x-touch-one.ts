@@ -15,6 +15,7 @@ import { createElements } from "/util";
 export const deviceConfig: DeviceConfig = {
   channelColorSupport: "behringer",
   hasIndividualScribbleStrips: true,
+  shallMouseValueModeMapAllEncoders: true,
   detectionUnits: [
     {
       main: (detectionPortPair) =>
@@ -162,6 +163,14 @@ export const deviceConfig: DeviceConfig = {
         footSwitch1: surface.makeButton(x + 11.375, 0.5, 1.5, 1.5).setShapeCircle(),
       },
     };
+  },
+
+  getSupplementaryShiftButtons(device) {
+    return [device.controlSectionElements.buttons.function[3]];
+  },
+
+  getMouseValueModeButton(device) {
+    return device.controlSectionElements.buttons.function[2];
   },
 
   configureEncoderMappings() {

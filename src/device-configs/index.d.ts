@@ -171,9 +171,17 @@ export interface DeviceConfig {
    * Whether the device has per-channel scribble strip displays, i.e. no display padding characters
    * are needed between channels.
    *
-   * @default {false}
+   * @default false
    */
   hasIndividualScribbleStrips?: boolean;
+
+  /**
+   * Whether all encoders shall be mapped in mouse value control mode. This option is intended for
+   * devices with only one physical channel.
+   *
+   * @default false
+   */
+  shallMouseValueModeMapAllEncoders?: boolean;
 
   detectionUnits: Array<{
     /**
@@ -208,6 +216,12 @@ export interface DeviceConfig {
    * be mapped as an additional Shift button.
    */
   getSupplementaryShiftButtons?(device: MainDevice): LedButton[];
+
+  /**
+   * If another button than "Sends" should toggle mouse value control mode, return it from this
+   * optional function.
+   */
+  getMouseValueModeButton?(device: MainDevice): LedButton;
 
   /**
    * This optional function receives the default {@link EncoderMappingConfig} and returns an

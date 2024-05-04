@@ -7,7 +7,7 @@
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Support me on Ko-fi](https://img.shields.io/badge/%E2%98%95-Support%20me%20on%20Ko--fi-brown)](https://ko-fi.com/bjoluc)
 
-Cubase 12 MIDI Remote Scripts for DAW Controllers using the MCU Protocol
+Cubase MIDI Remote Scripts for DAW Controllers using the MCU Protocol
 
 <div align="center">
   <img alt="Surface Screenshot" width="800" src="./surface.png">
@@ -144,6 +144,7 @@ The table below summarizes all available encoder assignments:
 - Like in the MCU default mapping, the 8 channel type buttons apply MixConsole channel visibility presets 1-8. In the likely case that you don't want to waste 8 prominent buttons for loading visibility presets, feel free to re-assign some buttons in the MIDI Remote Mapping Assistant.
 - The Channel Left/Right buttons move the fader bank left/right by one channel instead of navigating between encoder assignment pages. The latter can be achieved by pressing the respective Encoder Assign button multiple times to cycle through the available assignment pages in a round-robin fashion, or by using the Channel Left/Right buttons while holding the Shift button.
 - Pressing "Shift + Bank Left" navigates to the first (=leftmost) mixer bank.
+- Pressing "Shift" + "Rewind"/"Forward" moves the cursor to the project's start/end position.
 - Pressing "Shift + Edit" closes all **plugin** windows instead of only the currently active window (I couldn't find a command to "close the currently active window").
 - The "Instrument" and "Master" buttons are assigned to the handy MixConsole History Undo and Redo commands, respectively. In the default MCU mapping, they would activate instrument and main insert effects encoder assignments. However, these can already be reached via the "Inst" and "Plug-In" encoder assign buttons, so I decided to use the buttons differently.
 - For the same reason, the "Sends" button doesn't activate a send effects encoder assignment. Instead, it turns the rightmost push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor – like the Steinberg CC121's AI knob.
@@ -178,6 +179,8 @@ Current limitations of the MIDI Remote API:
 - The X-Touch One does not have encoder assign buttons. To make up for this, the F1 and F2 buttons are mapped to cycle through the following encoder assignments:
   - F1: Pan, Monitor, Pre Gain, Low-Cut Frequency / Enabled, High-Cut Frequency / Enabled
   - F2: Send levels/active 1-3
+- The F3 button turns the push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor – like the Steinberg CC121's AI knob.
+- The F4 button is mapped as "Shift".
 
 </details>
 

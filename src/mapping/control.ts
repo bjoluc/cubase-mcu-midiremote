@@ -1,7 +1,4 @@
 import { config, deviceConfig } from "/config";
-import { JogWheel } from "/decorators/surface-elements/JogWheel";
-import { LedButton } from "/decorators/surface-elements/LedButton";
-import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ControlSectionSurfaceElements } from "/device-configs";
 import { MainDevice } from "/devices";
 import { GlobalState } from "/state";
@@ -20,21 +17,24 @@ function setShiftableButtonsLedValues(
     buttons.utility.soloDefeat,
     buttons.transport.left,
     buttons.transport.right,
+    buttons.transport.rewind,
+    buttons.transport.forward,
     buttons.navigation.bank.left,
   ]) {
     button.setLedValue(context, value);
   }
 }
 
-export function bindCursorValueControl(page: MR_FactoryMappingPage, device: MainDevice) {
-  const button = device.controlSectionElements.buttons.automation.sends;
-  const encoder = device.channelElements[7].encoder;
-  const jogWheel = device.controlSectionElements.jogWheel;
+export function bindMouseValueControl(page: MR_FactoryMappingPage, device: MainDevice) {
+  const button = deviceConfig.getMouseValueModeButton
+    ? deviceConfig.getMouseValueModeButton(device)
+    : device.controlSectionElements.buttons.automation.sends;
 
   const subPageArea = page.makeSubPageArea("Cursor Value Control");
   const inactiveSubpage = subPageArea.makeSubPage("Cursor Value Control Inactive");
   const activeSubpage = subPageArea.makeSubPage("Cursor Value Control Active");
 
+  const jogWheel = device.controlSectionElements.jogWheel;
   activeSubpage.mOnActivate = (context) => {
     button.setLedValue(context, 1);
     jogWheel.mKnobModeEnabledValue.setProcessValue(context, 1);
@@ -51,12 +51,17 @@ export function bindCursorValueControl(page: MR_FactoryMappingPage, device: Main
     .makeActionBinding(button.mSurfaceValue, inactiveSubpage.mAction.mActivate)
     .setSubPage(activeSubpage);
 
-  page
-    .makeValueBinding(encoder.mEncoderValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
-    .setSubPage(activeSubpage);
-  page
-    .makeValueBinding(encoder.mPushValue, page.mCustom.makeHostValueVariable("Undefined"))
-    .setSubPage(activeSubpage);
+  const encoders = deviceConfig.shallMouseValueModeMapAllEncoders
+    ? device.channelElements.map((channelElements) => channelElements.encoder)
+    : [device.channelElements[7].encoder];
+  for (const encoder of encoders) {
+    page
+      .makeValueBinding(encoder.mEncoderValue, page.mHostAccess.mMouseCursor.mValueUnderMouse)
+      .setSubPage(activeSubpage);
+    page
+      .makeValueBinding(encoder.mPushValue, page.mCustom.makeHostValueVariable("Undefined"))
+      .setSubPage(activeSubpage);
+  }
 
   const dummyHostVariable = page.mCustom.makeHostValueVariable("dummy");
   page.makeValueBinding(jogWheel.mSurfaceValue, dummyHostVariable).setSubPage(inactiveSubpage);
@@ -294,8 +299,20 @@ export function bindControlSection(
     "Locate Next Marker",
   );
 
-  page.makeValueBinding(buttons.transport.rewind.mSurfaceValue, mTransport.mValue.mRewind);
-  page.makeValueBinding(buttons.transport.forward.mSurfaceValue, mTransport.mValue.mForward);
+  page
+    .makeValueBinding(buttons.transport.rewind.mSurfaceValue, mTransport.mValue.mRewind)
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.transport.rewind.mSurfaceValue, "Transport", "Return to Zero")
+    .setSubPage(shiftSubPage);
+
+  page
+    .makeValueBinding(buttons.transport.forward.mSurfaceValue, mTransport.mValue.mForward)
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.transport.forward.mSurfaceValue, "Transport", "Goto End")
+    .setSubPage(shiftSubPage);
+
   page
     .makeValueBinding(buttons.transport.stop.mSurfaceValue, mTransport.mValue.mStop)
     .setTypeToggle();
