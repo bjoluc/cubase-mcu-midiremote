@@ -275,9 +275,6 @@ export const deviceConfig: DeviceConfig = {
       for (const [layerId, layer] of buttonMatrix.slice(1).entries()) {
         for (const [rowId, row] of layer.entries()) {
           for (const [columnId, button] of row.entries()) {
-            console.log(
-              `layer ${layerId}, row ${rowId}, column ${columnId}: ${button.isBoundToNote()}`,
-            );
             if (!button.isBoundToNote()) {
               if (layerId === 0 && rowId === 0) {
                 button.bindToNote(ports, 122 + columnId);
