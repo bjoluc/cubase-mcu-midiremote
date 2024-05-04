@@ -163,7 +163,7 @@ The table below summarizes all available encoder assignments:
 **Miscellaneous**
 
 - The main fader controls the Control Room volume unless the `mapMainFaderToControlRoom` [config option](#configuration-options) is set to `false`.
-- In zoom mode, the jog wheel zooms in and out instead of moving the locator
+- In zoom mode, the jog wheel zooms in and out instead of moving the cursor
 
 ## Drawbacks
 
@@ -178,7 +178,7 @@ Current limitations of the MIDI Remote API:
 - The global "Solo" LED and the "Solo Defeat" button don't light up when a channel is in solo mode – no host value available
 - Channel visibility presets do not yet affect channel assignments since the `MixerBankZone` of the MIDI Remote API doesn't respect channel visibility presets (["`.setFollowVisibility()` is a teaser for future updates"](https://forums.steinberg.net/t/820531/2)).
 - The function buttons F1-F8 can only have one assignment per button, no matter whether "Shift" is held or not ("Shift" activates a sub page and the Mapping Assistant doesn't consider sub pages)
-- When controlling under-the-cursor values, the encoder's LED ring is not updated to single-dot mode but remains in whatever mode the currently active encoder assignment demands (blocked by https://forums.steinberg.net/t/831123).
+- When in mouse value control mode, the encoder's LED ring is not updated to single-dot mode but remains in whatever mode the currently active encoder assignment demands (blocked by https://forums.steinberg.net/t/831123).
 
 ## Supplementary Remarks for Individual Scripts
 
