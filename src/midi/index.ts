@@ -78,13 +78,9 @@ function bindVuMeter(
     sendMeterLevel(context, outputPort, meterId, level, midiChannel);
   };
 
-  let lastMeterUpdateTime = 0;
   let isMeterUnassigned = false;
   vuMeter.mOnProcessValueChange = (context, newValue) => {
-    const now: number = performance.now(); // ms
-    if ((!isMeterUnassigned && now - lastMeterUpdateTime > 125) || newValue === 0) {
-      lastMeterUpdateTime = now;
-
+    if (!isMeterUnassigned || newValue === 0) {
       // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
       const meterLevel = Math.ceil(
         (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) *
