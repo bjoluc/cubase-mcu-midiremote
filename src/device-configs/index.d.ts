@@ -213,6 +213,14 @@ export interface DeviceConfig {
    */
   hasSecondaryScribbleStrips?: boolean;
 
+  /**
+   * Whether all encoders shall be mapped in mouse value control mode. This option is intended for
+   * devices with only one physical channel.
+   *
+   * @default false
+   */
+  shallMouseValueModeMapAllEncoders?: boolean;
+
   detectionUnits: Array<{
     /**
      * A function that configures a `MR_DetectionPortPair` with main device input and output port
@@ -246,6 +254,12 @@ export interface DeviceConfig {
    * be mapped as an additional Shift button.
    */
   getSupplementaryShiftButtons?(device: MainDevice): LedButton[];
+
+  /**
+   * If another button than "Sends" should toggle mouse value control mode, return it from this
+   * optional function.
+   */
+  getMouseValueModeButton?(device: MainDevice): LedButton;
 
   /**
    * This optional function receives the default list of {@link EncoderMappingConfig}s and returns a
