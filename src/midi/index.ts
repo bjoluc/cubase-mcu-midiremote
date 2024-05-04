@@ -74,11 +74,15 @@ function bindVuMeter(
   meterId: number,
   midiChannel = 0,
 ) {
+  const sendLevel = (context: MR_ActiveDevice, level: number) => {
+    sendMeterLevel(context, outputPort, meterId, level, midiChannel);
+  };
+
   let lastMeterUpdateTime = 0;
+  let isMeterUnassigned = false;
   vuMeter.mOnProcessValueChange = (context, newValue) => {
     const now: number = performance.now(); // ms
-
-    if (now - lastMeterUpdateTime > 125) {
+    if ((!isMeterUnassigned && now - lastMeterUpdateTime > 125) || newValue === 0) {
       lastMeterUpdateTime = now;
 
       // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
@@ -88,9 +92,18 @@ function bindVuMeter(
           0.25,
       );
 
-      sendMeterLevel(context, outputPort, meterId, meterLevel, midiChannel);
+      sendLevel(context, meterLevel);
     }
   };
+
+  const setIsMeterUnassigned = (context: MR_ActiveDevice, isUnassigned: boolean) => {
+    isMeterUnassigned = isUnassigned;
+    if (isUnassigned) {
+      sendLevel(context, 0);
+    }
+  };
+
+  return { setIsMeterUnassigned };
 }
 
 function bindChannelElements(device: Device, globalState: GlobalState) {
@@ -152,12 +165,16 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
       channelTextManager.setParameterValue(context, value);
     };
 
-    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title) => {
+    channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title, title2) => {
       channelTextManager.setChannelName(context, title);
 
       if (DEVICE_NAME === "MCU Pro") {
         clearOverload(context);
       }
+
+      // Reset the VU meter when the channels becomes unassigned (there's no way to reliably detect
+      // this just using `channel.vuMeter`).
+      setIsMeterUnassigned(context, title2 === "");
     };
 
     if (deviceConfig.hasSecondaryScribbleStrips && channel.scribbleStrip.meterPeakLevel) {
@@ -184,7 +201,7 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
     };
 
     // VU Meter
-    bindVuMeter(channel.vuMeter, ports.output, channelIndex);
+    const { setIsMeterUnassigned } = bindVuMeter(channel.vuMeter, ports.output, channelIndex);
 
     globalState.areChannelMetersEnabled.addOnChangeCallback(
       (context, areMetersEnabled) => {
