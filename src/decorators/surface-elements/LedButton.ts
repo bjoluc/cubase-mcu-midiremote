@@ -83,6 +83,13 @@ class LedButtonDecorator {
       };
     }
   };
+
+  /**
+   * Returns whether `bindToNote()` has already been called on this button.
+   */
+  isBoundToNote = () => {
+    return Boolean(this.ports);
+  };
 }
 
 /**

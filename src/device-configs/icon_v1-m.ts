@@ -197,6 +197,13 @@ export const deviceConfig: DeviceConfig = {
           scrub: buttonMatrix[0][1][4],
           edit: buttonMatrix[0][0][0],
 
+          encoderAssign: {
+            pan: buttonMatrix[1][0][0],
+            eq: buttonMatrix[1][1][0],
+            send: buttonMatrix[1][1][1],
+            plugin: buttonMatrix[1][1][2],
+          },
+
           modify: {
             undo: buttonMatrix[0][2][0],
             redo: buttonMatrix[0][2][1],
@@ -264,14 +271,19 @@ export const deviceConfig: DeviceConfig = {
       buttonMatrix[0][1][2].bindToNote(ports, 120, 0);
       buttonMatrix[0][3][2].bindToNote(ports, 121, 0);
 
-      // Layer 2 & 3
+      // Remaining buttons in Layer 2 & 3
       for (const [layerId, layer] of buttonMatrix.slice(1).entries()) {
         for (const [rowId, row] of layer.entries()) {
           for (const [columnId, button] of row.entries()) {
-            if (layerId === 0 && rowId === 0) {
-              button.bindToNote(ports, 122 + columnId);
-            } else {
-              button.bindToNote(ports, (layerId + 1) * 24 + rowId * 6 + columnId, 1); // Channel 2
+            console.log(
+              `layer ${layerId}, row ${rowId}, column ${columnId}: ${button.isBoundToNote()}`,
+            );
+            if (!button.isBoundToNote()) {
+              if (layerId === 0 && rowId === 0) {
+                button.bindToNote(ports, 122 + columnId);
+              } else {
+                button.bindToNote(ports, (layerId + 1) * 24 + rowId * 6 + columnId, 1); // Channel 2
+              }
             }
           }
         }
@@ -310,27 +322,23 @@ export const deviceConfig: DeviceConfig = {
 
     const hostAccess = page.mHostAccess;
     return [
+      // The default six MCU encoder assign button mappings are included for backwards compatibility
+      // with the default iMAP Cubase button functions:
+      ...defaultEncoderMapping,
+
+      // These are additional, fine-grained encoder mappings:
+
       ...[
-        pageConfigs.pan,
         pageConfigs.monitor,
         pageConfigs.inputGain,
         pageConfigs.inputPhase,
         pageConfigs.lowCut,
         pageConfigs.highCut,
-      ].map((pageConfig, buttonColumn) => ({
+      ].map((pageConfig, buttonIndex) => ({
         pages: [pageConfig],
-        activatorButtonSelector: makeActivatorButtonSelector(0, buttonColumn),
+        activatorButtonSelector: makeActivatorButtonSelector(0, buttonIndex + 1),
       })),
 
-      {
-        pages: [pageConfigs.eq(hostAccess)],
-        activatorButtonSelector: makeActivatorButtonSelector(1, 0),
-      },
-      {
-        pages: [pageConfigs.sends(hostAccess)],
-        activatorButtonSelector: makeActivatorButtonSelector(1, 1),
-      },
-      pageConfigs.pluginMappingConfig(page, makeActivatorButtonSelector(1, 2)),
       {
         activatorButtonSelector: makeActivatorButtonSelector(1, 3),
         pages: [pageConfigs.vstQuickControls(hostAccess)],
