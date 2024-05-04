@@ -1,7 +1,4 @@
 import { config, deviceConfig } from "/config";
-import { JogWheel } from "/decorators/surface-elements/JogWheel";
-import { LedButton } from "/decorators/surface-elements/LedButton";
-import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ControlSectionSurfaceElements } from "/device-configs";
 import { MainDevice } from "/devices";
 import { GlobalState } from "/state";
@@ -20,6 +17,8 @@ function setShiftableButtonsLedValues(
     buttons.utility.soloDefeat,
     buttons.transport.left,
     buttons.transport.right,
+    buttons.transport.rewind,
+    buttons.transport.forward,
     buttons.navigation.bank.left,
   ]) {
     button.setLedValue(context, value);
@@ -300,8 +299,20 @@ export function bindControlSection(
     "Locate Next Marker",
   );
 
-  page.makeValueBinding(buttons.transport.rewind.mSurfaceValue, mTransport.mValue.mRewind);
-  page.makeValueBinding(buttons.transport.forward.mSurfaceValue, mTransport.mValue.mForward);
+  page
+    .makeValueBinding(buttons.transport.rewind.mSurfaceValue, mTransport.mValue.mRewind)
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.transport.rewind.mSurfaceValue, "Transport", "Return to Zero")
+    .setSubPage(shiftSubPage);
+
+  page
+    .makeValueBinding(buttons.transport.forward.mSurfaceValue, mTransport.mValue.mForward)
+    .setSubPage(regularSubPage);
+  page
+    .makeCommandBinding(buttons.transport.forward.mSurfaceValue, "Transport", "Goto End")
+    .setSubPage(shiftSubPage);
+
   page
     .makeValueBinding(buttons.transport.stop.mSurfaceValue, mTransport.mValue.mStop)
     .setTypeToggle();
