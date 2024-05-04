@@ -31,18 +31,19 @@ export function createDevices(
     return device;
   });
 
-  if (
-    devices.length === 1 ||
-    (devices.length === 2 && devices[0].constructor.name !== devices[1].constructor.name)
-  ) {
+  if (devices.filter((device) => device instanceof MainDevice).length === 1) {
     for (const detectionUnitConfig of deviceConfig.detectionUnits) {
       const detectionUnit = driver.makeDetectionUnit();
+
+      let nextExtenderId = 1;
       for (const device of devices) {
-        const detectionUnitConfigurator =
-          detectionUnitConfig[device instanceof MainDevice ? "main" : "extender"];
-        detectionUnitConfigurator(
-          detectionUnit.detectPortPair(device.ports.input, device.ports.output),
-        );
+        const portPair = detectionUnit.detectPortPair(device.ports.input, device.ports.output);
+
+        if (device instanceof MainDevice) {
+          detectionUnitConfig["main"](portPair);
+        } else {
+          detectionUnitConfig["extender"](portPair, nextExtenderId++);
+        }
       }
     }
   }

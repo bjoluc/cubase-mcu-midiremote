@@ -60,15 +60,32 @@ function makeChannelElements(surface: MR_DeviceSurface, x: number): ChannelSurfa
 
 export const deviceConfig: DeviceConfig = {
   detectionUnits: [
+    // Platform M/X
     {
       main: (detectionPortPair) =>
         detectionPortPair
           .expectInputNameContains("Platform M")
           .expectOutputNameContains("Platform M"),
-      extender: (detectionPortPair) =>
+      extender: (detectionPortPair, extenderNumber) => {
+        let name = "Platform X";
+        if (extenderNumber > 1) {
+          name += extenderNumber;
+        }
+
+        detectionPortPair.expectInputNameContains(name).expectOutputNameContains(name);
+      },
+    },
+
+    // Platform M+/X+
+    {
+      main: (detectionPortPair) =>
         detectionPortPair
-          .expectInputNameContains("Platform X")
-          .expectOutputNameContains("Platform X"),
+          .expectInputNameContains("Platform M+")
+          .expectOutputNameContains("Platform M+"),
+      extender: (detectionPortPair, extenderNumber) =>
+        detectionPortPair
+          .expectInputNameContains(`Platform X+${extenderNumber}`)
+          .expectOutputNameContains(`Platform X+${extenderNumber}`),
     },
   ],
 

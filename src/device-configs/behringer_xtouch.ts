@@ -65,6 +65,18 @@ function makeChannelElements(surface: MR_DeviceSurface, x: number): ChannelSurfa
   });
 }
 
+const extenderPortPairConfigurator = (
+  detectionPortPair: MR_DetectionPortPair,
+  extenderNumber: number,
+) => {
+  let name = "X-Touch-Ext";
+  if (extenderNumber > 1) {
+    name += extenderNumber;
+  }
+
+  detectionPortPair.expectInputNameEquals(name).expectOutputNameEquals(name);
+};
+
 export const deviceConfig: DeviceConfig = {
   channelColorSupport: "behringer",
   hasIndividualScribbleStrips: true,
@@ -72,20 +84,14 @@ export const deviceConfig: DeviceConfig = {
     {
       main: (detectionPortPair) =>
         detectionPortPair.expectInputNameEquals("X-Touch").expectOutputNameEquals("X-Touch"),
-      extender: (detectionPortPair) =>
-        detectionPortPair
-          .expectInputNameEquals("X-Touch-Ext")
-          .expectOutputNameEquals("X-Touch-Ext"),
+      extender: extenderPortPairConfigurator,
     },
     {
       main: (detectionPortPair) =>
         detectionPortPair
           .expectInputNameEquals("X-Touch INT")
           .expectOutputNameEquals("X-Touch INT"),
-      extender: (detectionPortPair) =>
-        detectionPortPair
-          .expectInputNameStartsWith("X-Touch-Ext")
-          .expectOutputNameStartsWith("X-Touch-Ext"),
+      extender: extenderPortPairConfigurator,
     },
   ],
 

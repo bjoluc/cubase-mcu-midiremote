@@ -93,12 +93,23 @@ A MIDI Remote API script can illuminate these scribble strips according to their
   > If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive.
   > In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
 
+  > **Note** Most extender devices will let you choose an extender number (1,2,3,...) which will affect the MIDI port names assigned to them.
+  > If you have only one extender, make sure it is configured as extender 1.
+  > For multiple extenders, assign extender numbers from left to right.
+  > Some extenders (e.g., Behringer X-Touch Extender) do not give you this choice.
+  > If you use more than one of these extenders and have the ability to freely assign your port names (for instance using MIDI over ethernet), assign the port names according to the following pattern:
+  >
+  > - Extender 1: "X-Touch-Ext" (default extender port name)
+  > - Extender 2: "X-Touch-Ext2" (default extender port name + "2")
+  > - Extender 3: "X-Touch-Ext3" (default extender port name + "3")
+  > - ...
+
   </details>
 
 - Finally, restart Cubase to make it pick up the script.
 
 The script detects your device(s) based on MIDI port names.
-If you are using a standalone device (main or extender) or one main device and one extender, Cubase should automatically set up the MIDI Remote.
+If you are using a standalone device (main or extender) or one main device with one or multiple extender(s), Cubase should automatically set up the MIDI Remote.
 Alternatively, you can manually add it by clicking the "+" button in the lower zone's MIDI Remote pane and selecting vendor, device, and input/output ports yourself.
 
 ## Configuration Options
