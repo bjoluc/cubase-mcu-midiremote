@@ -164,6 +164,10 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
+  getSupplementaryShiftButtons(device) {
+    return [device.controlSectionElements.buttons.function[3]];
+  },
+
   configureEncoderMappings() {
     return [
       // Pan, Monitor, Gain, LC, HC (F1)
