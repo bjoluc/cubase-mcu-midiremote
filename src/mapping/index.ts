@@ -84,7 +84,6 @@ export function makeHostMapping(
       // Display buttons, 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation, Jog wheel
       bindControlSection(page, device, mixerBankZone, globalState);
 
-      // Foot Control
       bindFootControl(page, controlSectionElements);
     }
   }

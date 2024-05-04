@@ -270,10 +270,14 @@ export class EncoderPage implements EncoderPageConfig {
   public onActivated(context: MR_ActiveDevice) {
     this.isActive.set(context, true);
 
-    this.dependencies.segmentDisplayManager.setAssignment(
-      context,
-      this.pagesCount === 1 ? "  " : `${this.index + 1}.${this.pagesCount}`,
-    );
+    const assignment =
+      this.pagesCount === 1
+        ? "  "
+        : this.pagesCount < 10
+          ? `${this.index + 1}.${this.pagesCount}`
+          : (this.index + 1).toString().padStart(2, " ");
+
+    this.dependencies.segmentDisplayManager.setAssignment(context, assignment);
 
     for (const [encoderIndex, { encoder }] of this.dependencies.channelElements.entries()) {
       const assignment = this.assignments[encoderIndex] as EncoderAssignmentConfig | undefined;
