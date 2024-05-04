@@ -94,10 +94,10 @@ export const deviceConfig: DeviceConfig = {
         detectionPortPair
           .expectInputNameStartsWith("iCON V1-M")
           .expectOutputNameStartsWith("iCON V1-M"),
-      extender: (detectionPortPair) =>
+      extender: (detectionPortPair, extenderNumber) =>
         detectionPortPair
-          .expectInputNameStartsWith("iCON V1-X1")
-          .expectOutputNameStartsWith("iCON V1-X1"),
+          .expectInputNameStartsWith(`iCON V1-X${extenderNumber}`)
+          .expectOutputNameStartsWith(`iCON V1-X${extenderNumber}`),
     },
   ],
 
