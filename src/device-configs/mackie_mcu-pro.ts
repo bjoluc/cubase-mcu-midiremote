@@ -66,10 +66,10 @@ export const deviceConfig: DeviceConfig = {
         detectionPortPair
           .expectInputNameStartsWith("MCU Pro USB v")
           .expectOutputNameStartsWith("MCU Pro USB v"),
-      extender: (detectionPortPair) =>
+      extender: (detectionPortPair, extenderNumber) =>
         detectionPortPair
-          .expectInputNameStartsWith("MIDIIN2 (MCU Pro USB v")
-          .expectOutputNameStartsWith("MIDIOUT2 (MCU Pro USB v"),
+          .expectInputNameStartsWith(`MIDIIN${extenderNumber + 1} (MCU Pro USB v`)
+          .expectOutputNameStartsWith(`MIDIOUT${extenderNumber + 1} (MCU Pro USB v`),
     },
   ],
 

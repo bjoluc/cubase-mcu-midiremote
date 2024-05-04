@@ -231,8 +231,11 @@ export interface DeviceConfig {
     /**
      * A function that configures a `MR_DetectionPortPair` with extender input and output port name
      * detection rules.
+     *
+     * @param detectionPortPair The port pair to be configured
+     * @param extenderNumber The number of the extender to configure the port pair for, starting at 1
      */
-    extender: (detectionPortPair: MR_DetectionPortPair) => void;
+    extender: (detectionPortPair: MR_DetectionPortPair, extenderNumber: number) => void;
   }>;
 
   /**

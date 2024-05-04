@@ -70,10 +70,10 @@ export const deviceConfig: DeviceConfig = {
         detectionPortPair
           .expectInputNameContains("iCON QCON Pro G2")
           .expectOutputNameContains("iCON QCON Pro G2"),
-      extender: (detectionPortPair) =>
+      extender: (detectionPortPair, extenderNumber) =>
         detectionPortPair
-          .expectInputNameContains("iCON QCON EX1 G2")
-          .expectOutputNameContains("iCON QCON EX1 G2"),
+          .expectInputNameContains(`iCON QCON EX${extenderNumber} G2`)
+          .expectOutputNameContains(`iCON QCON EX${extenderNumber} G2`),
     },
   ],
 
