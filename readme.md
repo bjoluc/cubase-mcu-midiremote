@@ -82,7 +82,7 @@ A MIDI Remote API script can illuminate these scribble strips according to their
 
   > **Note** Cubase does not expect scripts to change their port definitions over time – which is what happens when you edit the `devices` config option.
   > If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive.
-  > In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
+  > In that case, try [disabling and re-enabling](#how-to-disable-and-re-enable-a-controller-script) the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
 
   > **Note** Most extender devices will let you choose an extender number (1,2,3,...) which will affect the MIDI port names assigned to them.
   > If you have only one extender, make sure it is configured as extender 1.
