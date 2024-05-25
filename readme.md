@@ -10,7 +10,7 @@
 Cubase MIDI Remote Scripts for DAW Controllers using the MCU Protocol
 
 <div align="center">
-  <img alt="Surface Screenshot" width="800" src="./surface.png">
+  <img alt="Surface Screenshot" width="800" src="./images/surface.png">
 </div>
 
 The following devices are explicitly supported:
@@ -229,6 +229,10 @@ Those mappings are stored as JSON files in a `User Settings` folder at `Document
 If some button/fader/encoder isn't working as expected – especially after an update to the script – it is always worth a try to remove the user setting files (those starting with your script's name) to make sure they don't interfere with the script's default functionality.
 Afterwards, restart Cubase to reload the MIDI Remote scripts and settings.
 
+If that still didn't help, disabling and re-enabling the script can solve some mapping issues as well:
+
+![How to disable and re-enable a script](images/disable-enable-controller-script.gif)
+
 ### Some displays are lagging or faders are stuttering heavily when reading automation
 
 This might be caused by another source sending MIDI data to your device, for instance Cubase's default Mackie Control remote device integration.
@@ -241,4 +245,6 @@ The button has no effect when both time formats are identical, so make sure you 
 
 ### One or multiple devices are unresponsive
 
-Try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase re-detect the script's MIDI ports.
+Try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase re-detect the script's MIDI ports:
+
+![How to disable and re-enable a script](images/disable-enable-controller-script.gif)
