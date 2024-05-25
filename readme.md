@@ -51,13 +51,6 @@ Since version 12, Cubase supports the customized integration of MIDI controllers
 Several vendors are producing DAW controllers similar to the Mackie Control Universal (MCU) which are traditionally set up as Mackie Control devices in Cubase.
 Creating MIDI Remote API scripts for these controllers allows to improve the mapping where applicable and offers users the possibility to override parts of it themselves via Cubase's MIDI Remote Mapping Assistant.
 
-Some points for improvement of the default MCU mapping are:
-
-- The main fader controls the first output channel's volume, not the Control Room volume.
-- The meters do not seem to fully match the scale of the MixConsole meters.
-- Bringing up the parameters of the currently focused plugin requires navigating through the list of insert slots with a push encoder.
-- There is no single knob that can control any parameter under the mouse cursor, like in Steinberg's CC121 controller.
-
 Moreover, some controllers have features that are not available with the default Mackie Control setup in Cubase.
 For instance, the Behringer X-Touch has an individual, generously padded, RGB backlit scribble strip display per channel, as well as integrated LEDs in most buttons.
 A MIDI Remote API script can illuminate these scribble strips according to their tracks' colors, avoid unnecessary display padding characters, and light up buttons while they are being pressed.
