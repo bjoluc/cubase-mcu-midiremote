@@ -52,7 +52,7 @@ Several vendors are producing DAW controllers similar to the Mackie Control Univ
 Creating MIDI Remote API scripts for these controllers allows to improve the mapping where applicable and offers users the possibility to override parts of it themselves via Cubase's MIDI Remote Mapping Assistant.
 
 Moreover, some controllers have features that are not available with the default Mackie Control setup in Cubase.
-For instance, the Behringer X-Touch has an individual, generously padded, RGB backlit scribble strip display per channel, as well as integrated LEDs in most buttons.
+For instance, the Behringer X-Touch has an individual, RGB-backlit scribble strip display per channel, as well as integrated LEDs in most buttons.
 A MIDI Remote API script can illuminate these scribble strips according to their tracks' colors, avoid unnecessary display padding characters, and light up buttons while they are being pressed.
 
 ## Setup
@@ -161,7 +161,7 @@ The table below summarizes all available encoder assignments:
 
 Current limitations of the MIDI Remote API:
 
-- The "Track" encoder assignment is missing the "Input Bus" and "Output Bus" pages which are not exposed by the MIDI Remote API. I prefer to use the mouse for routing anyway, as opposed to a push encoder and a tiny single-row string on a scribble strip display.
+- The "Track" encoder assignment is missing the "Input Bus" and "Output Bus" pages which are not exposed by the MIDI Remote API.
 - The "Pan/Surround" encoder assignment is missing a second page for vertical panning which is not exposed by the MIDI Remote API.
 - The "Send" encoder assignment doesn't include a "Bus" page because send busses are not exposed by the MIDI Remote API.
 - The "Plug-In" encoder assignment doesn't display the number of the active parameter page because it is not exposed by the MIDI Remote API.
