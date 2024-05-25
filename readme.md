@@ -179,14 +179,14 @@ Current limitations of the MIDI Remote API:
 
 - The X-Touch One script does not provide a `devices` config option. If you want to use an X-Touch One with an extender, please use the X-Touch One script and the X-Touch script separately.
 - The X-Touch One does not have encoder assign buttons. To make up for this, the F1 button is mapped to cycle through the following encoder assignments:
-  1. Pan
-  2. Monitor
-  3. Pre Gain
-  4. Low-Cut Frequency / Enabled
-  5. High-Cut Frequency / Enabled
-  6. Send Slot 1 Level / Active
-  7. Send Slot 2 Level / Active
-  8. Send Slot 3 Level / Active
+  - **1** Pan
+  - **2** Monitor
+  - **3** Pre Gain
+  - **4** Low-Cut Frequency / Enabled
+  - **5** High-Cut Frequency / Enabled
+  - **6** Send Slot 1 Level / Active
+  - **7** Send Slot 2 Level / Active
+  - **8** Send Slot 3 Level / Active
 - The F3 button turns the push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor – like the Steinberg CC121's AI knob.
 - The F4 button is mapped as "Shift".
 
