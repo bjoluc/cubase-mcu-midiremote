@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.0](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.9.0...v1.10.0) (2024-05-25)
+
+
+### Features
+
+* Add an iCON Platform M+ script variant ([#25](https://github.com/bjoluc/cubase-mcu-midiremote/issues/25)) ([91aa580](https://github.com/bjoluc/cubase-mcu-midiremote/commit/91aa580d24a8ee4a57916b30951770e708ca525b))
+* Add an SSL UF1 script variant ([#31](https://github.com/bjoluc/cubase-mcu-midiremote/issues/31)) ([16f82a9](https://github.com/bjoluc/cubase-mcu-midiremote/commit/16f82a9626af9865b64b209c78d86affe305af4c))
+* Add an X-Touch One script variant ([#28](https://github.com/bjoluc/cubase-mcu-midiremote/issues/28)) ([f7bc13b](https://github.com/bjoluc/cubase-mcu-midiremote/commit/f7bc13bd44b8e54a18a30866214633a7add728f4))
+* Allow navigating to project start/end via Shift + Rewind/Forward ([370b5a6](https://github.com/bjoluc/cubase-mcu-midiremote/commit/370b5a60b6cbaf7d69c2a033556d0653945a53d5))
+* Allow switching encoder assignment pages via Shift + Channel Left/Right ([3f4cc63](https://github.com/bjoluc/cubase-mcu-midiremote/commit/3f4cc63ee629d74cf8369100e0c86ee0c8bf429f))
+* Enable automatic port detection for setups with multiple extenders ([dd504f8](https://github.com/bjoluc/cubase-mcu-midiremote/commit/dd504f8c63f2e7c3b073073bf95e4409cf6832f4))
+
+
+### Bug Fixes
+
+* Avoid issues with touch-sensitive automation writing ([cdea1c2](https://github.com/bjoluc/cubase-mcu-midiremote/commit/cdea1c255d66566f0407fa089880a879d96a64a9))
+* Do not send channel fader down when a track's name is empty ([de9c48b](https://github.com/bjoluc/cubase-mcu-midiremote/commit/de9c48bf0078ae0e1b8a84d73b7388346c933be1))
+* Fix an issue where the first-received jog wheel event after loading the script would be ignored ([aab865f](https://github.com/bjoluc/cubase-mcu-midiremote/commit/aab865f6b0ece8190f0c13c414dfa40afbb6b9fd))
+* Improve VU meter update rate ([6ca175f](https://github.com/bjoluc/cubase-mcu-midiremote/commit/6ca175f5c34f16fb5fa3967d8cbf86db0e908172))
+* Leave function buttons and foot switches unmapped by default. This avoids closing the Mapping Assistant when pressing a function button or foot switch to select it for mapping in Cubase 13. ([9e17737](https://github.com/bjoluc/cubase-mcu-midiremote/commit/9e17737101f5295af4be2b32dd23b9ad43db5b1a))
+* Reset a mixer channel's VU meter when the channel becomes unassigned by banking ([848bf7a](https://github.com/bjoluc/cubase-mcu-midiremote/commit/848bf7af789b01557eaf91f1642f9ba31f3438a4))
+* Reset all button LEDs on script activation in case they were not reset before ([3091540](https://github.com/bjoluc/cubase-mcu-midiremote/commit/3091540b3a506e67a682d27db879af63a79ced01))
+* Unassign encoder push value in value under mouse control mode ([44cd497](https://github.com/bjoluc/cubase-mcu-midiremote/commit/44cd497d65718fb1a25fb77036aeed88219856d0))
+
+
+### Performance Improvements
+
+* Improve button LED feedback times ([61486a5](https://github.com/bjoluc/cubase-mcu-midiremote/commit/61486a5d0b2aa2e30baaf067a27bdbd40d2ed61a))
+
 ## [1.9.0](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.8.0...v1.9.0) (2024-01-10)
 
 
