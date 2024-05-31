@@ -185,74 +185,77 @@ type StripEffectSlot =
   | MR_HostStripEffectSlotSaturator
   | MR_HostStripEffectSlotLimiter;
 
-const makeStripEffectAssignments = (stripEffect: StripEffectSlot) => {
-  return createElements(8, () => {
-    const parameterValue = stripEffect.mParameterBankZone.makeParameterValue();
-    return {
-      encoderValue: parameterValue,
-      displayMode: EncoderDisplayMode.SingleDot,
-      pushToggleValue: stripEffect.mBypass,
+let stripEffectAssignments: Record<string, EncoderAssignmentConfig[]> | undefined;
+const getStripEffectAssignments = (hostAccess: MR_HostAccess) => {
+  const createAssignments = (stripEffect: StripEffectSlot) =>
+    createElements(8, (): EncoderAssignmentConfig => {
+      const parameterValue = stripEffect.mParameterBankZone.makeParameterValue();
+      return {
+        encoderValue: parameterValue,
+        displayMode: EncoderDisplayMode.SingleDot,
+        pushToggleValue: stripEffect.mBypass,
+      };
+    });
+
+  if (!stripEffectAssignments) {
+    const stripEffects =
+      hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects;
+    stripEffectAssignments = {
+      gate: createAssignments(stripEffects.mGate),
+      compressor: createAssignments(stripEffects.mCompressor),
+      tools: createAssignments(stripEffects.mTools),
+      saturator: createAssignments(stripEffects.mSaturator),
+      limiter: createAssignments(stripEffects.mLimiter),
     };
-  });
+  }
+
+  return stripEffectAssignments;
 };
 
 export const stripEffects = (hostAccess: MR_HostAccess): EncoderPageConfig => {
-  const mStripEffects =
-    hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects;
+  const stripEffectAssignments = getStripEffectAssignments(hostAccess);
 
   return {
     name: "Channel Strip",
     assignments: [
-      mStripEffects.mGate,
-      mStripEffects.mCompressor,
-      mStripEffects.mTools,
-      mStripEffects.mSaturator,
-      mStripEffects.mLimiter,
-    ].flatMap(makeStripEffectAssignments),
+      ...stripEffectAssignments.gate,
+      ...stripEffectAssignments.compressor,
+      ...stripEffectAssignments.tools,
+      ...stripEffectAssignments.saturator,
+      ...stripEffectAssignments.limiter,
+    ],
     areAssignmentsChannelRelated: false,
   };
 };
 
 const makeStripEffectEncoderPageConfig = (
   name: string,
-  stripEffect: StripEffectSlot,
+  assignments: EncoderAssignmentConfig[],
 ): EncoderPageConfig => {
   return {
     name,
-    assignments: makeStripEffectAssignments(stripEffect),
+    assignments,
     areAssignmentsChannelRelated: false,
   };
 };
 
 export const stripEffectGate = (hostAccess: MR_HostAccess) =>
-  makeStripEffectEncoderPageConfig(
-    "Gate",
-    hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects.mGate,
-  );
+  makeStripEffectEncoderPageConfig("Gate", getStripEffectAssignments(hostAccess)["gate"]);
 
 export const stripEffectCompressor = (hostAccess: MR_HostAccess) =>
   makeStripEffectEncoderPageConfig(
     "Compressor",
-    hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects.mCompressor,
+    getStripEffectAssignments(hostAccess)["compressor"],
   );
 
 export const stripEffectTools = (hostAccess: MR_HostAccess) =>
-  makeStripEffectEncoderPageConfig(
-    "Tools",
-    hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects.mTools,
-  );
+  makeStripEffectEncoderPageConfig("Tools", getStripEffectAssignments(hostAccess)["tools"]);
 
 export const stripEffectSaturator = (hostAccess: MR_HostAccess) =>
-  makeStripEffectEncoderPageConfig(
-    "Saturator",
-    hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects.mSaturator,
-  );
+  makeStripEffectEncoderPageConfig("Saturator", getStripEffectAssignments(hostAccess)["saturator"]);
 
 export const stripEffectLimiter = (hostAccess: MR_HostAccess) =>
-  makeStripEffectEncoderPageConfig(
-    "Limiter",
-    hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects.mLimiter,
-  );
+  makeStripEffectEncoderPageConfig("Limiter", getStripEffectAssignments(hostAccess)["limiter"]);
 
 /**
  * Not a page config, I know. But I'd like to make it a page config in the future (the
