@@ -1,4 +1,3 @@
-import type { EncoderMapper } from "./EncoderMapper";
 import { EncoderPageGroup } from "./EncoderPageGroup";
 import { config } from "/config";
 import { LedButton } from "/decorators/surface-elements/LedButton";
@@ -46,6 +45,17 @@ export interface EncoderPageConfig {
   name: string;
   assignments: EncoderAssignmentConfigs;
   areAssignmentsChannelRelated: boolean;
+
+  /**
+   * An optional function to add additional host mappings for the encoder page. It receives the
+   * created {@link EncoderPage}, its {@link EncoderPageGroup}, and an
+   * {@link EncoderMappingDependencies} object.
+   */
+  enhanceMapping?: (
+    page: EncoderPage,
+    pageGroup: EncoderPageGroup,
+    mappingDependencies: EncoderMappingDependencies,
+  ) => void;
 }
 
 interface SubPages {
@@ -71,47 +81,46 @@ export interface EncoderMappingDependencies {
   globalState: GlobalState;
 }
 
-export class EncoderPage implements EncoderPageConfig {
-  public readonly subPages: SubPages;
-  public readonly name: string;
-  public readonly assignments: EncoderAssignmentConfig[];
-  public readonly areAssignmentsChannelRelated: boolean;
-
-  private isActive = new ContextVariable(false);
+export class EncoderPage {
+  private readonly assignments: EncoderAssignmentConfig[];
   private lastSubPageActivationTime = 0;
 
+  public readonly subPages: SubPages;
+  public readonly isActive = new ContextVariable(false);
+
   constructor(
+    private readonly config: EncoderPageConfig,
+    private readonly index: number,
     private readonly encoderPageGroup: EncoderPageGroup,
     private dependencies: EncoderMappingDependencies,
-    pageConfig: EncoderPageConfig,
-    public readonly activatorButtons: LedButton[],
-    public readonly index: number,
-    public readonly pagesCount: number,
   ) {
-    this.name = pageConfig.name;
-    this.areAssignmentsChannelRelated = pageConfig.areAssignmentsChannelRelated;
+    this.assignments = this.processAssignments(config.assignments);
+    this.subPages = this.createSubPages();
+    this.bindSubPages();
+  }
 
-    const assignmentsConfig = pageConfig.assignments;
-    this.assignments =
-      typeof assignmentsConfig === "function"
-        ? dependencies.mixerBankChannels.map((channel, channelIndex) =>
-            assignmentsConfig(channel, channelIndex),
+  private processAssignments(
+    assignmentConfigs: EncoderAssignmentConfigs,
+  ): EncoderAssignmentConfig[] {
+    const assignments =
+      typeof assignmentConfigs === "function"
+        ? this.dependencies.mixerBankChannels.map((channel, channelIndex) =>
+            assignmentConfigs(channel, channelIndex),
           )
-        : assignmentsConfig;
+        : assignmentConfigs;
 
-    for (const assignment of this.assignments) {
+    for (const assignment of assignments) {
       if (assignment.onPush) {
         assignment.pushToggleValue = undefined;
       }
     }
 
-    this.subPages = this.createSubPages();
-    this.bindSubPages();
+    return assignments;
   }
 
   private createSubPages(): SubPages {
     const subPageArea = this.dependencies.encoderSubPageArea;
-    const subPageName = `${this.name} ${this.index + 1}`;
+    const subPageName = `${this.config.name} ${this.index + 1}`;
 
     const subPages: SubPages = {
       default: subPageArea.makeSubPage(subPageName),
@@ -239,7 +248,7 @@ export class EncoderPage implements EncoderPageConfig {
           (binding) => {
             // Don't select mixer channels on touch when a fader's value does not belong to its
             // mixer channel
-            binding.filterByValue(+this.areAssignmentsChannelRelated);
+            binding.filterByValue(+this.config.areAssignmentsChannelRelated);
           },
         );
       }
@@ -267,14 +276,21 @@ export class EncoderPage implements EncoderPageConfig {
     }
   }
 
+  public enhanceMappingIfApplicable() {
+    if (this.config.enhanceMapping) {
+      this.config.enhanceMapping(this, this.encoderPageGroup, this.dependencies);
+    }
+  }
+
   public onActivated(context: MR_ActiveDevice) {
     this.isActive.set(context, true);
 
+    const numberOfPages = this.encoderPageGroup.numberOfPages;
     const assignment =
-      this.pagesCount === 1
+      numberOfPages === 1
         ? "  "
-        : this.pagesCount < 10
-          ? `${this.index + 1}.${this.pagesCount}`
+        : numberOfPages < 10
+          ? `${this.index + 1}.${numberOfPages}`
           : (this.index + 1).toString().padStart(2, " ");
 
     this.dependencies.segmentDisplayManager.setAssignment(context, assignment);

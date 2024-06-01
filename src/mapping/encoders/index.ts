@@ -58,7 +58,10 @@ export function bindEncoders(
     },
 
     // Plug-In
-    pageConfigs.pluginMappingConfig(page, (device) => selectAssignButtons(device).plugin),
+    {
+      activatorButtonSelector: (device) => selectAssignButtons(device).plugin,
+      pages: [pageConfigs.focusedInsertEffect(hostAccess)],
+    },
 
     // Instrument
     {

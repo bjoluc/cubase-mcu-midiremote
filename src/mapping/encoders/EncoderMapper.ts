@@ -18,12 +18,6 @@ export type EncoderMappingConfig = {
   activatorButtonSelector: (device: MainDevice) => LedButton;
 
   pages: EncoderPageConfig[];
-
-  /**
-   * An optional function that receives the created {@link EncoderPage} objects and an array with
-   * each device's activator button. It can be used to add additional host mappings.
-   */
-  enhanceMapping?: (pages: EncoderPage[], activatorButtons: LedButton[]) => void;
 };
 
 export class EncoderMapper {
