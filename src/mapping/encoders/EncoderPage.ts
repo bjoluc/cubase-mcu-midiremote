@@ -1,6 +1,5 @@
 import { EncoderPageGroup } from "./EncoderPageGroup";
 import { config } from "/config";
-import { LedButton } from "/decorators/surface-elements/LedButton";
 import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { ChannelSurfaceElements, ControlSectionButtons } from "/device-configs";
 import { MainDevice } from "/devices";
