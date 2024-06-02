@@ -243,6 +243,7 @@ The button has no effect when both time formats are identical, so make sure you 
 ### One or multiple devices are unresponsive
 
 Try [disabling and re-enabling](#how-to-disable-and-re-enable-a-controller-script) the controller script in the MIDI Remote Manager to make Cubase re-detect the script's MIDI ports.
+If that doesn't solve it and the unresponsive device is connected via network MIDI, it might help to [configure a lower bitrate](https://github.com/bjoluc/cubase-mcu-midiremote/issues/27#issuecomment-1930624505).
 
 ### How to disable and re-enable a controller script?
 
