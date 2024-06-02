@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.10.1](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.10.0...v1.10.1) (2024-06-02)
+
+
+### Bug Fixes
+
+* Fix plugin parameter page navigation via Shift + Channel Left/Right ([6c0d268](https://github.com/bjoluc/cubase-mcu-midiremote/commit/6c0d268ce1acd4e2d5270e9bd6fb0d5a2d1eb06f))
+* **iCON Platform M+:** Fix mapping of the Mixer button ([5cc90c8](https://github.com/bjoluc/cubase-mcu-midiremote/commit/5cc90c87756a2953804ea51e4333554703a85775))
+
 ## [1.10.0](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.9.0...v1.10.0) (2024-05-25)
 
 

@@ -257,46 +257,53 @@ export const stripEffectSaturator = (hostAccess: MR_HostAccess) =>
 export const stripEffectLimiter = (hostAccess: MR_HostAccess) =>
   makeStripEffectEncoderPageConfig("Limiter", getStripEffectAssignments(hostAccess)["limiter"]);
 
-/**
- * Not a page config, I know. But I'd like to make it a page config in the future (the
- * `enhanceMapping` logic is currently preventing this).
- **/
-export const pluginMappingConfig = (
-  page: MR_FactoryMappingPage,
-  activatorButtonSelector: (device: MainDevice) => LedButton,
-): EncoderMappingConfig => {
-  const insertEffectsViewer = page.mHostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects
+export const focusedInsertEffect = (hostAccess: MR_HostAccess): EncoderPageConfig => {
+  const insertEffectsViewer = hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects
     .makeInsertEffectViewer("Inserts")
     .followPluginWindowInFocus();
+  const parameterBankZone = insertEffectsViewer.mParameterBankZone;
 
   return {
-    activatorButtonSelector,
-    pages: [
-      {
-        name: "Plugin",
-        assignments: () => {
-          const parameterValue = insertEffectsViewer.mParameterBankZone.makeParameterValue();
-          return {
-            encoderValue: parameterValue,
-            displayMode: EncoderDisplayMode.SingleDot,
-          };
-        },
-        areAssignmentsChannelRelated: false,
-      },
-    ],
-    enhanceMapping: ([pluginEncoderPage], activatorButtons) => {
-      for (const button of activatorButtons) {
-        for (const subPage of [
-          pluginEncoderPage.subPages.default,
-          pluginEncoderPage.subPages.flip,
-        ]) {
+    name: "Plugin",
+    assignments: () => {
+      const parameterValue = parameterBankZone.makeParameterValue();
+      return {
+        encoderValue: parameterValue,
+        displayMode: EncoderDisplayMode.SingleDot,
+      };
+    },
+    areAssignmentsChannelRelated: false,
+
+    enhanceMapping(encoderPage, pageGroup, { page, mainDevices, globalState }) {
+      const subPages = encoderPage.subPages;
+      const actions = parameterBankZone.mAction;
+
+      for (const button of pageGroup.activatorButtons) {
+        for (const subPage of [subPages.default, subPages.flip]) {
+          page.makeActionBinding(button.mSurfaceValue, actions.mNextBank).setSubPage(subPage);
+        }
+      }
+
+      // Map channel navigation buttons to parameter bank navigation
+      for (const device of mainDevices) {
+        const channelButtons = device.controlSectionElements.buttons.navigation.channel;
+
+        for (const subPage of [subPages.defaultShift, subPages.flipShift]) {
           page
-            .makeActionBinding(
-              button.mSurfaceValue,
-              insertEffectsViewer.mParameterBankZone.mAction.mNextBank,
-            )
+            .makeActionBinding(channelButtons.left.mSurfaceValue, actions.mPrevBank)
+            .setSubPage(subPage);
+          page
+            .makeActionBinding(channelButtons.right.mSurfaceValue, actions.mNextBank)
             .setSubPage(subPage);
         }
+
+        // Light up navigation buttons in shift mode
+        globalState.isShiftModeActive.addOnChangeCallback((context, isShiftModeActive) => {
+          if (encoderPage.isActive.get(context)) {
+            channelButtons.left.setLedValue(context, +isShiftModeActive);
+            channelButtons.right.setLedValue(context, +isShiftModeActive);
+          }
+        });
       }
     },
   };
