@@ -176,7 +176,7 @@ export const deviceConfig: DeviceConfig = {
 
   configureEncoderMappings() {
     return [
-      // Pan, Monitor, Gain, LC, HC (F1)
+      // Pan, Monitor, Gain, LC, HC, Sends 1-3 (F1)
       {
         activatorButtonSelector: (device) => device.controlSectionElements.buttons.function[0],
         pages: [
@@ -185,13 +185,10 @@ export const deviceConfig: DeviceConfig = {
           encoderPageConfigs.inputGain,
           encoderPageConfigs.lowCut,
           encoderPageConfigs.highCut,
+          encoderPageConfigs.sendSlot(0),
+          encoderPageConfigs.sendSlot(1),
+          encoderPageConfigs.sendSlot(2),
         ],
-      },
-
-      // Sends 1-3 (F2)
-      {
-        activatorButtonSelector: (device) => device.controlSectionElements.buttons.function[1],
-        pages: createElements(3, (slotId) => encoderPageConfigs.sendSlot(slotId)),
       },
     ];
   },

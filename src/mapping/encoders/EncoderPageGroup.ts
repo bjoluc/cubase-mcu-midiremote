@@ -7,22 +7,24 @@ export class EncoderPageGroup {
   private static activeInstance = new ContextVariable<EncoderPageGroup | undefined>(undefined);
 
   private activeEncoderPage = new ContextVariable<EncoderPage | undefined>(undefined);
-  private activatorButtons: LedButton[];
+
+  public readonly numberOfPages: number;
+  public readonly activatorButtons: LedButton[];
 
   constructor(
     private dependencies: EncoderMappingDependencies,
     config: EncoderMappingConfig,
   ) {
     this.activatorButtons = dependencies.mainDevices.map(config.activatorButtonSelector);
-    const encoderPages = this.createEncoderPages(
-      this.splitEncoderPageConfigs(config.pages),
-      this.activatorButtons,
-    );
+
+    const encoderPages = this.createEncoderPages(this.splitEncoderPageConfigs(config.pages));
+    this.numberOfPages = encoderPages.length;
+
     this.bindEncoderPagesToActivatorButtons(encoderPages);
     this.bindEncoderPagesToChannelButtons(encoderPages);
 
-    if (config.enhanceMapping) {
-      config.enhanceMapping(encoderPages, this.activatorButtons);
+    for (const page of encoderPages) {
+      page.enhanceMappingIfApplicable();
     }
   }
 
@@ -51,19 +53,12 @@ export class EncoderPageGroup {
   }
 
   /**
-   * Given a list of `EncoderPageConfig`s and the button(s) that cycle through the encoder pages,
-   * this method creates `EncoderPage`s for them and returns the resulting list of encoder pages.
+   * Given a list of `EncoderPageConfig`s, this method creates `EncoderPage`s for them and returns
+   * them in an array.
    */
-  private createEncoderPages(pageConfigs: EncoderPageConfig[], activatorButtons: LedButton[]) {
+  private createEncoderPages(pageConfigs: EncoderPageConfig[]) {
     return pageConfigs.map((pageConfig, pageIndex) => {
-      return new EncoderPage(
-        this,
-        this.dependencies,
-        pageConfig,
-        activatorButtons,
-        pageIndex,
-        pageConfigs.length,
-      );
+      return new EncoderPage(pageConfig, pageIndex, this, this.dependencies);
     });
   }
 
@@ -170,7 +165,7 @@ export class EncoderPageGroup {
   }
 
   /**
-   * This is invoked when another `EncoderGroup` is activated.
+   * This is invoked when another `EncoderPageGroup` is activated.
    */
   onDeactivated(context: MR_ActiveDevice) {
     this.activeEncoderPage.get(context)?.onDeactivated(context);

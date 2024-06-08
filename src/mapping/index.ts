@@ -1,4 +1,4 @@
-import { bindControlSection, bindFootControl, bindMouseValueControl } from "./control";
+import { bindControlSection, bindMouseValueControl } from "./control";
 import { bindEncoders } from "./encoders";
 import { config } from "/config";
 import { Device, MainDevice } from "/devices";
@@ -98,10 +98,8 @@ export function makeHostMapping(
         page.makeValueBinding(mainVuMeters.right, mainChannel.mValue.mVUMeter);
       }
 
-      // Display buttons, 1-8, F1-F8, Modify, Automation, Utility, Transport, Navigation, Jog wheel
+      // Display buttons, 1-8, Modify, Automation, Utility, Transport, Navigation, Jog wheel
       bindControlSection(page, device, mixerBankZone, globalState);
-
-      bindFootControl(page, controlSectionElements);
     }
   }
 

@@ -165,15 +165,6 @@ export function bindControlSection(
     );
   }
 
-  // Function buttons
-  for (const button of buttons.function) {
-    page.makeCommandBinding(
-      button.mSurfaceValue,
-      "MIDI Remote",
-      "Open MIDI Remote Mapping Assistant",
-    );
-  }
-
   // Edit
   page
     .makeCommandBinding(buttons.edit.mSurfaceValue, "Edit", "Edit Channel Settings")
@@ -419,21 +410,5 @@ export function bindControlSection(
     ) => {
       globalState.isShiftModeActive.set(context, Boolean(value), mapping);
     };
-  }
-}
-
-export function bindFootControl(
-  page: MR_FactoryMappingPage,
-  controlSectionElements: ControlSectionSurfaceElements,
-) {
-  for (const footSwitch of [
-    controlSectionElements.footSwitch1,
-    controlSectionElements.footSwitch2,
-  ]) {
-    page.makeCommandBinding(
-      footSwitch.mSurfaceValue,
-      "MIDI Remote",
-      "Open MIDI Remote Mapping Assistant",
-    );
   }
 }

@@ -10,7 +10,7 @@
 Cubase MIDI Remote Scripts for DAW Controllers using the MCU Protocol
 
 <div align="center">
-  <img alt="Surface Screenshot" width="800" src="./surface.png">
+  <img alt="Surface Screenshot" width="800" src="./images/surface.png">
 </div>
 
 The following devices are explicitly supported:
@@ -52,15 +52,8 @@ Since version 12, Cubase supports the customized integration of MIDI controllers
 Several vendors are producing DAW controllers similar to the Mackie Control Universal (MCU) which are traditionally set up as Mackie Control devices in Cubase.
 Creating MIDI Remote API scripts for these controllers allows to improve the mapping where applicable and offers users the possibility to override parts of it themselves via Cubase's MIDI Remote Mapping Assistant.
 
-Some points for improvement of the default MCU mapping are:
-
-- The main fader controls the first output channel's volume, not the Control Room volume.
-- The meters do not seem to fully match the scale of the MixConsole meters.
-- Bringing up the parameters of the currently focused plugin requires navigating through the list of insert slots with a push encoder.
-- There is no single knob that can control any parameter under the mouse cursor, like in Steinberg's CC121 controller.
-
 Moreover, some controllers have features that are not available with the default Mackie Control setup in Cubase.
-For instance, the Behringer X-Touch has an individual, generously padded, RGB backlit scribble strip display per channel, as well as integrated LEDs in most buttons.
+For instance, the Behringer X-Touch has an individual, RGB-backlit scribble strip display per channel, as well as integrated LEDs in most buttons.
 A MIDI Remote API script can illuminate these scribble strips according to their tracks' colors, avoid unnecessary display padding characters, and light up buttons while they are being pressed.
 
 ## Setup
@@ -90,7 +83,7 @@ A MIDI Remote API script can illuminate these scribble strips according to their
 
   > **Note** Cubase does not expect scripts to change their port definitions over time – which is what happens when you edit the `devices` config option.
   > If you load a project in which you were previously using the script with a different `devices` configuration, Cubase might not properly detect your devices' MIDI ports and your devices might stay unresponsive.
-  > In that case, try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
+  > In that case, try [disabling and re-enabling](#how-to-disable-and-re-enable-a-controller-script) the controller script in the MIDI Remote Manager to make Cubase forget the previous port configuration.
 
   > **Note** Most extender devices will let you choose an extender number (1,2,3,...) which will affect the MIDI port names assigned to them.
   > If you have only one extender, make sure it is configured as extender 1.
@@ -169,7 +162,7 @@ The table below summarizes all available encoder assignments:
 
 Current limitations of the MIDI Remote API:
 
-- The "Track" encoder assignment is missing the "Input Bus" and "Output Bus" pages which are not exposed by the MIDI Remote API. I prefer to use the mouse for routing anyway, as opposed to a push encoder and a tiny single-row string on a scribble strip display.
+- The "Track" encoder assignment is missing the "Input Bus" and "Output Bus" pages which are not exposed by the MIDI Remote API.
 - The "Pan/Surround" encoder assignment is missing a second page for vertical panning which is not exposed by the MIDI Remote API.
 - The "Send" encoder assignment doesn't include a "Bus" page because send busses are not exposed by the MIDI Remote API.
 - The "Plug-In" encoder assignment doesn't display the number of the active parameter page because it is not exposed by the MIDI Remote API.
@@ -186,9 +179,15 @@ Current limitations of the MIDI Remote API:
 <summary>Behringer X-Touch One</summary>
 
 - The X-Touch One script does not provide a `devices` config option. If you want to use an X-Touch One with an extender, please use the X-Touch One script and the X-Touch script separately.
-- The X-Touch One does not have encoder assign buttons. To make up for this, the F1 and F2 buttons are mapped to cycle through the following encoder assignments:
-  - F1: Pan, Monitor, Pre Gain, Low-Cut Frequency / Enabled, High-Cut Frequency / Enabled
-  - F2: Send levels/active 1-3
+- The X-Touch One does not have encoder assign buttons. To make up for this, the F1 button is mapped to cycle through the following encoder assignments:
+  - **1** Pan
+  - **2** Monitor
+  - **3** Pre Gain
+  - **4** Low-Cut Frequency / Enabled
+  - **5** High-Cut Frequency / Enabled
+  - **6** Send Slot 1 Level / Active
+  - **7** Send Slot 2 Level / Active
+  - **8** Send Slot 3 Level / Active
 - The F3 button turns the push encoder and the jog wheel into controllers for the value that's currently under the mouse cursor – like the Steinberg CC121's AI knob.
 - The F4 button is mapped as "Shift".
 
@@ -249,6 +248,8 @@ Those mappings are stored as JSON files in a `User Settings` folder at `Document
 If some button/fader/encoder isn't working as expected – especially after an update to the script – it is always worth a try to remove the user setting files (those starting with your script's name) to make sure they don't interfere with the script's default functionality.
 Afterwards, restart Cubase to reload the MIDI Remote scripts and settings.
 
+If that still didn't help, [disabling and re-enabling](#how-to-disable-and-re-enable-a-controller-script) the controller script can solve some mapping issues as well.
+
 ### Some displays are lagging or faders are stuttering heavily when reading automation
 
 This might be caused by another source sending MIDI data to your device, for instance Cubase's default Mackie Control remote device integration.
@@ -261,4 +262,9 @@ The button has no effect when both time formats are identical, so make sure you 
 
 ### One or multiple devices are unresponsive
 
-Try disabling and re-enabling the controller script in the MIDI Remote Manager to make Cubase re-detect the script's MIDI ports.
+Try [disabling and re-enabling](#how-to-disable-and-re-enable-a-controller-script) the controller script in the MIDI Remote Manager to make Cubase re-detect the script's MIDI ports.
+If that doesn't solve it and the unresponsive device is connected via network MIDI, it might help to [configure a lower bitrate](https://github.com/bjoluc/cubase-mcu-midiremote/issues/27#issuecomment-1930624505).
+
+### How to disable and re-enable a controller script?
+
+![How to disable and re-enable a controller script](images/disable-enable-controller-script.gif)

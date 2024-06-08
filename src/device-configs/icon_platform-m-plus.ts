@@ -149,9 +149,9 @@ export const deviceConfig: DeviceConfig = {
           automation: {
             read: mainChannelButtons[1],
             write: mainChannelButtons[2],
-            mixer: mainChannelButtons[0],
           },
           transport: {
+            left: mainChannelButtons[0],
             cycle: controlButtonArray[9],
             rewind: controlButtonArray[4],
             forward: controlButtonArray[5],
@@ -175,7 +175,10 @@ export const deviceConfig: DeviceConfig = {
   },
 
   getSupplementaryShiftButtons(device) {
-    return [device.controlSectionElements.buttons.automation.mixer];
+    return [
+      device.controlSectionElements.buttons.transport.left, // "Mixer" on the Platform M(+)
+      device.controlSectionElements.buttons.automation.mixer, // MCU Mixer button, for those having re-assigned the Platform M(+) mixer button's MIDI note
+    ];
   },
 
   configureEncoderMappings(defaultEncoderMappings, page) {

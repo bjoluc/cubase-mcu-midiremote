@@ -1,4 +1,4 @@
-import { EncoderMappingDependencies, EncoderPage, EncoderPageConfig } from "./EncoderPage";
+import { EncoderMappingDependencies, EncoderPageConfig } from "./EncoderPage";
 import { EncoderPageGroup } from "./EncoderPageGroup";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { Device, MainDevice } from "/devices";
@@ -17,12 +17,6 @@ export interface EncoderMappingConfig {
   activatorButtonSelector: (device: MainDevice) => LedButton;
 
   pages: EncoderPageConfig[];
-
-  /**
-   * An optional function that receives the created {@link EncoderPage} objects and an array with
-   * each device's activator button. It can be used to add additional host mappings.
-   */
-  enhanceMapping?: (pages: EncoderPage[], activatorButtons: LedButton[]) => void;
 }
 
 export class EncoderMapper {
