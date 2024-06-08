@@ -78,7 +78,7 @@ export const deviceConfig: DeviceConfig = {
   colorManager: IconColorManager,
   maximumMeterValue: 0xc,
   hasIndividualScribbleStrips: true,
-  hasSecondaryScribbleStrips: true,
+  secondaryScribbleStripSetup: "joint",
 
   detectionUnits: [
     {

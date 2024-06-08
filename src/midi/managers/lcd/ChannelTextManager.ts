@@ -270,14 +270,16 @@ export class ChannelTextManager {
    * device has secondary displays.
    */
   private updateSecondaryTrackTitleDisplay(context: MR_ActiveDevice) {
-    if (deviceConfig.hasSecondaryScribbleStrips) {
+    if (deviceConfig.secondaryScribbleStripSetup) {
       this.sendText(
         context,
         2,
         ChannelTextManager.centerString(
           this.isFaderTouched.get(context)
             ? this.faderParameterName.get(context)
-            : this.channelName.get(context),
+            : deviceConfig.secondaryScribbleStripSetup === "separate"
+              ? this.channelName.get(context)
+              : "",
         ),
       );
     }
@@ -288,7 +290,7 @@ export class ChannelTextManager {
    * device has secondary displays.
    */
   private updateSupplementaryInfo(context: MR_ActiveDevice) {
-    if (deviceConfig.hasSecondaryScribbleStrips) {
+    if (deviceConfig.secondaryScribbleStripSetup) {
       this.sendText(
         context,
         3,
