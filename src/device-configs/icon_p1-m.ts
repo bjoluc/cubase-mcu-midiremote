@@ -129,7 +129,7 @@ export const deviceConfig: DeviceConfig = {
 
     // Button matrix
     const buttonMatrixControlLayerZone = surface.makeControlLayerZone("Touch Buttons");
-    const buttonMatrix = createElements(3, (layerIndex) => {
+    const buttonMatrix = createElements(5, (layerIndex) => {
       const controlLayer = buttonMatrixControlLayerZone.makeControlLayer(
         "Layer " + (layerIndex < 3 ? layerIndex + 1 : "U" + (layerIndex - 3)),
       );
@@ -194,41 +194,40 @@ export const deviceConfig: DeviceConfig = {
             bank: { left: lowerButtonMatrix[0][2], right: lowerButtonMatrix[0][3] },
           },
           flip: lowerButtonMatrix[0][4],
-          //
-          // display: buttonMatrix[0][0][4],
-          // timeMode: buttonMatrix[0][0][5],
-          // scrub: buttonMatrix[0][1][4],
-          // edit: buttonMatrix[0][0][0],
-          //
-          // encoderAssign: {
-          //   pan: buttonMatrix[1][0][0],
-          //   eq: buttonMatrix[1][1][0],
-          //   send: buttonMatrix[1][1][1],
-          //   plugin: buttonMatrix[1][1][2],
-          // },
-          //
-          // modify: {
-          //   undo: buttonMatrix[0][2][0],
-          //   redo: buttonMatrix[0][2][1],
-          //   save: buttonMatrix[0][3][0],
-          //   revert: buttonMatrix[0][3][1],
-          // },
-          //
+
+          display: buttonMatrix[0][1][2],
+          timeMode: buttonMatrix[0][1][3],
+          scrub: buttonMatrix[1][2][3],
+          edit: buttonMatrix[0][0][0],
+
+          encoderAssign: {
+            pan: buttonMatrix[2][0][0],
+            eq: buttonMatrix[2][2][0],
+            send: buttonMatrix[2][2][1],
+            plugin: buttonMatrix[2][1][0],
+          },
+
+          modify: {
+            undo: buttonMatrix[0][2][0],
+            redo: buttonMatrix[0][2][1],
+            save: buttonMatrix[0][3][0],
+          },
+
           automation: {
             read: lowerButtonMatrix[1][1],
             write: lowerButtonMatrix[1][3],
-            //   motor: buttonMatrix[0][1][5],
-            //   mixer: buttonMatrix[0][0][2],
-            //   project: buttonMatrix[0][0][3],
+            motor: buttonMatrix[0][2][3],
+            mixer: buttonMatrix[0][0][2],
+            project: buttonMatrix[0][0][3],
           },
-          //
-          // utility: {
-          //   instrument: buttonMatrix[0][1][0],
-          //   main: buttonMatrix[0][1][1],
-          //   soloDefeat: buttonMatrix[0][2][2],
-          //   shift: buttonMatrix[0][3][5],
-          // },
-          //
+
+          utility: {
+            instrument: buttonMatrix[0][1][0],
+            main: buttonMatrix[0][1][1],
+            soloDefeat: buttonMatrix[0][2][2],
+            shift: buttonMatrix[0][3][3],
+          },
+
           transport: {
             rewind: transportButtons[0],
             forward: transportButtons[1],
@@ -237,14 +236,14 @@ export const deviceConfig: DeviceConfig = {
             play: transportButtons[4],
             record: transportButtons[5],
 
-            // punch: buttonMatrix[0][1][3],
-            // markers: {
-            //   previous: buttonMatrix[0][2][3],
-            //   add: buttonMatrix[0][2][4],
-            //   next: buttonMatrix[0][2][5],
-            // },
-            // left: buttonMatrix[0][3][3],
-            // right: buttonMatrix[0][3][4],
+            punch: buttonMatrix[1][2][1],
+            markers: {
+              previous: buttonMatrix[1][3][0],
+              add: buttonMatrix[1][3][1],
+              next: buttonMatrix[1][3][2],
+            },
+            left: buttonMatrix[0][3][1],
+            right: buttonMatrix[0][3][2],
           },
         },
 
@@ -259,7 +258,6 @@ export const deviceConfig: DeviceConfig = {
   },
 
   enhanceMapping({ devices, page }) {
-    /*
     const mainDevices = devices.filter(
       (device) => device instanceof MainDevice,
     ) as MainDevice<MainDeviceCustomElements>[];
@@ -269,22 +267,12 @@ export const deviceConfig: DeviceConfig = {
       const { ports } = device;
       const buttonMatrix = device.customElements.buttonMatrix;
 
-      // MIDI Bindings
-      // Remaining buttons in Layer 1
-      buttonMatrix[0][0][1].bindToNote(ports, 119, 0);
-      buttonMatrix[0][1][2].bindToNote(ports, 120, 0);
-      buttonMatrix[0][3][2].bindToNote(ports, 121, 0);
-
-      // Remaining buttons in Layer 2 & 3
-      for (const [layerId, layer] of buttonMatrix.slice(1).entries()) {
+      // Bind remaining matrix buttons to MIDI notes on Channel 2
+      for (const [layerId, layer] of buttonMatrix.entries()) {
         for (const [rowId, row] of layer.entries()) {
           for (const [columnId, button] of row.entries()) {
             if (!button.isBoundToNote()) {
-              if (layerId === 0 && rowId === 0) {
-                button.bindToNote(ports, 122 + columnId);
-              } else {
-                button.bindToNote(ports, (layerId + 1) * 24 + rowId * 6 + columnId, 1); // Channel 2
-              }
+              button.bindToNote(ports, layerId * 16 + rowId * 4 + columnId, 1); // Channel 2
             }
           }
         }
@@ -300,71 +288,81 @@ export const deviceConfig: DeviceConfig = {
         .setTypeToggle();
 
       // Reset meters
-      page.makeCommandBinding(buttonMatrix[0][1][2].mSurfaceValue, "Mixer", "Meters: Reset");
+      page.makeCommandBinding(buttonMatrix[1][2][2].mSurfaceValue, "Mixer", "Meters: Reset");
 
       // Click
       page
         .makeValueBinding(
-          buttonMatrix[0][3][2].mSurfaceValue,
+          buttonMatrix[1][2][0].mSurfaceValue,
           page.mHostAccess.mTransport.mValue.mMetronomeActive,
         )
         .setTypeToggle();
     }
-    */
   },
 
-  // getSupplementaryShiftButtons(device: MainDevice<MainDeviceCustomElements>) {
-  //   const buttonMatrix = device.customElements.buttonMatrix;
-  //   return [buttonMatrix[1][3][5], buttonMatrix[2][3][5]];
-  // },
+  getSupplementaryShiftButtons(device: MainDevice<MainDeviceCustomElements>) {
+    const buttonMatrix = device.customElements.buttonMatrix;
+    return [buttonMatrix[1][3][3], buttonMatrix[2][3][3]];
+  },
 
-  // configureEncoderMappings(defaultEncoderMapping, page) {
-  //   const makeActivatorButtonSelector = (row: number, column: number) => (device: MainDevice) =>
-  //     (device as MainDevice<MainDeviceCustomElements>).customElements.buttonMatrix[1][row][column];
+  configureEncoderMappings(defaultEncoderMapping, page) {
+    const makeActivatorButtonSelector = (row: number, column: number) => (device: MainDevice) =>
+      (device as MainDevice<MainDeviceCustomElements>).customElements.buttonMatrix[2][row][column];
 
-  //   const hostAccess = page.mHostAccess;
-  //   return [
-  //     // The default six MCU encoder assign button mappings are included for backwards compatibility
-  //     // with the default iMAP Cubase button functions:
-  //     ...defaultEncoderMapping,
+    const hostAccess = page.mHostAccess;
+    return [
+      // The default six MCU encoder assign button mappings are included for backwards compatibility
+      // with the default iMAP Cubase button functions:
+      ...defaultEncoderMapping,
 
-  //     // These are additional, fine-grained encoder mappings:
+      // These are additional, fine-grained encoder mappings:
+      {
+        pages: [pageConfigs.monitor],
+        activatorButtonSelector: makeActivatorButtonSelector(0, 1),
+      },
+      {
+        pages: [pageConfigs.inputGain, pageConfigs.inputPhase],
+        activatorButtonSelector: makeActivatorButtonSelector(0, 2),
+      },
+      {
+        pages: [pageConfigs.lowCut, pageConfigs.highCut],
+        activatorButtonSelector: makeActivatorButtonSelector(0, 3),
+      },
 
-  //     ...[
-  //       pageConfigs.monitor,
-  //       pageConfigs.inputGain,
-  //       pageConfigs.inputPhase,
-  //       pageConfigs.lowCut,
-  //       pageConfigs.highCut,
-  //     ].map((pageConfig, buttonIndex) => ({
-  //       pages: [pageConfig],
-  //       activatorButtonSelector: makeActivatorButtonSelector(0, buttonIndex + 1),
-  //     })),
+      {
+        pages: [pageConfigs.vstQuickControls(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(1, 1),
+      },
+      {
+        pages: [pageConfigs.trackQuickControls(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(1, 2),
+      },
+      {
+        pages: [pageConfigs.focusedQuickControls(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(1, 3),
+      },
 
-  //     {
-  //       activatorButtonSelector: makeActivatorButtonSelector(1, 3),
-  //       pages: [pageConfigs.vstQuickControls(hostAccess)],
-  //     },
-  //     {
-  //       activatorButtonSelector: makeActivatorButtonSelector(1, 4),
-  //       pages: [pageConfigs.trackQuickControls(hostAccess)],
-  //     },
-  //     {
-  //       activatorButtonSelector: makeActivatorButtonSelector(1, 5),
-  //       pages: [pageConfigs.focusedQuickControls(hostAccess)],
-  //     },
-
-  //     // Strip effects
-  //     ...[
-  //       pageConfigs.stripEffectGate(hostAccess),
-  //       pageConfigs.stripEffectCompressor(hostAccess),
-  //       pageConfigs.stripEffectTools(hostAccess),
-  //       pageConfigs.stripEffectSaturator(hostAccess),
-  //       pageConfigs.stripEffectLimiter(hostAccess),
-  //     ].map((pageConfig, buttonColumn) => ({
-  //       pages: [pageConfig],
-  //       activatorButtonSelector: makeActivatorButtonSelector(2, buttonColumn),
-  //     })),
-  //   ];
-  // },
+      // Strip effects
+      {
+        pages: [pageConfigs.stripEffectGate(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(2, 2),
+      },
+      {
+        pages: [pageConfigs.stripEffectCompressor(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(2, 3),
+      },
+      {
+        pages: [pageConfigs.stripEffectTools(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(3, 0),
+      },
+      {
+        pages: [pageConfigs.stripEffectSaturator(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(3, 1),
+      },
+      {
+        pages: [pageConfigs.stripEffectLimiter(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(3, 2),
+      },
+    ];
+  },
 };
