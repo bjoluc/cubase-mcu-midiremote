@@ -126,4 +126,10 @@ var CONFIGURATION = {
    * this option to `true`.
    */
   flipDisplayRowsByDefault: false,
+
+  /**
+   * Set this option to `true` if you want the jog wheel to move the cursor in zoom mode too
+   * (instead of zooming in and out).
+   */
+  disableJogWheelZoom: false,
 };
