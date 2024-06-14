@@ -146,7 +146,7 @@ export const sends = (hostAccess: MR_HostAccess): EncoderPageConfig => {
           encoderParameter: sendSlot.mLevel,
           encoderParameterNameBuilder: (title1, title2) =>
             /^\d$/.test(title1) ? `Send ${title1}` : title1,
-          displayMode: EncoderDisplayMode.SingleDot,
+          displayMode: EncoderDisplayMode.Wrap,
           encoderParameterDefault: 0.7890865802764893,
           pushToggleParameter: sendSlot.mOn,
         };
