@@ -153,22 +153,22 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
     // Scribble Strip
     const channelTextManager = device.lcdManager.channelTextManagers[channelIndex];
 
-    channel.encoder.mOnEncoderValueTitleChange.addCallback((context, _title1, title2) => {
-      channelTextManager.setParameterName(context, title2);
+    channel.encoder.mOnEncoderValueTitleChange.addCallback((context, title1, title2) => {
+      channelTextManager.onParameterTitleChange(context, title1, title2);
     });
 
     channel.encoder.mEncoderValue.mOnDisplayValueChange = (context, value) => {
-      channelTextManager.setParameterValue(context, value);
+      channelTextManager.onParameterDisplayValueChange(context, value);
     };
 
     channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title, title2) => {
-      channelTextManager.setChannelName(context, title);
+      channelTextManager.onChannelNameChange(context, title);
 
       if (DEVICE_NAME === "MCU Pro") {
         clearOverload(context);
       }
 
-      // Reset the VU meter when the channels becomes unassigned (there's no way to reliably detect
+      // Reset the VU meter when the channel becomes unassigned (there's no way to reliably detect
       // this just using `channel.vuMeter`).
       setIsMeterUnassigned(context, title2 === "");
     };
