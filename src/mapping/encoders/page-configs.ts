@@ -332,3 +332,24 @@ export const sendSlot = (slotId: number): EncoderPageConfig => ({
   },
   areAssignmentsChannelRelated: true,
 });
+
+export const cueSlot = (slotId: number): EncoderPageConfig => ({
+  name: "Cue",
+  assignments: (channel) => {
+    const cueSlot = channel.mCueSends.getByIndex(slotId);
+
+    return {
+      encoderParameter: cueSlot.mLevel,
+      encoderParameterNameBuilder: (title1) => title1,
+      displayMode: EncoderDisplayMode.Wrap,
+      encoderParameterDefault: 0.7890865802764893,
+      pushToggleParameter: cueSlot.mOn,
+    };
+  },
+  areAssignmentsChannelRelated: true,
+});
+
+export const allAvailableCueSlotPages = createElements(
+  mDefaults.getMaxControlRoomCueChannels(),
+  cueSlot,
+);
