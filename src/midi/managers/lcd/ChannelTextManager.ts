@@ -1,5 +1,6 @@
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
+import { EncoderParameterNameBuilder } from ".";
 import { LcdManager } from "./LcdManager";
 import { deviceConfig } from "/config";
 import { GlobalState } from "/state";
@@ -10,6 +11,11 @@ import { ContextVariable, TimerUtils } from "/util";
  */
 export class ChannelTextManager {
   private static readonly channelWidth = deviceConfig.hasIndividualScribbleStrips ? 7 : 6;
+
+  private static readonly defaultParameterNameBuilder: EncoderParameterNameBuilder = (
+    title1,
+    title2,
+  ) => title2;
 
   private static nextManagerId = 0;
 
@@ -117,7 +123,7 @@ export class ChannelTextManager {
   private uniqueManagerId = ChannelTextManager.nextManagerId++;
 
   private parameterName = new ContextVariable("");
-  private parameterNameOverride = new ContextVariable<string | undefined>(undefined);
+  private parameterNameBuilder = ChannelTextManager.defaultParameterNameBuilder;
   private parameterValue = new ContextVariable("");
   private channelName = new ContextVariable("");
   private isLocalValueModeActive = new ContextVariable(false);
@@ -176,7 +182,7 @@ export class ChannelTextManager {
       this.isLocalValueModeActive.get(context) ||
         this.globalState.isValueDisplayModeActive.get(context)
         ? this.parameterValue.get(context)
-        : this.parameterNameOverride.get(context) ?? this.parameterName.get(context),
+        : this.parameterName.get(context),
     );
   }
 
@@ -196,7 +202,13 @@ export class ChannelTextManager {
     this.sendText(context, row, this.channelName.get(context));
   }
 
-  setParameterName(context: MR_ActiveDevice, name: string) {
+  setParameterNameBuilder(builder?: EncoderParameterNameBuilder) {
+    // console.log("setParameterNameBuilder");
+    this.parameterNameBuilder = builder ?? ChannelTextManager.defaultParameterNameBuilder;
+  }
+
+  onParameterTitleChange(context: MR_ActiveDevice, title1: string, title2: string) {
+    // console.log("onParameterTitleChange");
     // Luckily, `mOnTitleChange` runs after `mOnDisplayValueChange`, so setting
     // `isLocalValueModeActive` to `false` here overwrites the `true` that `mOnDisplayValueChange`
     // sets
@@ -207,7 +219,7 @@ export class ChannelTextManager {
       ChannelTextManager.centerString(
         ChannelTextManager.abbreviateString(
           ChannelTextManager.stripNonAsciiCharacters(
-            ChannelTextManager.translateParameterName(name),
+            this.parameterNameBuilder(title1, ChannelTextManager.translateParameterName(title2)),
           ),
         ),
       ),
@@ -216,22 +228,7 @@ export class ChannelTextManager {
     this.updateNameValueDisplay(context);
   }
 
-  /**
-   * Sets a parameter name string that replaces the one set via `setParameterName()` until
-   * `clearParameterNameOverride()` is invoked.
-   */
-  setParameterNameOverride(context: MR_ActiveDevice, name: string) {
-    this.parameterNameOverride.set(
-      context,
-      ChannelTextManager.centerString(ChannelTextManager.abbreviateString(name)),
-    );
-  }
-
-  clearParameterNameOverride(context: MR_ActiveDevice) {
-    this.parameterNameOverride.set(context, undefined);
-  }
-
-  setParameterValue(context: MR_ActiveDevice, value: string) {
+  onParameterDisplayValueChange(context: MR_ActiveDevice, value: string) {
     value = ChannelTextManager.translateParameterValue(value);
 
     this.parameterValue.set(
@@ -254,7 +251,7 @@ export class ChannelTextManager {
     );
   }
 
-  setChannelName(context: MR_ActiveDevice, name: string) {
+  onChannelNameChange(context: MR_ActiveDevice, name: string) {
     this.channelName.set(
       context,
       ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(name)),
