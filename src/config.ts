@@ -122,8 +122,8 @@ var CONFIGURATION = {
 
   /**
    * You can flip the scribble strip rows back and forth via "Shift + Display Name/Value". If you
-   * would like to change the default order though (the one the script is initialized with), set
-   * this option to `true`.
+   * would like to change the default order (the one the script is initialized with), set this
+   * option to `true`.
    */
   flipDisplayRowsByDefault: false,
 
