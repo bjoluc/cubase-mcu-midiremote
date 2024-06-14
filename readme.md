@@ -108,7 +108,7 @@ Alternatively, you can manually add it by clicking the "+" button in the lower z
 The very top of the MIDI Remote script file declares a number of configuration options.
 You can edit these options with a text editor to match your preferences.
 Each option is documented in a comment above it.
-For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L28-L115).
+For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L32).
 
 ## Mapping
 
@@ -154,7 +154,6 @@ The table below summarizes all available encoder assignments:
 
 **Miscellaneous**
 
-- The main fader controls the Control Room volume unless the `mapMainFaderToControlRoom` [config option](#configuration-options) is set to `false`.
 - In zoom mode, the jog wheel zooms in and out instead of moving the cursor
 
 ## Drawbacks

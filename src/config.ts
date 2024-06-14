@@ -53,11 +53,11 @@ var CONFIGURATION = {
   enableAutoSelect: true,
 
   /**
-   * If you don't use the Control Room or your version of Cubase doesn't have it, you'll likely want
-   * the main fader to control the first output channel like in the default Mackie Control mapping.
-   * You can achieve this by replacing `true` with `false` below.
+   * By default, the main fader is mapped to the first output channel's volume. If you use the
+   * Control Room, you can map the main fader to the control room level instead by replacing `false`
+   * with `true` below.
    */
-  mapMainFaderToControlRoom: true,
+  mapMainFaderToControlRoom: false,
 
   /**
    * In old Cubase versions, pushing an encoder in the PAN encoder assignment used to reset the
