@@ -190,9 +190,9 @@ const getStripEffectAssignments = (hostAccess: MR_HostAccess) => {
     createElements(8, (): EncoderAssignmentConfig => {
       const parameterValue = stripEffect.mParameterBankZone.makeParameterValue();
       return {
-        encoderValue: parameterValue,
+        encoderParameter: parameterValue,
         displayMode: EncoderDisplayMode.SingleDot,
-        pushToggleValue: stripEffect.mBypass,
+        pushToggleParameter: stripEffect.mBypass,
       };
     });
 
@@ -336,7 +336,7 @@ export const sendSlot = (slotId: number): EncoderPageConfig => ({
   areAssignmentsChannelRelated: true,
 });
 
-export const cueSlot = (slotId: number): EncoderPageConfig => ({
+export const cue = (slotId: number): EncoderPageConfig => ({
   name: "Cue",
   assignments: (channel) => {
     const cueSlot = channel.mCueSends.getByIndex(slotId);
@@ -352,7 +352,4 @@ export const cueSlot = (slotId: number): EncoderPageConfig => ({
   areAssignmentsChannelRelated: true,
 });
 
-export const allAvailableCueSlotPages = createElements(
-  mDefaults.getMaxControlRoomCueChannels(),
-  cueSlot,
-);
+export const allAvailableCuePages = createElements(mDefaults.getMaxControlRoomCueChannels(), cue);

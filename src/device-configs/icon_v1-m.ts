@@ -315,16 +315,26 @@ export const deviceConfig: DeviceConfig = {
 
       // These are additional, fine-grained encoder mappings:
 
-      ...[
-        pageConfigs.monitor,
-        pageConfigs.inputGain,
-        pageConfigs.inputPhase,
-        pageConfigs.lowCut,
-        pageConfigs.highCut,
-      ].map((pageConfig, buttonIndex) => ({
-        pages: [pageConfig],
-        activatorButtonSelector: makeActivatorButtonSelector(0, buttonIndex + 1),
-      })),
+      {
+        pages: [pageConfigs.monitor],
+        activatorButtonSelector: makeActivatorButtonSelector(0, 1),
+      },
+      {
+        pages: [pageConfigs.inputGain],
+        activatorButtonSelector: makeActivatorButtonSelector(0, 2),
+      },
+      {
+        pages: [pageConfigs.inputPhase],
+        activatorButtonSelector: makeActivatorButtonSelector(0, 3),
+      },
+      {
+        pages: [pageConfigs.lowCut, pageConfigs.highCut],
+        activatorButtonSelector: makeActivatorButtonSelector(0, 4),
+      },
+      {
+        pages: pageConfigs.allAvailableCuePages,
+        activatorButtonSelector: makeActivatorButtonSelector(0, 5),
+      },
 
       {
         activatorButtonSelector: makeActivatorButtonSelector(1, 3),
