@@ -119,4 +119,11 @@ var CONFIGURATION = {
    * @devices MCU Pro
    */
   toggleMeteringModeWithoutShift: false,
+
+  /**
+   * You can flip the scribble strip rows back and forth via "Shift + Display Name/Value". If you
+   * would like to change the default order though (the one the script is initialized with), set
+   * this option to `true`.
+   */
+  flipDisplayRowsByDefault: false,
 };

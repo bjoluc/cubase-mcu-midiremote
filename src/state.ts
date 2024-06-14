@@ -1,4 +1,5 @@
-import { BooleanContextVariable, ObservableContextVariable } from "/util";
+import { config } from "./config";
+import { BooleanContextVariable } from "/util";
 
 /** Declares some global context-dependent variables that (may) affect multiple devices */
 export const createGlobalState = () => ({
@@ -6,7 +7,7 @@ export const createGlobalState = () => ({
 
   isValueDisplayModeActive: new BooleanContextVariable(),
 
-  areDisplayRowsFlipped: new BooleanContextVariable(),
+  areDisplayRowsFlipped: new BooleanContextVariable(config.flipDisplayRowsByDefault),
 
   isFlipModeActive: new BooleanContextVariable(),
 
