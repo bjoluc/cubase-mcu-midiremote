@@ -13,6 +13,7 @@ export const pan: EncoderPageConfig = {
     encoderParameter: mixerBankChannel.mValue.mPan,
     encoderParameterDefault: 0.5,
     pushToggleParameter: mixerBankChannel.mValue.mMonitorEnable,
+    pushToggleParameterPrefix: "Mon ",
     onPush: config.resetPanOnEncoderPush
       ? (context, encoder) => {
           encoder.mEncoderValue.setProcessValue(context, 0.5);
@@ -60,6 +61,7 @@ export const lowCut: EncoderPageConfig = {
     encoderParameter: mixerBankChannel.mPreFilter.mLowCutFreq,
     encoderParameterDefault: 0,
     pushToggleParameter: mixerBankChannel.mPreFilter.mLowCutOn,
+    pushToggleParameterPrefix: "LC ",
   }),
   areAssignmentsChannelRelated: true,
 };
@@ -71,6 +73,7 @@ export const highCut: EncoderPageConfig = {
     encoderParameter: mixerBankChannel.mPreFilter.mHighCutFreq,
     encoderParameterDefault: 1,
     pushToggleParameter: mixerBankChannel.mPreFilter.mHighCutOn,
+    pushToggleParameterPrefix: "HC ",
   }),
   areAssignmentsChannelRelated: true,
 };
@@ -105,6 +108,7 @@ export const eq = (hostAccess: MR_HostAccess): EncoderPageConfig => {
           0.2810622751712799, 0.47443774342536926, 0.5877489447593689, 0.889056384563446,
         ][bandIndex],
         pushToggleParameter: band.mOn,
+        pushToggleParameterPrefix: "Bnd ",
       },
       {
         displayMode: EncoderDisplayMode.BoostOrCut,
@@ -120,14 +124,16 @@ export const eq = (hostAccess: MR_HostAccess): EncoderPageConfig => {
       {
         displayMode: EncoderDisplayMode.SingleDot,
         encoderParameter: band.mQ,
-        pushToggleParameter: band.mOn,
         encoderParameterDefault: 0.0833333358168602,
+        pushToggleParameter: band.mOn,
+        pushToggleParameterPrefix: "Bnd ",
       },
       {
         displayMode: EncoderDisplayMode.SingleDot,
         encoderParameter: band.mFilterType,
-        pushToggleParameter: band.mOn,
         encoderParameterDefault: [0.7142857313156128, 1, 1, 0.7142857313156128][bandIndex],
+        pushToggleParameter: band.mOn,
+        pushToggleParameterPrefix: "Bnd ",
       },
     ]),
     areAssignmentsChannelRelated: false,

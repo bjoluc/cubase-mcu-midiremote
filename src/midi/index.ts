@@ -158,6 +158,10 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
       channelTextManager.onParameterDisplayValueChange(context, value);
     };
 
+    channel.encoder.mPushValue.mOnDisplayValueChange = (context, value) => {
+      channelTextManager.onPushParameterDisplayValueChange(context, value);
+    };
+
     channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title, title2) => {
       channelTextManager.onChannelNameChange(context, title);
 

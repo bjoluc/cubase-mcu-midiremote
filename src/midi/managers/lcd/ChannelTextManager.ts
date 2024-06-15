@@ -6,6 +6,12 @@ import { deviceConfig } from "/config";
 import { GlobalState } from "/state";
 import { ContextVariable, TimerUtils } from "/util";
 
+const enum LocalValueDisplayMode {
+  Disabled,
+  EncoderValue,
+  PushValue,
+}
+
 /**
  * Handles the LCD display text of a single channel
  */
@@ -125,8 +131,16 @@ export class ChannelTextManager {
   private parameterName = new ContextVariable("");
   private parameterNameBuilder = ChannelTextManager.defaultParameterNameBuilder;
   private parameterValue = new ContextVariable("");
+  private lastParameterValueChangeTime = 0;
+
+  private pushParameterValue = new ContextVariable("");
+  private pushParameterValueRaw = new ContextVariable("");
+  private pushParameterValuePrefix = "";
+
+  private localValueDisplayMode = new ContextVariable(LocalValueDisplayMode.Disabled);
+
   private channelName = new ContextVariable("");
-  private isLocalValueModeActive = new ContextVariable(false);
+  private lastChannelNameChangeTime = 0;
 
   constructor(
     private globalState: GlobalState,
@@ -163,6 +177,24 @@ export class ChannelTextManager {
     }
   }
 
+  private enableLocalValueDisplayMode(
+    context: MR_ActiveDevice,
+    mode: LocalValueDisplayMode.EncoderValue | LocalValueDisplayMode.PushValue,
+  ) {
+    this.localValueDisplayMode.set(context, mode);
+    this.updateNameValueDisplay(context);
+
+    this.timerUtils.setTimeout(
+      context,
+      `updateDisplay${this.uniqueManagerId}`,
+      (context) => {
+        this.localValueDisplayMode.set(context, LocalValueDisplayMode.Disabled);
+        this.updateNameValueDisplay(context);
+      },
+      1,
+    );
+  }
+
   private updateNameValueDisplay(context: MR_ActiveDevice) {
     const row = +this.globalState.areDisplayRowsFlipped.get(context);
 
@@ -176,13 +208,17 @@ export class ChannelTextManager {
       return;
     }
 
+    const localValueDisplayMode = this.localValueDisplayMode.get(context);
+
     this.sendText(
       context,
       row,
-      this.isLocalValueModeActive.get(context) ||
-        this.globalState.isValueDisplayModeActive.get(context)
-        ? this.parameterValue.get(context)
-        : this.parameterName.get(context),
+      localValueDisplayMode === LocalValueDisplayMode.PushValue
+        ? this.pushParameterValue.get(context)
+        : localValueDisplayMode === LocalValueDisplayMode.EncoderValue ||
+            this.globalState.isValueDisplayModeActive.get(context)
+          ? this.parameterValue.get(context)
+          : this.parameterName.get(context),
     );
   }
 
@@ -203,16 +239,18 @@ export class ChannelTextManager {
   }
 
   setParameterNameBuilder(builder?: EncoderParameterNameBuilder) {
-    // console.log("setParameterNameBuilder");
     this.parameterNameBuilder = builder ?? ChannelTextManager.defaultParameterNameBuilder;
   }
 
+  setPushParameterValuePrefix(prefix: string = "") {
+    this.pushParameterValuePrefix = prefix;
+  }
+
   onParameterTitleChange(context: MR_ActiveDevice, title1: string, title2: string) {
-    // console.log("onParameterTitleChange");
-    // Luckily, `mOnTitleChange` runs after `mOnDisplayValueChange`, so setting
-    // `isLocalValueModeActive` to `false` here overwrites the `true` that `mOnDisplayValueChange`
-    // sets
-    this.isLocalValueModeActive.set(context, false);
+    // Luckily, `onParameterTitleChange` runs after `onParameterDisplayValueChange`, so disabling
+    // `localValueDisplayMode` here overwrites the `EncoderValue` mode that
+    // `onParameterDisplayValueChange` sets
+    this.localValueDisplayMode.set(context, LocalValueDisplayMode.Disabled);
 
     this.parameterName.set(
       context,
@@ -229,6 +267,8 @@ export class ChannelTextManager {
   }
 
   onParameterDisplayValueChange(context: MR_ActiveDevice, value: string) {
+    this.lastParameterValueChangeTime = performance.now();
+
     value = ChannelTextManager.translateParameterValue(value);
 
     this.parameterValue.set(
@@ -237,21 +277,39 @@ export class ChannelTextManager {
         ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(value)),
       ),
     );
-    this.isLocalValueModeActive.set(context, true);
-    this.updateNameValueDisplay(context);
 
-    this.timerUtils.setTimeout(
-      context,
-      `updateDisplay${this.uniqueManagerId}`,
-      (context) => {
-        this.isLocalValueModeActive.set(context, false);
-        this.updateNameValueDisplay(context);
-      },
-      1,
-    );
+    this.enableLocalValueDisplayMode(context, LocalValueDisplayMode.EncoderValue);
+  }
+
+  onPushParameterDisplayValueChange(context: MR_ActiveDevice, value: string) {
+    const lastValue = this.pushParameterValueRaw.get(context);
+    this.pushParameterValueRaw.set(context, value);
+
+    // Avoid reacting to display value changes when they are caused by switching to or from an
+    // undefined host value or by switching encoder assignments (i.e. if this callback runs up to
+    // 100 ms after the parameter display value was changed).
+    if (
+      value !== "" &&
+      lastValue !== "" &&
+      performance.now() > this.lastParameterValueChangeTime + 100
+    ) {
+      this.pushParameterValue.set(
+        context,
+        ChannelTextManager.centerString(
+          ChannelTextManager.abbreviateString(
+            this.pushParameterValuePrefix +
+              ChannelTextManager.stripNonAsciiCharacters(
+                ChannelTextManager.translateParameterValue(value),
+              ),
+          ),
+        ),
+      );
+      this.enableLocalValueDisplayMode(context, LocalValueDisplayMode.PushValue);
+    }
   }
 
   onChannelNameChange(context: MR_ActiveDevice, name: string) {
+    this.lastChannelNameChangeTime = performance.now();
     this.channelName.set(
       context,
       ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(name)),

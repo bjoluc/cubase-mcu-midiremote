@@ -20,7 +20,14 @@ export interface EncoderAssignmentConfig {
   encoderParameterNameBuilder?: EncoderParameterNameBuilder;
 
   displayMode: EncoderDisplayMode;
+
   pushToggleParameter?: MR_HostValue;
+
+  /**
+   * An optional string to be displayed in front of push toggle parameter values to make them
+   * distinguishable from encoder parameter values.
+   */
+  pushToggleParameterPrefix?: string;
 
   /**
    * A function that will be invoked when the encoder is pushed instead of toggling
@@ -300,9 +307,10 @@ export class EncoderPage {
     for (const [encoderIndex, { encoder }] of this.dependencies.channelElements.entries()) {
       const assignment = this.assignments[encoderIndex] as EncoderAssignmentConfig | undefined;
       encoder.displayMode.set(context, assignment?.displayMode ?? EncoderDisplayMode.SingleDot);
-      this.dependencies.channelTextManagers[encoderIndex].setParameterNameBuilder(
-        assignment?.encoderParameterNameBuilder,
-      );
+
+      const channelTextManager = this.dependencies.channelTextManagers[encoderIndex];
+      channelTextManager.setParameterNameBuilder(assignment?.encoderParameterNameBuilder);
+      channelTextManager.setPushParameterValuePrefix(assignment?.pushToggleParameterPrefix);
     }
 
     this.dependencies.globalState.isValueDisplayModeActive.set(context, false);
