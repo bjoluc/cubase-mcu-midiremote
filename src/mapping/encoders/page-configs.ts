@@ -109,13 +109,13 @@ export const eq = (hostAccess: MR_HostAccess): EncoderPageConfig => {
       {
         displayMode: EncoderDisplayMode.BoostOrCut,
         encoderParameter: band.mGain,
-        pushToggleParameter: band.mOn,
-        onShiftPush: (context, encoder) => {
+        onPush: (context, encoder) => {
           encoder.mEncoderValue.setProcessValue(
             context,
             1 - encoder.mEncoderValue.getProcessValue(context),
           );
         },
+        encoderParameterDefault: 0.5,
       },
       {
         displayMode: EncoderDisplayMode.SingleDot,
