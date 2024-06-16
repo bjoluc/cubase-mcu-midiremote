@@ -161,6 +161,7 @@ export const sends = (hostAccess: MR_HostAccess): EncoderPageConfig => {
         const sendSlot = mSends.getByIndex(slotIndex);
         return {
           encoderParameter: sendSlot.mPrePost,
+          encoderParameterNameBuilder: () => "PreFadr",
           displayMode: EncoderDisplayMode.Wrap,
           encoderParameterDefault: 0,
           pushToggleParameter: sendSlot.mPrePost,
