@@ -128,10 +128,16 @@ export class ChannelTextManager {
   /** A unique number for each `ChannelTextManager` so it can set uniquely identified timeouts */
   private uniqueManagerId = ChannelTextManager.nextManagerId++;
 
+  /** An ID string to uniquely identify the timeouts set by this `ChannelTextManager` */
+  private timeoutId = `updateDisplay${this.uniqueManagerId}`;
+
   private parameterName = new ContextVariable("");
   private parameterNameBuilder = ChannelTextManager.defaultParameterNameBuilder;
   private parameterValue = new ContextVariable("");
   private lastParameterValueChangeTime = 0;
+
+  /** The time at which the parameter (not its value) controlled by the encoder last changed */
+  private lastParameterChangeTime = 0;
 
   private pushParameterValue = new ContextVariable("");
   private pushParameterValueRaw = new ContextVariable("");
@@ -140,7 +146,9 @@ export class ChannelTextManager {
   private localValueDisplayMode = new ContextVariable(LocalValueDisplayMode.Disabled);
 
   private channelName = new ContextVariable("");
-  private lastChannelNameChangeTime = 0;
+
+  /** Whether the parameter controlled by the channel's encoder belongs to that channel */
+  public isParameterChannelRelated = true;
 
   constructor(
     private globalState: GlobalState,
@@ -152,6 +160,7 @@ export class ChannelTextManager {
     );
     globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateNameValueDisplay.bind(this));
     globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateTrackTitleDisplay.bind(this));
+    globalState.selectedTrackName.addOnChangeCallback(this.onSelectedTrackChange.bind(this));
 
     if (DEVICE_NAME === "MCU Pro") {
       // Handle metering mode changes
@@ -186,13 +195,18 @@ export class ChannelTextManager {
 
     this.timerUtils.setTimeout(
       context,
-      `updateDisplay${this.uniqueManagerId}`,
-      (context) => {
-        this.localValueDisplayMode.set(context, LocalValueDisplayMode.Disabled);
-        this.updateNameValueDisplay(context);
-      },
+      this.timeoutId,
+      this.disableLocalValueDisplayMode.bind(this),
       1,
     );
+  }
+
+  private disableLocalValueDisplayMode(context: MR_ActiveDevice) {
+    if (this.localValueDisplayMode.get(context) !== LocalValueDisplayMode.Disabled) {
+      this.localValueDisplayMode.set(context, LocalValueDisplayMode.Disabled);
+      this.timerUtils.clearTimeout(this.timeoutId);
+      this.updateNameValueDisplay(context);
+    }
   }
 
   private updateNameValueDisplay(context: MR_ActiveDevice) {
@@ -267,32 +281,44 @@ export class ChannelTextManager {
   }
 
   onParameterDisplayValueChange(context: MR_ActiveDevice, value: string) {
-    this.lastParameterValueChangeTime = performance.now();
-
-    value = ChannelTextManager.translateParameterValue(value);
+    const now = performance.now();
+    this.lastParameterValueChangeTime = now;
 
     this.parameterValue.set(
       context,
       ChannelTextManager.centerString(
-        ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(value)),
+        ChannelTextManager.abbreviateString(
+          ChannelTextManager.stripNonAsciiCharacters(
+            ChannelTextManager.translateParameterValue(value),
+          ),
+        ),
       ),
     );
 
-    this.enableLocalValueDisplayMode(context, LocalValueDisplayMode.EncoderValue);
+    if (this.globalState.isValueDisplayModeActive.get(context)) {
+      this.updateNameValueDisplay(context);
+    } else if (now > this.lastParameterChangeTime + 100) {
+      this.enableLocalValueDisplayMode(context, LocalValueDisplayMode.EncoderValue);
+    }
   }
 
   onPushParameterDisplayValueChange(context: MR_ActiveDevice, value: string) {
     const lastValue = this.pushParameterValueRaw.get(context);
     this.pushParameterValueRaw.set(context, value);
+    const now = performance.now();
 
     // Avoid reacting to display value changes when they are caused by switching to or from an
-    // undefined host value or by switching encoder assignments (i.e. if this callback runs up to
-    // 100 ms after the parameter display value was changed).
+    // undefined host value or by switching encoder assignments or tracks (i.e. if this callback
+    // runs up to 100 ms after these values were changed).
     if (
       value !== "" &&
       lastValue !== "" &&
-      performance.now() > this.lastParameterValueChangeTime + 100
+      now > this.lastParameterValueChangeTime + 100 &&
+      now > this.lastParameterChangeTime + 100
     ) {
+      // The only way push parameter values are ever displayed is by calling
+      // `enableLocalValueDisplayMode` below. Hence, we only update `this.pushParameterValue` inside
+      // the if block.
       this.pushParameterValue.set(
         context,
         ChannelTextManager.centerString(
@@ -304,16 +330,31 @@ export class ChannelTextManager {
           ),
         ),
       );
+
       this.enableLocalValueDisplayMode(context, LocalValueDisplayMode.PushValue);
     }
   }
 
   onChannelNameChange(context: MR_ActiveDevice, name: string) {
-    this.lastChannelNameChangeTime = performance.now();
+    if (this.isParameterChannelRelated) {
+      this.onParameterChange(context);
+    }
+
     this.channelName.set(
       context,
       ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(name)),
     );
     this.updateTrackTitleDisplay(context);
+  }
+
+  onSelectedTrackChange(context: MR_ActiveDevice) {
+    if (!this.isParameterChannelRelated) {
+      this.onParameterChange(context);
+    }
+  }
+
+  onParameterChange(context: MR_ActiveDevice) {
+    this.lastParameterChangeTime = performance.now();
+    this.disableLocalValueDisplayMode(context);
   }
 }

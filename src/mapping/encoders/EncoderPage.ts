@@ -311,6 +311,7 @@ export class EncoderPage {
       const channelTextManager = this.dependencies.channelTextManagers[encoderIndex];
       channelTextManager.setParameterNameBuilder(assignment?.encoderParameterNameBuilder);
       channelTextManager.setPushParameterValuePrefix(assignment?.pushToggleParameterPrefix);
+      channelTextManager.isParameterChannelRelated = this.config.areAssignmentsChannelRelated;
     }
 
     this.dependencies.globalState.isValueDisplayModeActive.set(context, false);

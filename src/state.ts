@@ -1,5 +1,5 @@
 import { config } from "./config";
-import { BooleanContextVariable } from "/util";
+import { BooleanContextVariable, ObservableContextVariable } from "/util";
 
 /** Declares some global context-dependent variables that (may) affect multiple devices */
 export const createGlobalState = () => ({
@@ -18,6 +18,8 @@ export const createGlobalState = () => ({
   isGlobalLcdMeterModeVertical: new BooleanContextVariable(),
 
   shouldMeterOverloadsBeCleared: new BooleanContextVariable(true),
+
+  selectedTrackName: new ObservableContextVariable(""),
 });
 
 export type GlobalState = ReturnType<typeof createGlobalState>;

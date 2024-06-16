@@ -90,5 +90,9 @@ export function makeTimerUtils(
     timeouts[timeoutId] = { scheduledExecutionTime: performance.now() + timeout * 1000, callback };
   };
 
-  return { setTimeout };
+  const clearTimeout = (timeoutId: string) => {
+    delete timeouts[timeoutId];
+  };
+
+  return { setTimeout, clearTimeout };
 }
