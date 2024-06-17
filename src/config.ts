@@ -132,4 +132,11 @@ var CONFIGURATION = {
    * (instead of zooming in and out).
    */
   disableJogWheelZoom: false,
+
+  /**
+   * If you set this option to `true`, the channel left/right buttons will be mapped to navigate
+   * encoder parameter pages by default, and only move the mixer channels while Shift is held – just
+   * like Cubase's default Mackie Control integration does.
+   */
+  mapChannelButtonsToParameterPageNavigation: false,
 };

@@ -317,7 +317,9 @@ export const focusedInsertEffect = (hostAccess: MR_HostAccess): EncoderPageConfi
       for (const device of mainDevices) {
         const channelButtons = device.controlSectionElements.buttons.navigation.channel;
 
-        for (const subPage of [subPages.defaultShift, subPages.flipShift]) {
+        for (const subPage of config.mapChannelButtonsToParameterPageNavigation
+          ? [subPages.default, subPages.flip]
+          : [subPages.defaultShift, subPages.flipShift]) {
           page
             .makeActionBinding(channelButtons.left.mSurfaceValue, actions.mPrevBank)
             .setSubPage(subPage);
