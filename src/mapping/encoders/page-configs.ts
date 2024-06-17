@@ -50,6 +50,7 @@ export const inputPhase: EncoderPageConfig = {
     displayMode: EncoderDisplayMode.Wrap,
     encoderParameter: mixerBankChannel.mPreFilter.mPhaseSwitch,
     encoderParameterDefault: 0,
+    pushToggleParameter: mixerBankChannel.mPreFilter.mPhaseSwitch,
   }),
   areAssignmentsChannelRelated: true,
 };
