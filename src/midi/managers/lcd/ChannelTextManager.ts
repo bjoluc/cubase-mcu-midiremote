@@ -148,6 +148,7 @@ export class ChannelTextManager {
   private faderParameterValue = new ContextVariable("");
   private faderParameterName = new ContextVariable("");
   private isFaderTouched = new ContextVariable(false);
+  private isFaderParameterDisplayed = new ContextVariable(false);
 
   /** Whether the parameter controlled by the channel's encoder belongs to that channel */
   public isParameterChannelRelated = true;
@@ -163,6 +164,12 @@ export class ChannelTextManager {
     globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateNameValueDisplay.bind(this));
     globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateTrackTitleDisplay.bind(this));
     globalState.selectedTrackName.addOnChangeCallback(this.onSelectedTrackChange.bind(this));
+
+    if (deviceConfig.hasSecondaryScribbleStrips) {
+      globalState.isShiftModeActive.addOnChangeCallback(
+        this.updateIsFaderParameterDisplayed.bind(this),
+      );
+    }
 
     if (DEVICE_NAME === "MCU Pro") {
       // Handle metering mode changes
@@ -265,11 +272,23 @@ export class ChannelTextManager {
         context,
         2,
         ChannelTextManager.centerString(
-          this.isFaderTouched.get(context)
+          this.isFaderParameterDisplayed.get(context)
             ? this.faderParameterName.get(context)
             : this.channelName.get(context),
         ),
       );
+    }
+  }
+
+  private updateIsFaderParameterDisplayed(context: MR_ActiveDevice) {
+    const previousValue = this.isFaderParameterDisplayed.get(context);
+    const newValue =
+      this.isFaderTouched.get(context) && !this.globalState.isShiftModeActive.get(context);
+
+    if (newValue !== previousValue) {
+      this.isFaderParameterDisplayed.set(context, newValue);
+      this.updateSecondaryTrackTitleDisplay(context);
+      this.updateSupplementaryInfo(context);
     }
   }
 
@@ -284,7 +303,7 @@ export class ChannelTextManager {
         3,
         ChannelTextManager.centerString(
           ChannelTextManager.abbreviateString(
-            this.isFaderTouched.get(context)
+            this.isFaderParameterDisplayed.get(context)
               ? this.faderParameterValue.get(context)
               : this.meterPeakLevel.get(context),
           ),
@@ -402,14 +421,14 @@ export class ChannelTextManager {
 
   onMeterPeakLevelChange(context: MR_ActiveDevice, level: string) {
     this.meterPeakLevel.set(context, level);
-    if (!this.isFaderTouched.get(context)) {
+    if (!this.isFaderParameterDisplayed.get(context)) {
       this.updateSupplementaryInfo(context);
     }
   }
 
   onFaderParameterValueChange(context: MR_ActiveDevice, value: string) {
     this.faderParameterValue.set(context, ChannelTextManager.stripNonAsciiCharacters(value));
-    if (this.isFaderTouched.get(context)) {
+    if (this.isFaderParameterDisplayed.get(context)) {
       this.updateSupplementaryInfo(context);
     }
   }
@@ -422,14 +441,13 @@ export class ChannelTextManager {
       ),
     );
 
-    if (this.isFaderTouched.get(context)) {
+    if (this.isFaderParameterDisplayed.get(context)) {
       this.updateSecondaryTrackTitleDisplay(context);
     }
   }
 
   onFaderTouchedChange(context: MR_ActiveDevice, isFaderTouched: boolean) {
     this.isFaderTouched.set(context, isFaderTouched);
-    this.updateSecondaryTrackTitleDisplay(context);
-    this.updateSupplementaryInfo(context);
+    this.updateIsFaderParameterDisplayed(context);
   }
 }

@@ -222,7 +222,7 @@ Presuming the provided iMAP preset has been loaded, the following aspects of the
 - All buttons are labelled according to their actual functions (even if these functions differ from the default MCU functions).
 - The first (blue) function layer exposes three buttons that are not available in Cubase's default MCU mapping: Edit Instrument, Reset Meters, and Click.
 - There is no additional touchscreen button for controlling the value under the mouse cursor because the controller can already do this via the Focus button top-right of the jog wheel.
-- The secondary scribble strips show track names and peak meter levels. While a track's fader is touched, its scribble strip switches to the fader's current parameter name and parameter value instead.
+- The secondary scribble strips show track names and peak meter levels. While a track's fader is touched, its scribble strip switches to the fader's current parameter name and parameter value instead, unless the Shift button is held.
 - All encoder assign buttons are located on the second (green) function layer and there are more encoder assign buttons than traditional MCU devices have: The encoder assignments from the table in the previous section have mostly been split across individual buttons to make them easier to access. The only encoder assignments which you can page through by pressing the assign button multiple times are EQ, Sends, and Focused Insert.
 
 Lastly, thanks to iCON for supporting the development of this script variant!
