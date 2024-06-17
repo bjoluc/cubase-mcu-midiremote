@@ -155,4 +155,15 @@ export function makeHostMapping(
       segmentDisplayManager.updateTime(context, time, timeFormat);
     }
   };
+
+  // Selected track name global state variable
+  page.mHostAccess.mTrackSelection.mMixerChannel.mOnTitleChange = (
+    context,
+    _mapping,
+    trackName,
+  ) => {
+    if (trackName !== globalState.selectedTrackName.get(context)) {
+      globalState.selectedTrackName.set(context, trackName);
+    }
+  };
 }

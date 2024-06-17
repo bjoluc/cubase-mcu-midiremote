@@ -1,15 +1,27 @@
 // @ts-expect-error No type defs available
 import abbreviate from "abbreviate";
+import { EncoderParameterNameBuilder } from ".";
 import { LcdManager } from "./LcdManager";
 import { deviceConfig } from "/config";
 import { GlobalState } from "/state";
 import { ContextVariable, TimerUtils } from "/util";
+
+const enum LocalValueDisplayMode {
+  Disabled,
+  EncoderValue,
+  PushValue,
+}
 
 /**
  * Handles the LCD display text of a single channel
  */
 export class ChannelTextManager {
   private static readonly channelWidth = deviceConfig.hasIndividualScribbleStrips ? 7 : 6;
+
+  private static readonly defaultParameterNameBuilder: EncoderParameterNameBuilder = (
+    title1,
+    title2,
+  ) => title2;
 
   private static nextManagerId = 0;
 
@@ -113,16 +125,33 @@ export class ChannelTextManager {
   /** A unique number for each `ChannelTextManager` so it can set uniquely identified timeouts */
   private uniqueManagerId = ChannelTextManager.nextManagerId++;
 
+  /** An ID string to uniquely identify the timeouts set by this `ChannelTextManager` */
+  private timeoutId = `updateDisplay${this.uniqueManagerId}`;
+
   private parameterName = new ContextVariable("");
-  private parameterNameOverride = new ContextVariable<string | undefined>(undefined);
+  private parameterNameBuilder = ChannelTextManager.defaultParameterNameBuilder;
   private parameterValue = new ContextVariable("");
-  private isLocalValueModeActive = new ContextVariable(false);
+  private lastParameterValueChangeTime = 0;
+
+  /** The time at which the parameter (not its value) controlled by the encoder last changed */
+  private lastParameterChangeTime = 0;
+
+  private pushParameterValue = new ContextVariable("");
+  private pushParameterValueRaw = new ContextVariable("");
+  private pushParameterValuePrefix = "";
+
+  private localValueDisplayMode = new ContextVariable(LocalValueDisplayMode.Disabled);
 
   private channelName = new ContextVariable("");
+
   private meterPeakLevel = new ContextVariable("");
   private faderParameterValue = new ContextVariable("");
   private faderParameterName = new ContextVariable("");
   private isFaderTouched = new ContextVariable(false);
+  private isFaderParameterDisplayed = new ContextVariable(false);
+
+  /** Whether the parameter controlled by the channel's encoder belongs to that channel */
+  public isParameterChannelRelated = true;
 
   constructor(
     private globalState: GlobalState,
@@ -134,6 +163,13 @@ export class ChannelTextManager {
     );
     globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateNameValueDisplay.bind(this));
     globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateTrackTitleDisplay.bind(this));
+    globalState.selectedTrackName.addOnChangeCallback(this.onSelectedTrackChange.bind(this));
+
+    if (deviceConfig.secondaryScribbleStripSetup) {
+      globalState.isShiftModeActive.addOnChangeCallback(
+        this.updateIsFaderParameterDisplayed.bind(this),
+      );
+    }
 
     if (DEVICE_NAME === "MCU Pro") {
       // Handle metering mode changes
@@ -159,6 +195,29 @@ export class ChannelTextManager {
     }
   }
 
+  private enableLocalValueDisplayMode(
+    context: MR_ActiveDevice,
+    mode: LocalValueDisplayMode.EncoderValue | LocalValueDisplayMode.PushValue,
+  ) {
+    this.localValueDisplayMode.set(context, mode);
+    this.updateNameValueDisplay(context);
+
+    this.timerUtils.setTimeout(
+      context,
+      this.timeoutId,
+      this.disableLocalValueDisplayMode.bind(this),
+      1,
+    );
+  }
+
+  private disableLocalValueDisplayMode(context: MR_ActiveDevice) {
+    if (this.localValueDisplayMode.get(context) !== LocalValueDisplayMode.Disabled) {
+      this.localValueDisplayMode.set(context, LocalValueDisplayMode.Disabled);
+      this.timerUtils.clearTimeout(this.timeoutId);
+      this.updateNameValueDisplay(context);
+    }
+  }
+
   private updateNameValueDisplay(context: MR_ActiveDevice) {
     const row = +this.globalState.areDisplayRowsFlipped.get(context);
 
@@ -172,13 +231,17 @@ export class ChannelTextManager {
       return;
     }
 
+    const localValueDisplayMode = this.localValueDisplayMode.get(context);
+
     this.sendText(
       context,
       row,
-      this.isLocalValueModeActive.get(context) ||
-        this.globalState.isValueDisplayModeActive.get(context)
-        ? this.parameterValue.get(context)
-        : this.parameterNameOverride.get(context) ?? this.parameterName.get(context),
+      localValueDisplayMode === LocalValueDisplayMode.PushValue
+        ? this.pushParameterValue.get(context)
+        : localValueDisplayMode === LocalValueDisplayMode.EncoderValue ||
+            this.globalState.isValueDisplayModeActive.get(context)
+          ? this.parameterValue.get(context)
+          : this.parameterName.get(context),
     );
   }
 
@@ -199,72 +262,6 @@ export class ChannelTextManager {
     this.updateSecondaryTrackTitleDisplay(context);
   }
 
-  setParameterName(context: MR_ActiveDevice, name: string) {
-    // Luckily, `mOnTitleChange` runs after `mOnDisplayValueChange`, so setting
-    // `isLocalValueModeActive` to `false` here overwrites the `true` that `mOnDisplayValueChange`
-    // sets
-    this.isLocalValueModeActive.set(context, false);
-
-    this.parameterName.set(
-      context,
-      ChannelTextManager.centerString(
-        ChannelTextManager.abbreviateString(
-          ChannelTextManager.stripNonAsciiCharacters(
-            ChannelTextManager.translateParameterName(name),
-          ),
-        ),
-      ),
-    );
-
-    this.updateNameValueDisplay(context);
-  }
-
-  /**
-   * Sets a parameter name string that replaces the one set via `setParameterName()` until
-   * `clearParameterNameOverride()` is invoked.
-   */
-  setParameterNameOverride(context: MR_ActiveDevice, name: string) {
-    this.parameterNameOverride.set(
-      context,
-      ChannelTextManager.centerString(ChannelTextManager.abbreviateString(name)),
-    );
-  }
-
-  clearParameterNameOverride(context: MR_ActiveDevice) {
-    this.parameterNameOverride.set(context, undefined);
-  }
-
-  setParameterValue(context: MR_ActiveDevice, value: string) {
-    value = ChannelTextManager.translateParameterValue(value);
-
-    this.parameterValue.set(
-      context,
-      ChannelTextManager.centerString(
-        ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(value)),
-      ),
-    );
-    this.isLocalValueModeActive.set(context, true);
-    this.updateNameValueDisplay(context);
-
-    this.timerUtils.setTimeout(
-      context,
-      `updateDisplay${this.uniqueManagerId}`,
-      (context) => {
-        this.isLocalValueModeActive.set(context, false);
-        this.updateNameValueDisplay(context);
-      },
-      1,
-    );
-  }
-
-  setChannelName(context: MR_ActiveDevice, name: string) {
-    this.channelName.set(
-      context,
-      ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(name)),
-    );
-    this.updateTrackTitleDisplay(context);
-  }
-
   /**
    * Updates the track title displayed on the first row of the channel's secondary display, if the
    * device has secondary displays.
@@ -275,13 +272,25 @@ export class ChannelTextManager {
         context,
         2,
         ChannelTextManager.centerString(
-          this.isFaderTouched.get(context)
+          this.isFaderParameterDisplayed.get(context)
             ? this.faderParameterName.get(context)
             : deviceConfig.secondaryScribbleStripSetup === "separate"
               ? this.channelName.get(context)
               : "",
         ),
       );
+    }
+  }
+
+  private updateIsFaderParameterDisplayed(context: MR_ActiveDevice) {
+    const previousValue = this.isFaderParameterDisplayed.get(context);
+    const newValue =
+      this.isFaderTouched.get(context) && !this.globalState.isShiftModeActive.get(context);
+
+    if (newValue !== previousValue) {
+      this.isFaderParameterDisplayed.set(context, newValue);
+      this.updateSecondaryTrackTitleDisplay(context);
+      this.updateSupplementaryInfo(context);
     }
   }
 
@@ -296,7 +305,7 @@ export class ChannelTextManager {
         3,
         ChannelTextManager.centerString(
           ChannelTextManager.abbreviateString(
-            this.isFaderTouched.get(context)
+            this.isFaderParameterDisplayed.get(context)
               ? this.faderParameterValue.get(context)
               : this.meterPeakLevel.get(context),
           ),
@@ -305,21 +314,128 @@ export class ChannelTextManager {
     }
   }
 
-  setMeterPeakLevel(context: MR_ActiveDevice, level: string) {
+  setParameterNameBuilder(builder?: EncoderParameterNameBuilder) {
+    this.parameterNameBuilder = builder ?? ChannelTextManager.defaultParameterNameBuilder;
+  }
+
+  setPushParameterValuePrefix(prefix: string = "") {
+    this.pushParameterValuePrefix = prefix;
+  }
+
+  onParameterTitleChange(context: MR_ActiveDevice, title1: string, title2: string) {
+    // Luckily, `onParameterTitleChange` runs after `onParameterDisplayValueChange`, so disabling
+    // `localValueDisplayMode` here overwrites the `EncoderValue` mode that
+    // `onParameterDisplayValueChange` sets
+    this.localValueDisplayMode.set(context, LocalValueDisplayMode.Disabled);
+
+    this.parameterName.set(
+      context,
+      ChannelTextManager.centerString(
+        ChannelTextManager.abbreviateString(
+          ChannelTextManager.stripNonAsciiCharacters(
+            this.parameterNameBuilder(title1, ChannelTextManager.translateParameterName(title2)),
+          ),
+        ),
+      ),
+    );
+
+    this.updateNameValueDisplay(context);
+  }
+
+  onParameterDisplayValueChange(context: MR_ActiveDevice, value: string) {
+    const now = performance.now();
+    this.lastParameterValueChangeTime = now;
+
+    this.parameterValue.set(
+      context,
+      ChannelTextManager.centerString(
+        ChannelTextManager.abbreviateString(
+          ChannelTextManager.stripNonAsciiCharacters(
+            ChannelTextManager.translateParameterValue(value),
+          ),
+        ),
+      ),
+    );
+
+    if (this.globalState.isValueDisplayModeActive.get(context)) {
+      this.updateNameValueDisplay(context);
+    } else if (now > this.lastParameterChangeTime + 100) {
+      this.enableLocalValueDisplayMode(context, LocalValueDisplayMode.EncoderValue);
+    }
+  }
+
+  onPushParameterDisplayValueChange(context: MR_ActiveDevice, value: string) {
+    const lastValue = this.pushParameterValueRaw.get(context);
+    this.pushParameterValueRaw.set(context, value);
+    const now = performance.now();
+
+    // Avoid reacting to display value changes when they are caused by switching to or from an
+    // undefined host value or by switching encoder assignments or tracks (i.e. if this callback
+    // runs up to 100 ms after these values were changed).
+    if (
+      value !== "" &&
+      lastValue !== "" &&
+      now > this.lastParameterValueChangeTime + 100 &&
+      now > this.lastParameterChangeTime + 100
+    ) {
+      // The only way push parameter values are ever displayed is by calling
+      // `enableLocalValueDisplayMode` below. Hence, we only update `this.pushParameterValue` inside
+      // the if block.
+      this.pushParameterValue.set(
+        context,
+        ChannelTextManager.centerString(
+          ChannelTextManager.abbreviateString(
+            this.pushParameterValuePrefix +
+              ChannelTextManager.stripNonAsciiCharacters(
+                ChannelTextManager.translateParameterValue(value),
+              ),
+          ),
+        ),
+      );
+
+      this.enableLocalValueDisplayMode(context, LocalValueDisplayMode.PushValue);
+    }
+  }
+
+  onChannelNameChange(context: MR_ActiveDevice, name: string) {
+    if (this.isParameterChannelRelated) {
+      this.onParameterChange(context);
+    }
+
+    this.channelName.set(
+      context,
+      ChannelTextManager.abbreviateString(ChannelTextManager.stripNonAsciiCharacters(name)),
+    );
+    this.updateTrackTitleDisplay(context);
+  }
+
+  onSelectedTrackChange(context: MR_ActiveDevice) {
+    if (!this.isParameterChannelRelated) {
+      this.onParameterChange(context);
+    }
+  }
+
+  /** This callback is not called externally, but only from within this class */
+  onParameterChange(context: MR_ActiveDevice) {
+    this.lastParameterChangeTime = performance.now();
+    this.disableLocalValueDisplayMode(context);
+  }
+
+  onMeterPeakLevelChange(context: MR_ActiveDevice, level: string) {
     this.meterPeakLevel.set(context, level);
-    if (!this.isFaderTouched.get(context)) {
+    if (!this.isFaderParameterDisplayed.get(context)) {
       this.updateSupplementaryInfo(context);
     }
   }
 
-  setFaderParameterValue(context: MR_ActiveDevice, value: string) {
+  onFaderParameterValueChange(context: MR_ActiveDevice, value: string) {
     this.faderParameterValue.set(context, ChannelTextManager.stripNonAsciiCharacters(value));
-    if (this.isFaderTouched.get(context)) {
+    if (this.isFaderParameterDisplayed.get(context)) {
       this.updateSupplementaryInfo(context);
     }
   }
 
-  setFaderParameterName(context: MR_ActiveDevice, name: string) {
+  onFaderParameterNameChange(context: MR_ActiveDevice, name: string) {
     this.faderParameterName.set(
       context,
       ChannelTextManager.abbreviateString(
@@ -327,14 +443,13 @@ export class ChannelTextManager {
       ),
     );
 
-    if (this.isFaderTouched.get(context)) {
+    if (this.isFaderParameterDisplayed.get(context)) {
       this.updateSecondaryTrackTitleDisplay(context);
     }
   }
 
-  setIsFaderTouched(context: MR_ActiveDevice, isFaderTouched: boolean) {
+  onFaderTouchedChange(context: MR_ActiveDevice, isFaderTouched: boolean) {
     this.isFaderTouched.set(context, isFaderTouched);
-    this.updateSecondaryTrackTitleDisplay(context);
-    this.updateSupplementaryInfo(context);
+    this.updateIsFaderParameterDisplayed(context);
   }
 }

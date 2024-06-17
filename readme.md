@@ -110,7 +110,7 @@ Alternatively, you can manually add it by clicking the "+" button in the lower z
 The very top of the MIDI Remote script file declares a number of configuration options.
 You can edit these options with a text editor to match your preferences.
 Each option is documented in a comment above it.
-For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L28-L115).
+For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L32).
 
 ## Mapping
 
@@ -124,12 +124,13 @@ The mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 **Encoder Assignments**
 
 - The lower scribble strip row always shows track names since they are vital to using each channel's buttons and fader, regardless of the encoder assignment. Parameter page numbers are displayed on the otherwise unused two-digit Assignment display instead. If an encoder assignment only has one parameter page, the Assignment display remains blank.
-- Shift-pushing an encoder resets its parameter to the default value, if a static default value is known. An exception are EQ gains which are not reset but inverted when shift-pressing their encoder.
+- Shift-pushing an encoder resets its parameter to the default value, if a static default value is known.
 - The "Track" encoder assignment has additional parameter pages for Low Cut, High Cut, and the Track Quick Controls of the selected track.
 - By default, pushing encoders in the "Pan/Surround" encoder assignment resets a channel's panner instead of toggling its "Monitor Active" state. If you'd like to toggle "Monitor Active" instead, you can set the `resetPanOnEncoderPush` [config option](#configuration-options) to `false`.
-- Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages now. The "Level" and "On" pages have been combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses.
+- You can enable and disable EQ bands by pushing their encoders – with one exception: Pushing an EQ gain encoder inverts the EQ gain.
+- Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages for sends now. The "Level" and "On" pages have been combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses. If your Cubase version supports it, there are also four additional pages for Cue sends 1-4.
 - The "Plug-In" encoder assignment always follows the currently focused plugin window to avoid tedious plugin selection via push encoders.
-- The first page of the "Inst" encoder assignment maps encoders to the VST Quick Controls of the currently selected instrument track. The remaining pages map 8 encoders to each part of the channel strip, i.e., gate, compressor, tools, saturation, and limiter. Pushing an encoder toggles the bypass status of the corresponding channel strip plugin.
+- The first page of the "Inst" encoder assignment maps encoders to the VST Quick Controls of the currently selected instrument track. The remaining pages map 8 encoders to each part of the channel strip, i.e., gate, compressor, tools, saturation, and limiter. Pushing the last encoder of a channel strip effect toggles the effect's bypass status.
 
 The table below summarizes all available encoder assignments:
 
@@ -139,7 +140,7 @@ The table below summarizes all available encoder assignments:
 | **Track** | First | <ol><li>Monitor</li><li>Pre Gain</li><li>Phase</li><li>Low-Cut Frequency / Enabled</li><li>High-Cut Frequency / Enabled</li><li>Selected Track Quick Controls</li></ol> |
 | **Pan/Surround** | Pan | Pan |
 | **EQ** | EQ | <ul><li>EQ Bands 1 & 2 (8 encoders)</li><li>EQ Bands 3 & 4 (8 encoders)</li></ul> |
-| **Send** | Last | <ul><li>Send Levels / Enabled (8 encoders)</li><li>Send Pre/Post (8 encoders)</li></ul> |
+| **Send** | Last | <ul><li>Send Levels / Enabled (8 encoders)</li><li>Send Pre/Post (8 encoders)</li><li>Cue 1 Send Level / Enabled</li><li>Cue 2 Send Level / Enabled</li><li>Cue 3 Send Level / Enabled</li><li>Cue 4 Send Level / Enabled</li></ul> |
 | **Plug-In** | Plug-Ins | All Remote Control Editor parameter pages of the currently focused plugin (all encoders) |
 | **Instrument** | Dyn/FX/Aux | <ul><li>Remote Control Editor parameters of the selected track's VST instrument (all encoders)</li><li>Channel Strip Gate (8 encoders)</li><li>Channel Strip Compressor (8 encoders)</li><li>Channel Strip Tools (8 encoders)</li><li>Channel Strip Saturation (8 encoders)</li><li>Channel Strip Limiter (8 encoders)</li></ul> |
 
@@ -156,7 +157,6 @@ The table below summarizes all available encoder assignments:
 
 **Miscellaneous**
 
-- The main fader controls the Control Room volume unless the `mapMainFaderToControlRoom` [config option](#configuration-options) is set to `false`.
 - In zoom mode, the jog wheel zooms in and out instead of moving the cursor
 
 ## Drawbacks
@@ -223,7 +223,7 @@ Presuming the provided iMAP preset has been loaded, the following aspects of the
 - All buttons are labelled according to their actual functions (even if these functions differ from the default MCU functions).
 - The first (blue) and second (green) function layers expose three buttons that are not available in Cubase's default MCU mapping: Edit Instrument, Click, and Reset Meters.
 - There is no additional touchscreen button for controlling the value under the mouse cursor because the controller can already do this via the Focus button top-right of the jog wheel.
-- The fourth scribble strip row shows peak meter levels. While a track's fader is touched, the third and fourth row of its channel's scribble strip switch to the fader's current parameter name and parameter value.
+- The fourth scribble strip row shows peak meter levels. While a track's fader is touched, the third and fourth row of its channel's scribble strip switch to the fader's current parameter name and parameter value, unless the Shift button is held.
 - All encoder assign buttons are located on the third (yellow) function layer and there are more encoder assign buttons than traditional MCU devices have: The encoder assignments from the table in the previous section have mostly been split across individual buttons to make them easier to access. The only encoder assignments which you can page through by pressing the assign button multiple times are Gain/Ph, LC/HC, Focused Insert, EQ, and Sends.
 
 Lastly, thanks to iCON for supporting the development of this script variant!
@@ -242,7 +242,7 @@ Presuming the provided iMAP preset has been loaded, the following aspects of the
 - All buttons are labelled according to their actual functions (even if these functions differ from the default MCU functions).
 - The first (blue) function layer exposes three buttons that are not available in Cubase's default MCU mapping: Edit Instrument, Reset Meters, and Click.
 - There is no additional touchscreen button for controlling the value under the mouse cursor because the controller can already do this via the Focus button top-right of the jog wheel.
-- The secondary scribble strips show track names and peak meter levels. While a track's fader is touched, its scribble strip switches to the fader's current parameter name and parameter value instead.
+- The secondary scribble strips show track names and peak meter levels. While a track's fader is touched, its scribble strip switches to the fader's current parameter name and parameter value instead, unless the Shift button is held.
 - All encoder assign buttons are located on the second (green) function layer and there are more encoder assign buttons than traditional MCU devices have: The encoder assignments from the table in the previous section have mostly been split across individual buttons to make them easier to access. The only encoder assignments which you can page through by pressing the assign button multiple times are EQ, Sends, and Focused Insert.
 
 Lastly, thanks to iCON for supporting the development of this script variant!

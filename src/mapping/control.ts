@@ -20,6 +20,7 @@ function setShiftableButtonsLedValues(
     buttons.transport.rewind,
     buttons.transport.forward,
     buttons.navigation.bank.left,
+    buttons.display,
   ]) {
     button.setLedValue(context, value);
   }
@@ -391,8 +392,10 @@ export function bindControlSection(
     .setSubPage(zoomSubPage);
 
   // Use the zoom subpage to make the jog wheel zoom too
-  page.makeCommandBinding(jogLeft, "Zoom", "Zoom Out").setSubPage(zoomSubPage);
-  page.makeCommandBinding(jogRight, "Zoom", "Zoom In").setSubPage(zoomSubPage);
+  if (!config.disableJogWheelZoom) {
+    page.makeCommandBinding(jogLeft, "Zoom", "Zoom Out").setSubPage(zoomSubPage);
+    page.makeCommandBinding(jogRight, "Zoom", "Zoom In").setSubPage(zoomSubPage);
+  }
 
   page.makeActionBinding(directions.center.mSurfaceValue, subPageArea.mAction.mNext);
 

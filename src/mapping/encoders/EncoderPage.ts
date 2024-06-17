@@ -4,20 +4,30 @@ import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements
 import { ChannelSurfaceElements, ControlSectionButtons } from "/device-configs";
 import { MainDevice } from "/devices";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
+import { EncoderParameterNameBuilder } from "/midi/managers/lcd";
 import { ChannelTextManager } from "/midi/managers/lcd/ChannelTextManager";
 import { GlobalState } from "/state";
 import { ContextVariable } from "/util";
 
 export interface EncoderAssignmentConfig {
-  encoderValue?: MR_HostValue;
+  encoderParameter?: MR_HostValue;
 
   /**
-   * A custom string to display as the encoder's title instead of the one provided by Cubase
+   * An optional function to customize the name displayed for the encoder's parameter based on its
+   * `onTitleChange` parameters (`title1` and `title2`). The result of this function is abbreviated
+   * if necessary and centered if applicable.
    */
-  encoderValueName?: string;
+  encoderParameterNameBuilder?: EncoderParameterNameBuilder;
 
   displayMode: EncoderDisplayMode;
-  pushToggleValue?: MR_HostValue;
+
+  pushToggleParameter?: MR_HostValue;
+
+  /**
+   * An optional string to be displayed in front of push toggle parameter values to make them
+   * distinguishable from encoder parameter values.
+   */
+  pushToggleParameterPrefix?: string;
 
   /**
    * A function that will be invoked when the encoder is pushed instead of toggling
@@ -28,7 +38,7 @@ export interface EncoderAssignmentConfig {
   /**
    * If specified, shift-pushing the encoder will set the encoder value to the provided number.
    */
-  encoderValueDefault?: number;
+  encoderParameterDefault?: number;
 
   /**
    * A function that will be invoked when the encoder is shift-pushed.
@@ -114,7 +124,7 @@ export class EncoderPage {
 
     for (const assignment of assignments) {
       if (assignment.onPush) {
-        assignment.pushToggleValue = undefined;
+        assignment.pushToggleParameter = undefined;
       }
     }
 
@@ -192,14 +202,14 @@ export class EncoderPage {
       const mSelected = this.dependencies.mixerBankChannels[channelIndex].mValue.mSelected;
 
       const {
-        encoderValue = this.dependencies.page.mCustom.makeHostValueVariable(
+        encoderParameter: encoderValue = this.dependencies.page.mCustom.makeHostValueVariable(
           "unassignedEncoderValue",
         ),
-        pushToggleValue = this.dependencies.page.mCustom.makeHostValueVariable(
+        pushToggleParameter: pushToggleValue = this.dependencies.page.mCustom.makeHostValueVariable(
           "unassignedEncoderPushValue",
         ),
         onPush: pushAction,
-        encoderValueDefault,
+        encoderParameterDefault: encoderValueDefault,
         onShiftPush: shiftPushAction,
       } = this.assignments[channelIndex] ?? {};
 
@@ -301,14 +311,11 @@ export class EncoderPage {
     for (const [encoderIndex, { encoder }] of this.dependencies.channelElements.entries()) {
       const assignment = this.assignments[encoderIndex] as EncoderAssignmentConfig | undefined;
       encoder.displayMode.set(context, assignment?.displayMode ?? EncoderDisplayMode.SingleDot);
-      if (assignment?.encoderValueName) {
-        this.dependencies.channelTextManagers[encoderIndex].setParameterNameOverride(
-          context,
-          assignment.encoderValueName,
-        );
-      } else {
-        this.dependencies.channelTextManagers[encoderIndex].clearParameterNameOverride(context);
-      }
+
+      const channelTextManager = this.dependencies.channelTextManagers[encoderIndex];
+      channelTextManager.setParameterNameBuilder(assignment?.encoderParameterNameBuilder);
+      channelTextManager.setPushParameterValuePrefix(assignment?.pushToggleParameterPrefix);
+      channelTextManager.isParameterChannelRelated = this.config.areAssignmentsChannelRelated;
     }
 
     this.dependencies.globalState.isValueDisplayModeActive.set(context, false);
@@ -339,7 +346,7 @@ export class EncoderPage {
       for (const [channelIndex, { encoder }] of this.dependencies.channelElements.entries()) {
         if (
           channelIndex < this.assignments.length &&
-          !this.assignments[channelIndex].pushToggleValue
+          !this.assignments[channelIndex].pushToggleParameter
         ) {
           encoder.mPushValue.setProcessValue(context, 0);
         }

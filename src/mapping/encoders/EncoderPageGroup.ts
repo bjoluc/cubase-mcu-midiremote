@@ -1,5 +1,6 @@
 import { EncoderMappingConfig } from "./EncoderMapper";
 import { EncoderMappingDependencies, EncoderPage, EncoderPageConfig } from "./EncoderPage";
+import { config } from "/config";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { ContextVariable } from "/util";
 
@@ -100,21 +101,26 @@ export class EncoderPageGroup {
         for (const device of this.dependencies.mainDevices) {
           const buttons = device.controlSectionElements.buttons.navigation.channel;
 
-          for (const subpage of [
-            encoderPage.subPages.defaultShift,
-            encoderPage.subPages.flipShift,
-          ]) {
+          for (const subpage of config.mapChannelButtonsToParameterPageNavigation
+            ? [encoderPage.subPages.default, encoderPage.subPages.flip]
+            : [encoderPage.subPages.defaultShift, encoderPage.subPages.flipShift]) {
             this.dependencies.page
               .makeActionBinding(
                 buttons.left.mSurfaceValue,
-                previousEncoderPage.subPages.defaultShift.mAction.mActivate,
+                (config.mapChannelButtonsToParameterPageNavigation
+                  ? previousEncoderPage.subPages.default
+                  : previousEncoderPage.subPages.defaultShift
+                ).mAction.mActivate,
               )
               .setSubPage(subpage);
 
             this.dependencies.page
               .makeActionBinding(
                 buttons.right.mSurfaceValue,
-                nextEncoderPage.subPages.defaultShift.mAction.mActivate,
+                (config.mapChannelButtonsToParameterPageNavigation
+                  ? nextEncoderPage.subPages.default
+                  : nextEncoderPage.subPages.defaultShift
+                ).mAction.mActivate,
               )
               .setSubPage(subpage);
           }
