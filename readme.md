@@ -128,7 +128,7 @@ The mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 - You can enable and disable EQ bands by pushing their encoders – with one exception: Pushing an EQ gain encoder inverts the EQ gain.
 - Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages for sends now. The "Level" and "On" pages have been combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses. If your Cubase version supports it, there are also four additional pages for Cue sends 1-4.
 - The "Plug-In" encoder assignment always follows the currently focused plugin window to avoid tedious plugin selection via push encoders.
-- The first page of the "Inst" encoder assignment maps encoders to the VST Quick Controls of the currently selected instrument track. The remaining pages map 8 encoders to each part of the channel strip, i.e., gate, compressor, tools, saturation, and limiter. Pushing an encoder toggles the bypass status of the corresponding channel strip plugin.
+- The first page of the "Inst" encoder assignment maps encoders to the VST Quick Controls of the currently selected instrument track. The remaining pages map 8 encoders to each part of the channel strip, i.e., gate, compressor, tools, saturation, and limiter. Pushing the last encoder of a channel strip effect toggles the effect's bypass status.
 
 The table below summarizes all available encoder assignments:
 
