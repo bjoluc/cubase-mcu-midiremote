@@ -161,6 +161,10 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
       channelTextManager.onParameterDisplayValueChange(context, value);
     };
 
+    channel.encoder.mPushValue.mOnDisplayValueChange = (context, value) => {
+      channelTextManager.onPushParameterDisplayValueChange(context, value);
+    };
+
     channel.scribbleStrip.trackTitle.mOnTitleChange = (context, title, title2) => {
       channelTextManager.onChannelNameChange(context, title);
 
@@ -175,19 +179,19 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
 
     if (deviceConfig.hasSecondaryScribbleStrips && channel.scribbleStrip.meterPeakLevel) {
       channel.scribbleStrip.meterPeakLevel.mOnDisplayValueChange = (context, value) => {
-        channelTextManager.setMeterPeakLevel(context, value);
+        channelTextManager.onMeterPeakLevelChange(context, value);
       };
 
       channel.fader.mSurfaceValue.mOnDisplayValueChange = (context, value) => {
-        channelTextManager.setFaderParameterValue(context, value);
+        channelTextManager.onFaderParameterValueChange(context, value);
       };
 
       channel.fader.onTitleChangeCallbacks.addCallback((context, _title, parameterName) => {
-        channelTextManager.setFaderParameterName(context, parameterName);
+        channelTextManager.onFaderParameterNameChange(context, parameterName);
       });
 
       channel.fader.onTouchedValueChangeCallbacks.addCallback((context, isFaderTouched) => {
-        channelTextManager.setIsFaderTouched(context, Boolean(isFaderTouched));
+        channelTextManager.onFaderTouchedChange(context, Boolean(isFaderTouched));
       });
     }
 

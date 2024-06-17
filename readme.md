@@ -109,7 +109,7 @@ Alternatively, you can manually add it by clicking the "+" button in the lower z
 The very top of the MIDI Remote script file declares a number of configuration options.
 You can edit these options with a text editor to match your preferences.
 Each option is documented in a comment above it.
-For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L28-L115).
+For an overview of all options, please refer to the [source code on GitHub](https://github.com/bjoluc/cubase-xtouch-midiremote/blob/main/src/config.ts#L32).
 
 ## Mapping
 
@@ -123,12 +123,13 @@ The mapping is similar to [Cubase's default Mackie MCU Pro mapping](https://down
 **Encoder Assignments**
 
 - The lower scribble strip row always shows track names since they are vital to using each channel's buttons and fader, regardless of the encoder assignment. Parameter page numbers are displayed on the otherwise unused two-digit Assignment display instead. If an encoder assignment only has one parameter page, the Assignment display remains blank.
-- Shift-pushing an encoder resets its parameter to the default value, if a static default value is known. An exception are EQ gains which are not reset but inverted when shift-pressing their encoder.
+- Shift-pushing an encoder resets its parameter to the default value, if a static default value is known.
 - The "Track" encoder assignment has additional parameter pages for Low Cut, High Cut, and the Track Quick Controls of the selected track.
 - By default, pushing encoders in the "Pan/Surround" encoder assignment resets a channel's panner instead of toggling its "Monitor Active" state. If you'd like to toggle "Monitor Active" instead, you can set the `resetPanOnEncoderPush` [config option](#configuration-options) to `false`.
+- You can enable and disable EQ bands by pushing their encoders – with one exception: Pushing an EQ gain encoder inverts the EQ gain.
 - Instead of spreading the "Send" encoder assignment options out on four parameter pages, there are only two pages for sends now. The "Level" and "On" pages have been combined into a single page where turning encoders modifies the send level and pushing encoders toggles a send slot's On/Off status. The "Pre/Post" page remains untouched, and the "Bus" page is omitted because the MIDI Remote API doesn't expose send busses. If your Cubase version supports it, there are also four additional pages for Cue sends 1-4.
 - The "Plug-In" encoder assignment always follows the currently focused plugin window to avoid tedious plugin selection via push encoders.
-- The first page of the "Inst" encoder assignment maps encoders to the VST Quick Controls of the currently selected instrument track. The remaining pages map 8 encoders to each part of the channel strip, i.e., gate, compressor, tools, saturation, and limiter. Pushing an encoder toggles the bypass status of the corresponding channel strip plugin.
+- The first page of the "Inst" encoder assignment maps encoders to the VST Quick Controls of the currently selected instrument track. The remaining pages map 8 encoders to each part of the channel strip, i.e., gate, compressor, tools, saturation, and limiter. Pushing the last encoder of a channel strip effect toggles the effect's bypass status.
 
 The table below summarizes all available encoder assignments:
 
@@ -155,7 +156,6 @@ The table below summarizes all available encoder assignments:
 
 **Miscellaneous**
 
-- The main fader controls the Control Room volume unless the `mapMainFaderToControlRoom` [config option](#configuration-options) is set to `false`.
 - In zoom mode, the jog wheel zooms in and out instead of moving the cursor
 
 ## Drawbacks

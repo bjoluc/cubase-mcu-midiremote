@@ -1,10 +1,17 @@
 import { mDefaults } from "midiremote_api_v1";
 import { EncoderAssignmentConfig, EncoderPageConfig } from "./EncoderPage";
 import { config } from "/config";
-import { EncoderDisplayMode } from "/decorators/surface-elements/LedPushEncoder";
+import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { createElements } from "/util";
 
 const sendSlotsCount = mDefaults.getNumberOfSendSlots();
+
+const invertEncoderValueIfOneOrZero = (context: MR_ActiveDevice, encoder: LedPushEncoder) => {
+  const encoderValue = encoder.mEncoderValue.getProcessValue(context);
+  if (encoderValue === 0 || encoderValue === 1) {
+    encoder.mEncoderValue.setProcessValue(context, 1 - encoderValue);
+  }
+};
 
 export const pan: EncoderPageConfig = {
   name: "Pan",
@@ -13,6 +20,7 @@ export const pan: EncoderPageConfig = {
     encoderParameter: mixerBankChannel.mValue.mPan,
     encoderParameterDefault: 0.5,
     pushToggleParameter: mixerBankChannel.mValue.mMonitorEnable,
+    pushToggleParameterPrefix: "Mon ",
     onPush: config.resetPanOnEncoderPush
       ? (context, encoder) => {
           encoder.mEncoderValue.setProcessValue(context, 0.5);
@@ -49,6 +57,7 @@ export const inputPhase: EncoderPageConfig = {
     displayMode: EncoderDisplayMode.Wrap,
     encoderParameter: mixerBankChannel.mPreFilter.mPhaseSwitch,
     encoderParameterDefault: 0,
+    pushToggleParameter: mixerBankChannel.mPreFilter.mPhaseSwitch,
   }),
   areAssignmentsChannelRelated: true,
 };
@@ -60,6 +69,7 @@ export const lowCut: EncoderPageConfig = {
     encoderParameter: mixerBankChannel.mPreFilter.mLowCutFreq,
     encoderParameterDefault: 0,
     pushToggleParameter: mixerBankChannel.mPreFilter.mLowCutOn,
+    pushToggleParameterPrefix: "LC ",
   }),
   areAssignmentsChannelRelated: true,
 };
@@ -71,6 +81,7 @@ export const highCut: EncoderPageConfig = {
     encoderParameter: mixerBankChannel.mPreFilter.mHighCutFreq,
     encoderParameterDefault: 1,
     pushToggleParameter: mixerBankChannel.mPreFilter.mHighCutOn,
+    pushToggleParameterPrefix: "HC ",
   }),
   areAssignmentsChannelRelated: true,
 };
@@ -82,6 +93,7 @@ export const trackQuickControls = (hostAccess: MR_HostAccess): EncoderPageConfig
       encoderParameter:
         hostAccess.mTrackSelection.mMixerChannel.mQuickControls.getByIndex(channelIndex),
       displayMode: EncoderDisplayMode.SingleDot,
+      onPush: invertEncoderValueIfOneOrZero,
     };
   },
   areAssignmentsChannelRelated: false,
@@ -105,29 +117,32 @@ export const eq = (hostAccess: MR_HostAccess): EncoderPageConfig => {
           0.2810622751712799, 0.47443774342536926, 0.5877489447593689, 0.889056384563446,
         ][bandIndex],
         pushToggleParameter: band.mOn,
+        pushToggleParameterPrefix: "Bnd ",
       },
       {
         displayMode: EncoderDisplayMode.BoostOrCut,
         encoderParameter: band.mGain,
-        pushToggleParameter: band.mOn,
-        onShiftPush: (context, encoder) => {
+        onPush: (context, encoder) => {
           encoder.mEncoderValue.setProcessValue(
             context,
             1 - encoder.mEncoderValue.getProcessValue(context),
           );
         },
+        encoderParameterDefault: 0.5,
       },
       {
         displayMode: EncoderDisplayMode.SingleDot,
         encoderParameter: band.mQ,
-        pushToggleParameter: band.mOn,
         encoderParameterDefault: 0.0833333358168602,
+        pushToggleParameter: band.mOn,
+        pushToggleParameterPrefix: "Bnd ",
       },
       {
         displayMode: EncoderDisplayMode.SingleDot,
         encoderParameter: band.mFilterType,
-        pushToggleParameter: band.mOn,
         encoderParameterDefault: [0.7142857313156128, 1, 1, 0.7142857313156128][bandIndex],
+        pushToggleParameter: band.mOn,
+        pushToggleParameterPrefix: "Bnd ",
       },
     ]),
     areAssignmentsChannelRelated: false,
@@ -146,7 +161,7 @@ export const sends = (hostAccess: MR_HostAccess): EncoderPageConfig => {
           encoderParameter: sendSlot.mLevel,
           encoderParameterNameBuilder: (title1, title2) =>
             /^\d$/.test(title1) ? `Send ${title1}` : title1,
-          displayMode: EncoderDisplayMode.SingleDot,
+          displayMode: EncoderDisplayMode.Wrap,
           encoderParameterDefault: 0.7890865802764893,
           pushToggleParameter: sendSlot.mOn,
         };
@@ -155,6 +170,7 @@ export const sends = (hostAccess: MR_HostAccess): EncoderPageConfig => {
         const sendSlot = mSends.getByIndex(slotIndex);
         return {
           encoderParameter: sendSlot.mPrePost,
+          encoderParameterNameBuilder: () => "PreFadr",
           displayMode: EncoderDisplayMode.Wrap,
           encoderParameterDefault: 0,
           pushToggleParameter: sendSlot.mPrePost,
@@ -172,39 +188,52 @@ export const vstQuickControls = (hostAccess: MR_HostAccess): EncoderPageConfig =
       encoderParameter:
         hostAccess.mTrackSelection.mMixerChannel.mInstrumentPluginSlot.mParameterBankZone.makeParameterValue(),
       displayMode: EncoderDisplayMode.SingleDot,
+      onPush: invertEncoderValueIfOneOrZero,
     };
   },
   areAssignmentsChannelRelated: false,
 });
 
-type StripEffectSlot =
-  | MR_HostStripEffectSlotGate
-  | MR_HostStripEffectSlotCompressor
-  | MR_HostStripEffectSlotTools
-  | MR_HostStripEffectSlotSaturator
-  | MR_HostStripEffectSlotLimiter;
+const enum StripEffectType {
+  Gate = "mGate",
+  Compressor = "mCompressor",
+  Tools = "mTools",
+  Saturator = "mSaturator",
+  Limiter = "mLimiter",
+}
 
 let stripEffectAssignments: Record<string, EncoderAssignmentConfig[]> | undefined;
 const getStripEffectAssignments = (hostAccess: MR_HostAccess) => {
-  const createAssignments = (stripEffect: StripEffectSlot) =>
-    createElements(8, (): EncoderAssignmentConfig => {
-      const parameterValue = stripEffect.mParameterBankZone.makeParameterValue();
+  const stripEffects =
+    hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects;
+
+  const createAssignments = (stripEffectType: StripEffectType): EncoderAssignmentConfig[] => {
+    const stripEffect = stripEffects[stripEffectType];
+
+    const assignments = createElements(8, (): EncoderAssignmentConfig => {
+      const parameterValue = stripEffects[stripEffectType].mParameterBankZone.makeParameterValue();
       return {
         encoderParameter: parameterValue,
         displayMode: EncoderDisplayMode.SingleDot,
-        pushToggleParameter: stripEffect.mBypass,
+        onPush: invertEncoderValueIfOneOrZero,
       };
     });
 
+    // Make pushing the last encoder toggle bypass, regardless of its encoder parameter
+    const lastAssignment = assignments[7];
+    lastAssignment.onPush = undefined;
+    lastAssignment.pushToggleParameter = stripEffect.mBypass;
+
+    return assignments;
+  };
+
   if (!stripEffectAssignments) {
-    const stripEffects =
-      hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects.mStripEffects;
     stripEffectAssignments = {
-      gate: createAssignments(stripEffects.mGate),
-      compressor: createAssignments(stripEffects.mCompressor),
-      tools: createAssignments(stripEffects.mTools),
-      saturator: createAssignments(stripEffects.mSaturator),
-      limiter: createAssignments(stripEffects.mLimiter),
+      gate: createAssignments(StripEffectType.Gate),
+      compressor: createAssignments(StripEffectType.Compressor),
+      tools: createAssignments(StripEffectType.Tools),
+      saturator: createAssignments(StripEffectType.Saturator),
+      limiter: createAssignments(StripEffectType.Limiter),
     };
   }
 
@@ -269,6 +298,7 @@ export const focusedInsertEffect = (hostAccess: MR_HostAccess): EncoderPageConfi
       return {
         encoderParameter: parameterValue,
         displayMode: EncoderDisplayMode.SingleDot,
+        onPush: invertEncoderValueIfOneOrZero,
       };
     },
     areAssignmentsChannelRelated: false,
@@ -287,7 +317,9 @@ export const focusedInsertEffect = (hostAccess: MR_HostAccess): EncoderPageConfi
       for (const device of mainDevices) {
         const channelButtons = device.controlSectionElements.buttons.navigation.channel;
 
-        for (const subPage of [subPages.defaultShift, subPages.flipShift]) {
+        for (const subPage of config.mapChannelButtonsToParameterPageNavigation
+          ? [subPages.default, subPages.flip]
+          : [subPages.defaultShift, subPages.flipShift]) {
           page
             .makeActionBinding(channelButtons.left.mSurfaceValue, actions.mPrevBank)
             .setSubPage(subPage);
@@ -314,6 +346,7 @@ export const focusedQuickControls = (hostAccess: MR_HostAccess): EncoderPageConf
     return {
       encoderParameter: hostAccess.mFocusedQuickControls.getByIndex(channelIndex),
       displayMode: EncoderDisplayMode.SingleDot,
+      onPush: invertEncoderValueIfOneOrZero,
     };
   },
   areAssignmentsChannelRelated: false,

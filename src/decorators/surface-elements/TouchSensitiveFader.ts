@@ -62,9 +62,6 @@ class TouchSensitiveMotorFaderDecorator {
       // always computing `difference` ourselves:
       const difference = value - previousSurfaceValue.get(context);
 
-      if (surfaceValue.getProcessValue(context) !== value) {
-        console.log(`${true}`);
-      }
       // Prevent identical messages to reduce fader noise
       if (
         areMotorsActive.get(context) &&
