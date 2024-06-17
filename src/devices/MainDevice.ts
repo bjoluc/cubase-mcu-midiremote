@@ -10,8 +10,9 @@ import { LedButton } from "/decorators/surface-elements/LedButton";
 import { GlobalState } from "/state";
 import { TimerUtils, applyDefaultsFactory, createElements } from "/util";
 
-export class MainDevice extends Device {
+export class MainDevice<CustomElements extends Record<string, any> = {}> extends Device {
   controlSectionElements: ControlSectionSurfaceElements;
+  customElements: CustomElements;
 
   constructor(
     driver: MR_DeviceDriver,
@@ -28,6 +29,7 @@ export class MainDevice extends Device {
       surface,
       deviceSurface.controlSectionElements,
     );
+    this.customElements = (deviceSurface.customElements ?? {}) as CustomElements;
   }
 
   /**

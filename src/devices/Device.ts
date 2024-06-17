@@ -1,7 +1,7 @@
 import { ChannelSurfaceElements, DeviceSurface } from "../device-configs";
 import { deviceConfig } from "/config";
 import { MidiPortPair } from "/midi/MidiPortPair";
-import { ColorManager } from "/midi/managers/ColorManager";
+import { ColorManager } from "/midi/managers/colors/ColorManager";
 import { LcdManager } from "/midi/managers/lcd";
 import { GlobalState } from "/state";
 import { TimerUtils } from "/util";
@@ -31,8 +31,8 @@ export abstract class Device {
     this.ports = new MidiPortPair(driver, isExtender);
     this.lcdManager = new LcdManager(this, globalState, timerUtils);
 
-    if (deviceConfig.channelColorSupport === "behringer") {
-      this.colorManager = new ColorManager(this);
+    if (deviceConfig.colorManager) {
+      this.colorManager = new deviceConfig.colorManager(this);
     }
   }
 }

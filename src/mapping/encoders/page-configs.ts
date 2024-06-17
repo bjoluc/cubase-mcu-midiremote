@@ -369,7 +369,7 @@ export const sendSlot = (slotId: number): EncoderPageConfig => ({
   areAssignmentsChannelRelated: true,
 });
 
-export const cueSlot = (slotId: number): EncoderPageConfig => ({
+export const cue = (slotId: number): EncoderPageConfig => ({
   name: "Cue",
   assignments: (channel) => {
     const cueSlot = channel.mCueSends.getByIndex(slotId);
@@ -385,7 +385,4 @@ export const cueSlot = (slotId: number): EncoderPageConfig => ({
   areAssignmentsChannelRelated: true,
 });
 
-export const allAvailableCueSlotPages = createElements(
-  mDefaults.getMaxControlRoomCueChannels(),
-  cueSlot,
-);
+export const allAvailableCuePages = createElements(mDefaults.getMaxControlRoomCueChannels(), cue);

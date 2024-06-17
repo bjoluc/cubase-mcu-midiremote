@@ -54,7 +54,7 @@ export function bindEncoders(
     // Send
     {
       activatorButtonSelector: (device) => selectAssignButtons(device).send,
-      pages: [pageConfigs.sends(hostAccess), ...pageConfigs.allAvailableCueSlotPages],
+      pages: [pageConfigs.sends(hostAccess), ...pageConfigs.allAvailableCuePages],
     },
 
     // Plug-In
