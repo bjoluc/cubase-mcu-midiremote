@@ -201,7 +201,6 @@ export const deviceConfig: DeviceConfig = {
             pan: buttonMatrix[1][0][0],
             eq: buttonMatrix[1][1][0],
             send: buttonMatrix[1][1][1],
-            plugin: buttonMatrix[1][1][2],
           },
 
           modify: {
@@ -328,14 +327,18 @@ export const deviceConfig: DeviceConfig = {
         activatorButtonSelector: makeActivatorButtonSelector(0, 3),
       },
       {
-        pages: [pageConfigs.lowCut, pageConfigs.highCut],
+        pages: [pageConfigs.lowCut],
         activatorButtonSelector: makeActivatorButtonSelector(0, 4),
       },
       {
-        pages: pageConfigs.allAvailableCuePages,
+        pages: [pageConfigs.highCut],
         activatorButtonSelector: makeActivatorButtonSelector(0, 5),
       },
 
+      {
+        pages: pageConfigs.allAvailableCuePages,
+        activatorButtonSelector: makeActivatorButtonSelector(1, 2),
+      },
       {
         activatorButtonSelector: makeActivatorButtonSelector(1, 3),
         pages: [pageConfigs.vstQuickControls(hostAccess)],
@@ -360,6 +363,46 @@ export const deviceConfig: DeviceConfig = {
         pages: [pageConfig],
         activatorButtonSelector: makeActivatorButtonSelector(2, buttonColumn),
       })),
+
+      // Focused insert (with additional slot controls)
+      {
+        activatorButtonSelector: makeActivatorButtonSelector(3, 0),
+        pages: [
+          pageConfigs.focusedInsertEffect(
+            hostAccess,
+            (insertEffectViewer, _encoderPage, { page, mainDevices }) => {
+              insertEffectViewer.excludeEmptySlots();
+
+              for (const device of mainDevices as MainDevice<MainDeviceCustomElements>[]) {
+                const buttonMatrix = device.customElements.buttonMatrix;
+
+                // "|< Slot"
+                page.makeActionBinding(
+                  buttonMatrix[1][3][1].mSurfaceValue,
+                  insertEffectViewer.mAction.mReset,
+                );
+
+                // "< Slot"
+                page.makeActionBinding(
+                  buttonMatrix[1][3][2].mSurfaceValue,
+                  insertEffectViewer.mAction.mPrev,
+                );
+
+                // "Open Insert"
+                page
+                  .makeValueBinding(buttonMatrix[1][3][3].mSurfaceValue, insertEffectViewer.mEdit)
+                  .setTypeToggle();
+
+                // "Slot >"
+                page.makeActionBinding(
+                  buttonMatrix[1][3][4].mSurfaceValue,
+                  insertEffectViewer.mAction.mNext,
+                );
+              }
+            },
+          ),
+        ],
+      },
     ];
   },
 };
