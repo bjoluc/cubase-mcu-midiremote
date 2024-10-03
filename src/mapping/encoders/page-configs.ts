@@ -1,5 +1,10 @@
 import { mDefaults } from "midiremote_api_v1";
-import { EncoderAssignmentConfig, EncoderPageConfig } from "./EncoderPage";
+import {
+  EncoderAssignmentConfig,
+  EncoderMappingDependencies,
+  EncoderPage,
+  EncoderPageConfig,
+} from "./EncoderPage";
 import { config } from "/config";
 import { EncoderDisplayMode, LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { createElements } from "/util";
@@ -285,7 +290,14 @@ export const stripEffectSaturator = (hostAccess: MR_HostAccess) =>
 export const stripEffectLimiter = (hostAccess: MR_HostAccess) =>
   makeStripEffectEncoderPageConfig("Limiter", getStripEffectAssignments(hostAccess)["limiter"]);
 
-export const focusedInsertEffect = (hostAccess: MR_HostAccess): EncoderPageConfig => {
+export const focusedInsertEffect = (
+  hostAccess: MR_HostAccess,
+  enhanceMapping?: (
+    insertEffectViewer: MR_HostInsertEffectViewer,
+    encoderPage: EncoderPage,
+    mappingDependencies: EncoderMappingDependencies,
+  ) => void,
+): EncoderPageConfig => {
   const insertEffectsViewer = hostAccess.mTrackSelection.mMixerChannel.mInsertAndStripEffects
     .makeInsertEffectViewer("Inserts")
     .followPluginWindowInFocus();
@@ -303,7 +315,8 @@ export const focusedInsertEffect = (hostAccess: MR_HostAccess): EncoderPageConfi
     },
     areAssignmentsChannelRelated: false,
 
-    enhanceMapping(encoderPage, pageGroup, { page, mainDevices, globalState }) {
+    enhanceMapping(encoderPage, pageGroup, mappingDependencies) {
+      const { page, mainDevices, globalState } = mappingDependencies;
       const subPages = encoderPage.subPages;
       const actions = parameterBankZone.mAction;
 
@@ -335,6 +348,10 @@ export const focusedInsertEffect = (hostAccess: MR_HostAccess): EncoderPageConfi
             channelButtons.right.setLedValue(context, +isShiftModeActive);
           }
         });
+      }
+
+      if (enhanceMapping) {
+        enhanceMapping(insertEffectsViewer, encoderPage, mappingDependencies);
       }
     },
   };

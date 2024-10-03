@@ -257,7 +257,7 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  enhanceMapping({ devices, page }) {
+  enhanceMapping({ devices, page, lifecycleCallbacks }) {
     const mainDevices = devices.filter(
       (device) => device instanceof MainDevice,
     ) as MainDevice<MainDeviceCustomElements>[];
@@ -268,15 +268,27 @@ export const deviceConfig: DeviceConfig = {
       const buttonMatrix = device.customElements.buttonMatrix;
 
       // Bind remaining matrix buttons to MIDI notes on Channel 2
+      const channel2Buttons: LedButton[] = [];
       for (const [layerId, layer] of buttonMatrix.entries()) {
         for (const [rowId, row] of layer.entries()) {
           for (const [columnId, button] of row.entries()) {
             if (!button.isBoundToNote()) {
+              channel2Buttons.push(button);
               button.bindToNote(ports, layerId * 16 + rowId * 4 + columnId, 1); // Channel 2
             }
           }
         }
       }
+
+      // Reset non-MCU (channel 2) buttons on (de)activation
+      const resetChannel2Buttons = (context: MR_ActiveDevice) => {
+        for (const button of channel2Buttons) {
+          button.sendNoteOn(context, 0);
+        }
+      };
+
+      lifecycleCallbacks.addActivationCallback(resetChannel2Buttons);
+      lifecycleCallbacks.addDeactivationCallback(resetChannel2Buttons);
 
       // Host mappings
       // Edit instrument

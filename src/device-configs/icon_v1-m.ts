@@ -201,7 +201,6 @@ export const deviceConfig: DeviceConfig = {
             pan: buttonMatrix[1][0][0],
             eq: buttonMatrix[1][1][0],
             send: buttonMatrix[1][1][1],
-            plugin: buttonMatrix[1][1][2],
           },
 
           modify: {
@@ -255,7 +254,7 @@ export const deviceConfig: DeviceConfig = {
     };
   },
 
-  enhanceMapping({ devices, page }) {
+  enhanceMapping({ devices, page, lifecycleCallbacks }) {
     const mainDevices = devices.filter(
       (device) => device instanceof MainDevice,
     ) as MainDevice<MainDeviceCustomElements>[];
@@ -266,15 +265,27 @@ export const deviceConfig: DeviceConfig = {
       const buttonMatrix = device.customElements.buttonMatrix;
 
       // Bind unbound buttons in Layers 1-3 to MIDI notes on channel 2
+      const channel2Buttons: LedButton[] = [];
       for (const [layerId, layer] of buttonMatrix.entries()) {
         for (const [rowId, row] of layer.entries()) {
           for (const [columnId, button] of row.entries()) {
             if (!button.isBoundToNote()) {
+              channel2Buttons.push(button);
               button.bindToNote(ports, layerId * 24 + rowId * 6 + columnId, 1); // Channel 2
             }
           }
         }
       }
+
+      // Reset non-MCU (channel 2) buttons on (de)activation
+      const resetChannel2Buttons = (context: MR_ActiveDevice) => {
+        for (const button of channel2Buttons) {
+          button.sendNoteOn(context, 0);
+        }
+      };
+
+      lifecycleCallbacks.addActivationCallback(resetChannel2Buttons);
+      lifecycleCallbacks.addDeactivationCallback(resetChannel2Buttons);
 
       // Host mappings
       // Edit instrument
@@ -328,14 +339,18 @@ export const deviceConfig: DeviceConfig = {
         activatorButtonSelector: makeActivatorButtonSelector(0, 3),
       },
       {
-        pages: [pageConfigs.lowCut, pageConfigs.highCut],
+        pages: [pageConfigs.lowCut],
         activatorButtonSelector: makeActivatorButtonSelector(0, 4),
       },
       {
-        pages: pageConfigs.allAvailableCuePages,
+        pages: [pageConfigs.highCut],
         activatorButtonSelector: makeActivatorButtonSelector(0, 5),
       },
 
+      {
+        pages: pageConfigs.allAvailableCuePages,
+        activatorButtonSelector: makeActivatorButtonSelector(1, 2),
+      },
       {
         activatorButtonSelector: makeActivatorButtonSelector(1, 3),
         pages: [pageConfigs.vstQuickControls(hostAccess)],
@@ -360,6 +375,46 @@ export const deviceConfig: DeviceConfig = {
         pages: [pageConfig],
         activatorButtonSelector: makeActivatorButtonSelector(2, buttonColumn),
       })),
+
+      // Focused insert (with additional slot controls)
+      {
+        activatorButtonSelector: makeActivatorButtonSelector(3, 0),
+        pages: [
+          pageConfigs.focusedInsertEffect(
+            hostAccess,
+            (insertEffectViewer, _encoderPage, { page, mainDevices }) => {
+              insertEffectViewer.excludeEmptySlots();
+
+              for (const device of mainDevices as MainDevice<MainDeviceCustomElements>[]) {
+                const buttonMatrix = device.customElements.buttonMatrix;
+
+                // "|< Slot"
+                page.makeActionBinding(
+                  buttonMatrix[1][3][1].mSurfaceValue,
+                  insertEffectViewer.mAction.mReset,
+                );
+
+                // "< Slot"
+                page.makeActionBinding(
+                  buttonMatrix[1][3][2].mSurfaceValue,
+                  insertEffectViewer.mAction.mPrev,
+                );
+
+                // "Open Insert"
+                page
+                  .makeValueBinding(buttonMatrix[1][3][3].mSurfaceValue, insertEffectViewer.mEdit)
+                  .setTypeToggle();
+
+                // "Slot >"
+                page.makeActionBinding(
+                  buttonMatrix[1][3][4].mSurfaceValue,
+                  insertEffectViewer.mAction.mNext,
+                );
+              }
+            },
+          ),
+        ],
+      },
     ];
   },
 };
