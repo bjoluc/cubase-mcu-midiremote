@@ -1,4 +1,4 @@
-import { RgbColor } from "./managers/ColorManager";
+import { RgbColor } from "./managers/colors/ColorManager";
 import { SegmentDisplayManager } from "./managers/SegmentDisplayManager";
 import { sendChannelMeterMode, sendGlobalMeterModeOrientation, sendMeterLevel } from "./util";
 import { config, deviceConfig } from "/config";
@@ -72,9 +72,10 @@ function bindVuMeter(
   vuMeter: MR_SurfaceCustomValueVariable,
   outputPort: MidiOutputPort,
   meterId: number,
+  midiChannel = 0,
 ) {
   const sendLevel = (context: MR_ActiveDevice, level: number) => {
-    sendMeterLevel(context, outputPort, meterId, level);
+    sendMeterLevel(context, outputPort, meterId, level, midiChannel);
   };
 
   let isMeterUnassigned = false;
@@ -82,7 +83,9 @@ function bindVuMeter(
     if (!isMeterUnassigned || newValue === 0) {
       // Apply a log scale twice to make the meters look more like Cubase's MixConsole meters
       const meterLevel = Math.ceil(
-        (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) * 0xe - 0.25,
+        (1 + Math.log10(0.1 + 0.9 * (1 + Math.log10(0.1 + 0.9 * newValue)))) *
+          (deviceConfig.maximumMeterValue ?? 0xe) -
+          0.25,
       );
 
       sendLevel(context, meterLevel);
@@ -106,8 +109,8 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
     // Push Encoder
     channel.encoder.bindToMidi(ports, channelIndex);
 
-    // Display colors – only supported by the X-Touch
-    if (deviceConfig.channelColorSupport === "behringer") {
+    // Display colors
+    if (deviceConfig.colorManager) {
       const encoderColor = new ContextVariable({ isAssigned: false, r: 0, g: 0, b: 0 });
       channel.encoder.mEncoderValue.mOnColorChange = (context, r, g, b, _a, isAssigned) => {
         encoderColor.set(context, { isAssigned, r, g, b });
@@ -173,6 +176,24 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
       // this just using `channel.vuMeter`).
       setIsMeterUnassigned(context, title2 === "");
     };
+
+    if (deviceConfig.hasSecondaryScribbleStrips && channel.scribbleStrip.meterPeakLevel) {
+      channel.scribbleStrip.meterPeakLevel.mOnDisplayValueChange = (context, value) => {
+        channelTextManager.onMeterPeakLevelChange(context, value);
+      };
+
+      channel.fader.mSurfaceValue.mOnDisplayValueChange = (context, value) => {
+        channelTextManager.onFaderParameterValueChange(context, value);
+      };
+
+      channel.fader.onTitleChangeCallbacks.addCallback((context, _title, parameterName) => {
+        channelTextManager.onFaderParameterNameChange(context, parameterName);
+      });
+
+      channel.fader.onTouchedValueChangeCallbacks.addCallback((context, isFaderTouched) => {
+        channelTextManager.onFaderTouchedChange(context, Boolean(isFaderTouched));
+      });
+    }
 
     /** Clears the channel meter's overload indicator */
     const clearOverload = (context: MR_ActiveDevice) => {
@@ -306,4 +327,10 @@ function bindControlSectionElements(device: MainDevice, globalState: GlobalState
     .setInputPort(ports.input)
     .bindToControlChange(0, 0x2e)
     .setTypeAbsolute();
+
+  // Main VU Meters
+  if (elements.mainVuMeters) {
+    bindVuMeter(elements.mainVuMeters.left, ports.output, 0, 1);
+    bindVuMeter(elements.mainVuMeters.right, ports.output, 1, 1);
+  }
 }

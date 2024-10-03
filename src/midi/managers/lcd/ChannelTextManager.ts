@@ -36,15 +36,12 @@ export class ChannelTextManager {
    * Given a <= `ChannelTextManager.channelWidth` characters long string, returns a left-padded
    * version of it that appears centered on an `ChannelTextManager.channelWidth`-character display.
    */
-  private static centerString(input: string) {
-    if (input.length >= ChannelTextManager.channelWidth) {
+  private static centerString(input: string, width = ChannelTextManager.channelWidth) {
+    if (input.length >= width) {
       return input;
     }
 
-    return (
-      LcdManager.makeSpaces(Math.floor((ChannelTextManager.channelWidth - input.length) / 2)) +
-      input
-    );
+    return LcdManager.makeSpaces(Math.floor((width - input.length) / 2)) + input;
   }
 
   /**
@@ -147,6 +144,12 @@ export class ChannelTextManager {
 
   private channelName = new ContextVariable("");
 
+  private meterPeakLevel = new ContextVariable("");
+  private faderParameterValue = new ContextVariable("");
+  private faderParameterName = new ContextVariable("");
+  private isFaderTouched = new ContextVariable(false);
+  private isFaderParameterDisplayed = new ContextVariable(false);
+
   /** Whether the parameter controlled by the channel's encoder belongs to that channel */
   public isParameterChannelRelated = true;
 
@@ -161,6 +164,12 @@ export class ChannelTextManager {
     globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateNameValueDisplay.bind(this));
     globalState.areDisplayRowsFlipped.addOnChangeCallback(this.updateTrackTitleDisplay.bind(this));
     globalState.selectedTrackName.addOnChangeCallback(this.onSelectedTrackChange.bind(this));
+
+    if (deviceConfig.hasSecondaryScribbleStrips) {
+      globalState.isShiftModeActive.addOnChangeCallback(
+        this.updateIsFaderParameterDisplayed.bind(this),
+      );
+    }
 
     if (DEVICE_NAME === "MCU Pro") {
       // Handle metering mode changes
@@ -250,6 +259,57 @@ export class ChannelTextManager {
     }
 
     this.sendText(context, row, this.channelName.get(context));
+    this.updateSecondaryTrackTitleDisplay(context);
+  }
+
+  /**
+   * Updates the track title displayed on the first row of the channel's secondary display, if the
+   * device has secondary displays.
+   */
+  private updateSecondaryTrackTitleDisplay(context: MR_ActiveDevice) {
+    if (deviceConfig.hasSecondaryScribbleStrips) {
+      this.sendText(
+        context,
+        2,
+        ChannelTextManager.centerString(
+          this.isFaderParameterDisplayed.get(context)
+            ? this.faderParameterName.get(context)
+            : this.channelName.get(context),
+        ),
+      );
+    }
+  }
+
+  private updateIsFaderParameterDisplayed(context: MR_ActiveDevice) {
+    const previousValue = this.isFaderParameterDisplayed.get(context);
+    const newValue =
+      this.isFaderTouched.get(context) && !this.globalState.isShiftModeActive.get(context);
+
+    if (newValue !== previousValue) {
+      this.isFaderParameterDisplayed.set(context, newValue);
+      this.updateSecondaryTrackTitleDisplay(context);
+      this.updateSupplementaryInfo(context);
+    }
+  }
+
+  /**
+   * Updates the string displayed on the second row of the channel's secondary display, if the
+   * device has secondary displays.
+   */
+  private updateSupplementaryInfo(context: MR_ActiveDevice) {
+    if (deviceConfig.hasSecondaryScribbleStrips) {
+      this.sendText(
+        context,
+        3,
+        ChannelTextManager.centerString(
+          ChannelTextManager.abbreviateString(
+            this.isFaderParameterDisplayed.get(context)
+              ? this.faderParameterValue.get(context)
+              : this.meterPeakLevel.get(context),
+          ),
+        ),
+      );
+    }
   }
 
   setParameterNameBuilder(builder?: EncoderParameterNameBuilder) {
@@ -353,8 +413,41 @@ export class ChannelTextManager {
     }
   }
 
+  /** This callback is not called externally, but only from within this class */
   onParameterChange(context: MR_ActiveDevice) {
     this.lastParameterChangeTime = performance.now();
     this.disableLocalValueDisplayMode(context);
+  }
+
+  onMeterPeakLevelChange(context: MR_ActiveDevice, level: string) {
+    this.meterPeakLevel.set(context, level);
+    if (!this.isFaderParameterDisplayed.get(context)) {
+      this.updateSupplementaryInfo(context);
+    }
+  }
+
+  onFaderParameterValueChange(context: MR_ActiveDevice, value: string) {
+    this.faderParameterValue.set(context, ChannelTextManager.stripNonAsciiCharacters(value));
+    if (this.isFaderParameterDisplayed.get(context)) {
+      this.updateSupplementaryInfo(context);
+    }
+  }
+
+  onFaderParameterNameChange(context: MR_ActiveDevice, name: string) {
+    this.faderParameterName.set(
+      context,
+      ChannelTextManager.abbreviateString(
+        ChannelTextManager.stripNonAsciiCharacters(ChannelTextManager.translateParameterName(name)),
+      ),
+    );
+
+    if (this.isFaderParameterDisplayed.get(context)) {
+      this.updateSecondaryTrackTitleDisplay(context);
+    }
+  }
+
+  onFaderTouchedChange(context: MR_ActiveDevice, isFaderTouched: boolean) {
+    this.isFaderTouched.set(context, isFaderTouched);
+    this.updateIsFaderParameterDisplayed(context);
   }
 }
