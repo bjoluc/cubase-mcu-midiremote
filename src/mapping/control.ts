@@ -20,6 +20,7 @@ function setShiftableButtonsLedValues(
     buttons.transport.rewind,
     buttons.transport.forward,
     buttons.navigation.bank.left,
+    buttons.display,
   ]) {
     button.setLedValue(context, value);
   }
