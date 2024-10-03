@@ -26,16 +26,6 @@ class LedButtonDecorator {
   private channelNumber?: number;
   private note?: number;
 
-  private sendNoteOn(context: MR_ActiveDevice, velocity: number | boolean) {
-    if (
-      this.ports &&
-      typeof this.channelNumber !== "undefined" &&
-      typeof this.note !== "undefined"
-    ) {
-      this.ports.output.sendNoteOn(context, this.note, velocity, this.channelNumber);
-    }
-  }
-
   constructor(
     private surface: MR_DeviceSurface,
     private button: MR_Button,
@@ -43,6 +33,16 @@ class LedButtonDecorator {
   ) {}
 
   onSurfaceValueChange = new CallbackCollection(this.button.mSurfaceValue, "mOnProcessValueChange");
+
+  sendNoteOn = (context: MR_ActiveDevice, velocity: number | boolean) => {
+    if (
+      this.ports &&
+      typeof this.channelNumber !== "undefined" &&
+      typeof this.note !== "undefined"
+    ) {
+      this.ports.output.sendNoteOn(context, this.note, velocity, this.channelNumber);
+    }
+  };
 
   setLedValue = (context: MR_ActiveDevice, value: number) => {
     this.ledValue.set(context, value);
