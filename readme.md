@@ -63,7 +63,7 @@ A MIDI Remote API script can illuminate these scribble strips according to their
 - In the studio setup window, remove any Mackie Control remote devices (don't forget to take screenshots of your command assignments). If you don't feel comfortable removing the devices, it is also fine to select "Not Connected" for their ports.
 - Open the [latest GitHub release page](https://github.com/bjoluc/cubase-xtouch-midiremote/releases/latest) and in the "Assets" section, download the script (.js) that is named like your device.
 - Open `C:\Users\<Username>\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\Local` (Windows) or `/Users/<Username>/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/Local` (MacOS).
-- The filename of the script you downloaded has the form `<Device>_<Vendor>.js`. Cubase expects scripts to be nested in subdirectories named precisely after the script's vendor and device. So within the `Local` folder, create the subdirectories `<Device>/<Vendor>` according to the device and vendor portions of the script's filename. For instance, if you downloaded `behringer_xtouch.js`, the subdirectories would need to be `behringer\xtouch`.
+- The filename of the script you downloaded has the form `<Vendor>_<Device>.js`. Cubase expects scripts to be nested in subdirectories named precisely after the script's vendor and device. So within the `Local` folder, create the subdirectories `<Vendor>\<Device>` according to the device and vendor portions of the script's filename. For instance, if you downloaded `behringer_xtouch.js`, the subdirectories would need to be `behringer\xtouch`.
 
   > **Note**
   > Directory names matter.
