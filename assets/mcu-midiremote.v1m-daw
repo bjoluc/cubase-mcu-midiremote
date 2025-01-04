@@ -64,7 +64,7 @@
      <ctl id="61" kind="button" valueType="midi" value="28" name="LC" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
      <ctl id="62" kind="button" valueType="midi" value="29" name="HC" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
      <ctl id="63" kind="button" valueType="midi" value="44" name="EQ" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
-     <ctl id="64" kind="button" valueType="midi" value="41" name="Sends" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="64" kind="button" valueType="midi" value="31" name="Sends" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
      <ctl id="65" kind="button" valueType="midi" value="32" name="Cue 1-4" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
      <ctl id="66" kind="button" valueType="midi" value="33" name="Inst QC" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
      <ctl id="67" kind="button" valueType="midi" value="34" name="Track QC" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
