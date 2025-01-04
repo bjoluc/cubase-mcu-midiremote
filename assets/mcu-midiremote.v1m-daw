@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mode id="2" mode="cubase" protocol="0">
+     <ctl id="1" kind="button" valueType="func" value="0" name="REC 1" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="2" kind="button" valueType="func" value="1" name="REC 2" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="3" kind="button" valueType="func" value="2" name="REC 3" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="4" kind="button" valueType="func" value="3" name="REC 4" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="5" kind="button" valueType="func" value="4" name="REC 5" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="6" kind="button" valueType="func" value="5" name="REC 6" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="7" kind="button" valueType="func" value="6" name="REC 7" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="8" kind="button" valueType="func" value="7" name="REC 8" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="9" kind="button" valueType="func" value="8" name="SOLO1" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="10" kind="button" valueType="func" value="9" name="SOLO2" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="11" kind="button" valueType="func" value="10" name="SOLO3" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="12" kind="button" valueType="func" value="11" name="SOLO4" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="13" kind="button" valueType="func" value="12" name="SOLO5" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="14" kind="button" valueType="func" value="13" name="SOLO6" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="15" kind="button" valueType="func" value="14" name="SOLO7" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="16" kind="button" valueType="func" value="15" name="SOLO8" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="17" kind="button" valueType="func" value="16" name="MUTE1" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="18" kind="button" valueType="func" value="17" name="MUTE2" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="19" kind="button" valueType="func" value="18" name="MUTE3" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="20" kind="button" valueType="func" value="19" name="MUTE4" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="21" kind="button" valueType="func" value="20" name="MUTE5" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="22" kind="button" valueType="func" value="21" name="MUTE6" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="23" kind="button" valueType="func" value="22" name="MUTE7" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="24" kind="button" valueType="func" value="23" name="MUTE8" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="25" kind="button" valueType="func" value="24" name="SEL 1" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="26" kind="button" valueType="func" value="25" name="SEL 2" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="27" kind="button" valueType="func" value="26" name="SEL 3" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="28" kind="button" valueType="func" value="27" name="SEL 4" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="29" kind="button" valueType="func" value="28" name="SEL 5" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="30" kind="button" valueType="func" value="29" name="SEL 6" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="31" kind="button" valueType="func" value="30" name="SEL 7" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="32" kind="button" valueType="func" value="31" name="SEL 8" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="33" kind="button" valueType="midi" value="51" name="Edit" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="34" kind="button" valueType="midi" value="1" name="Edit Instr" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="35" kind="button" valueType="midi" value="78" name="Mixer" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="36" kind="button" valueType="midi" value="77" name="Project" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="37" kind="button" valueType="midi" value="52" name="Name/ Value" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="38" kind="button" valueType="midi" value="53" name="Time Format" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="39" kind="button" valueType="midi" value="80" name="Mix Undo" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="40" kind="button" valueType="midi" value="81" name="Mix Redo" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="41" kind="button" valueType="midi" value="8" name="Reset Meters" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="42" kind="button" valueType="midi" value="87" name="Punch In" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="43" kind="button" valueType="midi" value="101" name="Scrub" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="44" kind="button" valueType="midi" value="79" name="Motors" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="45" kind="button" valueType="midi" value="70" name="Undo" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="46" kind="button" valueType="midi" value="71" name="Redo" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="47" kind="button" valueType="midi" value="82" name="Deactiv. Solo" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="48" kind="button" valueType="midi" value="88" name="&lt; Marker" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="49" kind="button" valueType="midi" value="89" name="Add Marker" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="50" kind="button" valueType="midi" value="90" name="Marker &gt;" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="51" kind="button" valueType="midi" value="72" name="Save" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="52" kind="button" valueType="midi" value="73" name="Revert" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="53" kind="button" valueType="midi" value="20" name="Click" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="54" kind="button" valueType="midi" value="84" name="|&lt;" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="55" kind="button" valueType="midi" value="85" name="&gt;|" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="56" kind="button" valueType="midi" value="83" name="Shift" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="57" kind="button" valueType="midi" value="42" name="Pan" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="58" kind="button" valueType="midi" value="25" name="Monitor" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="59" kind="button" valueType="midi" value="26" name="Pre Gain" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="60" kind="button" valueType="midi" value="27" name="Phase" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="61" kind="button" valueType="midi" value="28" name="LC" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="62" kind="button" valueType="midi" value="29" name="HC" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="63" kind="button" valueType="midi" value="44" name="EQ" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="64" kind="button" valueType="midi" value="41" name="Sends" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="1" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="65" kind="button" valueType="midi" value="32" name="Cue 1-4" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="66" kind="button" valueType="midi" value="33" name="Inst QC" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="67" kind="button" valueType="midi" value="34" name="Track QC" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="68" kind="button" valueType="midi" value="35" name="Focus QC" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="69" kind="button" valueType="midi" value="36" name="Gate" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="70" kind="button" valueType="midi" value="37" name="Compr" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="71" kind="button" valueType="midi" value="38" name="Tools" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="72" kind="button" valueType="midi" value="39" name="Sat" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="73" kind="button" valueType="midi" value="40" name="Limiter" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="74" kind="button" valueType="midi" value="41" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="75" kind="button" valueType="midi" value="42" name="Focused Insert " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="76" kind="button" valueType="midi" value="43" name="|&lt; Slot" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="77" kind="button" valueType="midi" value="44" name="&lt; Slot" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="78" kind="button" valueType="midi" value="45" name="Open Insert" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="79" kind="button" valueType="midi" value="46" name="Slot &gt;" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="80" kind="button" valueType="midi" value="47" name="Shift" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="81" kind="button" valueType="midi" value="48" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="82" kind="button" valueType="midi" value="49" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="83" kind="button" valueType="midi" value="50" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="84" kind="button" valueType="midi" value="51" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="85" kind="button" valueType="midi" value="52" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="86" kind="button" valueType="midi" value="53" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="87" kind="button" valueType="midi" value="54" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="88" kind="button" valueType="midi" value="55" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="89" kind="button" valueType="midi" value="56" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="90" kind="button" valueType="midi" value="57" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="91" kind="button" valueType="midi" value="58" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="92" kind="button" valueType="midi" value="59" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="93" kind="button" valueType="midi" value="60" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="94" kind="button" valueType="midi" value="61" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="95" kind="button" valueType="midi" value="62" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="96" kind="button" valueType="midi" value="63" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="97" kind="button" valueType="midi" value="64" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="98" kind="button" valueType="midi" value="65" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="99" kind="button" valueType="midi" value="66" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="100" kind="button" valueType="midi" value="67" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="101" kind="button" valueType="midi" value="68" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="102" kind="button" valueType="midi" value="69" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="103" kind="button" valueType="midi" value="70" name=" " lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="104" kind="button" valueType="midi" value="71" name="Shift" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="note" chan="2" rotate="0" val1="-1" val2="-1" diyNameQ="1"/>
+     <ctl id="105" kind="button" valueType="hotkey" value="18" name="Open" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="18" keyName="O" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="106" kind="button" valueType="hotkey" value="26" name="Close" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="26" keyName="W" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="107" kind="button" valueType="hotkey" value="20" name="Quit" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="20" keyName="Q" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="108" kind="button" valueType="hotkey" value="17" name="New Project" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="17" keyName="N" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="109" kind="button" valueType="hotkey" value="22" name="Save" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="22" keyName="S" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="110" kind="button" valueType="hotkey" value="22" name="Save As" lockBy="0" ctrl="1" shift="1" alt="0" cmd="0" key="22" keyName="S" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="111" kind="button" valueType="hotkey" value="20" name="Quantize" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="20" keyName="Q" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="112" kind="button" valueType="hotkey" value="13" name="Snap On/Off" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="13" keyName="J" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="113" kind="button" valueType="hotkey" value="27" name="Cut" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="27" keyName="X" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="114" kind="button" valueType="hotkey" value="6" name="Copy" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="6" keyName="C" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="115" kind="button" valueType="hotkey" value="25" name="Paste" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="25" keyName="V" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="116" kind="button" valueType="hotkey" value="76" name="Delete" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="76" keyName="delete" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="117" kind="button" valueType="hotkey" value="25" name="Paste At Origin" lockBy="0" ctrl="0" shift="0" alt="1" cmd="0" key="25" keyName="V" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="118" kind="button" valueType="hotkey" value="27" name="Split" lockBy="0" ctrl="0" shift="0" alt="1" cmd="0" key="27" keyName="X" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="119" kind="button" valueType="hotkey" value="7" name="Dupli- cate" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="7" keyName="D" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="120" kind="button" valueType="hotkey" value="14" name="Repeat" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="14" keyName="K" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="121" kind="button" valueType="hotkey" value="19" name="Pool" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="19" keyName="P" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="122" kind="button" valueType="hotkey" value="16" name="Markers" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="16" keyName="M" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="123" kind="button" valueType="hotkey" value="23" name="Tempo Track" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="23" keyName="T" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="124" kind="button" valueType="hotkey" value="5" name="Browser" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="5" keyName="B" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="125" kind="button" valueType="hotkey" value="27" name="Cross- fade" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="27" keyName="X" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="126" kind="button" valueType="hotkey" value="4" name="Adjust Fades" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="4" keyName="A" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="127" kind="button" valueType="hotkey" value="6" name="Click" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="6" keyName="C" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="128" kind="button" valueType="hotkey" value="23" name="Add Track" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="23" keyName="T" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="129" kind="button" valueType="hotkey" value="59" name="Trans- port" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="59" keyName="F2" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="130" kind="button" valueType="hotkey" value="60" name="Mix" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="60" keyName="F3" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="131" kind="button" valueType="hotkey" value="63" name="Auto" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="63" keyName="F6" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="132" kind="button" valueType="hotkey" value="9" name="Auto Scroll" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="9" keyName="F" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="133" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="134" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="135" kind="button" valueType="hotkey" value="10" name="Group" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="10" keyName="G" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="136" kind="button" valueType="hotkey" value="24" name="Ungroup" lockBy="0" ctrl="1" shift="0" alt="0" cmd="0" key="24" keyName="U" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="137" kind="button" valueType="hotkey" value="15" name="Lock" lockBy="0" ctrl="1" shift="1" alt="0" cmd="0" key="15" keyName="L" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="138" kind="button" valueType="hotkey" value="24" name="Unlock" lockBy="0" ctrl="1" shift="1" alt="0" cmd="0" key="24" keyName="U" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="139" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="140" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="141" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="142" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="143" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="144" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="145" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="146" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="147" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="148" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="149" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="150" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="151" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="152" kind="button" valueType="null" value="0" name="" lockBy="0" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1" diyNameQ="0"/>
+     <ctl id="153" kind="button" valueType="func" value="32" name="MON 1" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="154" kind="button" valueType="func" value="33" name="MON 2" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="155" kind="button" valueType="func" value="34" name="MON 3" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="156" kind="button" valueType="func" value="35" name="MON 4" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="157" kind="button" valueType="func" value="36" name="MON 5" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="158" kind="button" valueType="func" value="37" name="MON 6" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="159" kind="button" valueType="func" value="38" name="MON 7" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="160" kind="button" valueType="func" value="39" name="MON 8" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="161" kind="button" valueType="func" value="102" name="User A" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="162" kind="button" valueType="func" value="103" name="User B" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="163" kind="knob" valueType="midi" value="16" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="1" rotate="2" val1="-1" val2="-1" down="1"/>
+     <ctl id="164" kind="knob" valueType="midi" value="17" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="1" rotate="2" val1="-1" val2="-1" down="1"/>
+     <ctl id="165" kind="knob" valueType="midi" value="18" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="1" rotate="2" val1="-1" val2="-1" down="1"/>
+     <ctl id="166" kind="knob" valueType="midi" value="19" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="1" rotate="2" val1="-1" val2="-1" down="1"/>
+     <ctl id="167" kind="knob" valueType="midi" value="20" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="1" rotate="2" val1="-1" val2="-1" down="1"/>
+     <ctl id="168" kind="knob" valueType="midi" value="21" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="1" rotate="2" val1="-1" val2="-1" down="1"/>
+     <ctl id="169" kind="knob" valueType="midi" value="22" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="1" rotate="2" val1="-1" val2="-1" down="1"/>
+     <ctl id="170" kind="knob" valueType="midi" value="23" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="1" rotate="2" val1="-1" val2="-1" down="1"/>
+     <ctl id="171" kind="knob" valueType="midi" value="60" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="1" rotate="2" val1="-1" val2="-1" down="65"/>
+     <ctl id="172" kind="button" valueType="func" value="104" name="Touch 1" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="173" kind="button" valueType="func" value="105" name="Touch 2" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="174" kind="button" valueType="func" value="106" name="Touch 3" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="175" kind="button" valueType="func" value="107" name="Touch 4" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="176" kind="button" valueType="func" value="108" name="Touch 5" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="177" kind="button" valueType="func" value="109" name="Touch 6" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="178" kind="button" valueType="func" value="110" name="Touch 7" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="179" kind="button" valueType="func" value="111" name="Touch 8" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="180" kind="button" valueType="func" value="112" name="TouchM" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="181" kind="fader" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="pitch" chan="1" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="182" kind="fader" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="pitch" chan="2" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="183" kind="fader" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="pitch" chan="3" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="184" kind="fader" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="pitch" chan="4" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="185" kind="fader" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="pitch" chan="5" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="186" kind="fader" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="pitch" chan="6" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="187" kind="fader" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="pitch" chan="7" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="188" kind="fader" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="pitch" chan="8" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="189" kind="fader" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="pitch" chan="9" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="190" kind="button" valueType="midi" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="cc" chan="11" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="191" kind="button" valueType="null" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="192" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="193" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="194" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="195" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="196" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="197" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="198" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="199" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="200" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="201" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="202" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="203" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="204" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="205" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="206" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="207" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="208" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="209" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="210" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="211" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="212" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="213" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="214" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="215" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="216" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="217" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="218" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="219" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="220" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="221" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="222" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="223" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="224" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="225" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+     <ctl id="226" kind="button" valueType="func" value="0" name="" ctrl="0" shift="0" alt="0" cmd="0" key="0" keyName="" type="nil" chan="0" rotate="0" val1="-1" val2="-1"/>
+</mode>
