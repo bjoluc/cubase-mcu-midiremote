@@ -26,8 +26,8 @@ export function makeHostMapping(
     input: "Input",
     output: "Output",
   })) {
-    if (config.channelVisibility[configName]) {
-      mixerBankZone[`include${methodNamePart}Channels`]();
+    if (!config.channelVisibility[configName]) {
+      mixerBankZone[`exclude${methodNamePart}Channels`]();
     }
   }
 
