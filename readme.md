@@ -21,8 +21,8 @@ The following devices are explicitly supported:
 - iCON:
   - Platform M+ / X+ <sup>\*</sup>
   - QCon Pro G2 / QCon EX G2
-  - P1-M / P1-X <sup>\*</sup>
   - V1-M / V1-X <sup>\*</sup>
+  - P1-M / P1-X <sup>\*</sup>
 - Mackie Control Universal (Pro) / XT (Pro)
 - SSL UF1 <sup>\*</sup>
 
@@ -212,25 +212,6 @@ Current limitations of the MIDI Remote API:
 </details>
 
 <details>
-<summary>iCON P1-M / P1-X</summary>
-
-The iCON P1-M has a touch screen button matrix with customizable button labels (via the iMAP software).
-The mappings of the MIDI Remote Script are available as an iMAP preset that you can [download](assets/mcu-midiremote-p1-m.imap) and load into iMAP so the hardware button layout matches the layout of the MIDI Remote control surface.
-When you customize your mappings in the Cubase MIDI Remote Mapping Assistant, you can use the iMAP software to update the labels on the V1-M.
-The default mapping assigns each button of the first three function layers (blue, green, yellow) to a corresponding virtual button on the MIDI Remote control surface.
-Presuming the provided iMAP preset has been loaded, the following aspects of the V1-M script differ from the default mapping described in the previous section:
-
-- All buttons are labelled according to their actual functions (even if these functions differ from the default MCU functions).
-- The first (blue) and second (green) function layers expose three buttons that are not available in Cubase's default MCU mapping: Edit Instrument, Click, and Reset Meters.
-- There is no additional touchscreen button for controlling the value under the mouse cursor because the controller can already do this via the Focus button top-right of the jog wheel.
-- The fourth scribble strip row shows peak meter levels. While a track's fader is touched, the third and fourth row of its channel's scribble strip switch to the fader's current parameter name and parameter value, unless the Shift button is held.
-- All encoder assign buttons are located on the third (yellow) function layer and there are more encoder assign buttons than traditional MCU devices have: The encoder assignments from the table in the previous section have mostly been split across individual buttons to make them easier to access. The only encoder assignments which you can page through by pressing the assign button multiple times are Gain/Ph, LC/HC, Focused Insert, EQ, and Sends.
-
-Lastly, thanks to iCON for supporting the development of this script variant!
-
-</details>
-
-<details>
 <summary>iCON V1-M / V1-X</summary>
 
 The iCON V1-M has a touch screen button matrix with customizable button labels (via the iMAP software).
@@ -244,6 +225,25 @@ Presuming the provided iMAP DAW mapping has been loaded, the following aspects o
 - There is no additional touchscreen button for controlling the value under the mouse cursor because the controller can already do this via the Focus button top-right of the jog wheel.
 - The secondary scribble strips show track names and peak meter levels. While a track's fader is touched, its scribble strip switches to the fader's current parameter name and parameter value instead, unless the Shift button is held.
 - All encoder assign buttons are located on the second (green) function layer and there are more encoder assign buttons than traditional MCU devices have: The encoder assignments from the table in the previous section have mostly been split across individual buttons to make them easier to access. The only encoder assignments which you can page through by pressing the assign button multiple times are EQ, Sends, and Focused Insert.
+
+Lastly, thanks to iCON for supporting the development of this script variant!
+
+</details>
+
+<details>
+<summary>iCON P1-M / P1-X</summary>
+
+The iCON P1-M has a touch screen button matrix with customizable button labels (via the iMAP software).
+The mappings of the MIDI Remote Script are available as an iMAP preset that you can [download](assets/mcu-midiremote-p1-m.imap) and load into iMAP so the hardware button layout matches the layout of the MIDI Remote control surface.
+When you customize your mappings in the Cubase MIDI Remote Mapping Assistant, you can use the iMAP software to update the labels on the V1-M.
+The default mapping assigns each button of the first three function layers (blue, green, yellow) to a corresponding virtual button on the MIDI Remote control surface.
+Presuming the provided iMAP preset has been loaded, the following aspects of the V1-M script differ from the default mapping described in the previous section:
+
+- All buttons are labelled according to their actual functions (even if these functions differ from the default MCU functions).
+- The first (blue) and second (green) function layers expose three buttons that are not available in Cubase's default MCU mapping: Edit Instrument, Click, and Reset Meters.
+- There is no additional touchscreen button for controlling the value under the mouse cursor because the controller can already do this via the Focus button top-right of the jog wheel.
+- The fourth scribble strip row shows peak meter levels. While a track's fader is touched, the third and fourth row of its channel's scribble strip switch to the fader's current parameter name and parameter value, unless the Shift button is held.
+- All encoder assign buttons are located on the third (yellow) function layer and there are more encoder assign buttons than traditional MCU devices have: The encoder assignments from the table in the previous section have mostly been split across individual buttons to make them easier to access. The only encoder assignments which you can page through by pressing the assign button multiple times are Gain/Ph, LC/HC, Focused Insert, EQ, and Sends.
 
 Lastly, thanks to iCON for supporting the development of this script variant!
 
