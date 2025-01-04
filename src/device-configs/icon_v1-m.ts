@@ -200,7 +200,6 @@ export const deviceConfig: DeviceConfig = {
           encoderAssign: {
             pan: buttonMatrix[1][0][0],
             eq: buttonMatrix[1][1][0],
-            send: buttonMatrix[1][1][1],
           },
 
           modify: {
@@ -347,6 +346,10 @@ export const deviceConfig: DeviceConfig = {
         activatorButtonSelector: makeActivatorButtonSelector(0, 5),
       },
 
+      {
+        pages: [pageConfigs.sends(hostAccess)],
+        activatorButtonSelector: makeActivatorButtonSelector(1, 1),
+      },
       {
         pages: pageConfigs.allAvailableCuePages,
         activatorButtonSelector: makeActivatorButtonSelector(1, 2),
