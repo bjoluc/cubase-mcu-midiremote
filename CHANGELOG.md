@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.11.0](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.10.1...v1.11.0) (2025-01-04)
+
+
+### Features
+
+* Add a config option to disable jog wheel zoom in zoom mode ([3f47505](https://github.com/bjoluc/cubase-mcu-midiremote/commit/3f47505163b07c5f9814e1a88f5e7bb9a811fbb9))
+* Add a config option to flip scribble strip display rows by default ([33914c7](https://github.com/bjoluc/cubase-mcu-midiremote/commit/33914c7cd4dbb553bde099b9671d4bdfdec26845))
+* Add a config option to map the channel left/right buttons to encoder parameter page navigation by default ([c1a16a1](https://github.com/bjoluc/cubase-mcu-midiremote/commit/c1a16a12c398eec1cfd2d85d253ad0a85f56e5a6))
+* Add an iCON V1-M script variant ([#38](https://github.com/bjoluc/cubase-mcu-midiremote/issues/38)) ([278b689](https://github.com/bjoluc/cubase-mcu-midiremote/commit/278b689ee583f6c99598d0911f059770cfb8af1b))
+* Add Cue Send 1-4 encoder assignments ([74cc7d0](https://github.com/bjoluc/cubase-mcu-midiremote/commit/74cc7d0ef40c68e10ce8c79676e242b104399af1))
+* Allow toggling the input phase by pushing encoders in the "Input Phase" encoder assignment ([831c6eb](https://github.com/bjoluc/cubase-mcu-midiremote/commit/831c6ebf116f7b71d01138f231103378928fca99))
+* Display "PreFadr" instead of "PrePost" in Sends encoder assignment ([c639771](https://github.com/bjoluc/cubase-mcu-midiremote/commit/c639771bb9eb236d8fcb82b927f99243ba1c5ffc))
+* Display changes to secondary encoder parameters (e.g. EQ band on/off, Send slot on/off) made by pushing encoders ([8efc127](https://github.com/bjoluc/cubase-mcu-midiremote/commit/8efc127a79f87ee85180c3bdccf681b3e4999975))
+* Make EQ gain encoder pushes invert EQ gain without holding Shift and reset it when Shift is held ([5730634](https://github.com/bjoluc/cubase-mcu-midiremote/commit/5730634c7e4a64e86f6982418e94dbf1019235de))
+* Make mapping the main fader to the control room level an opt-in option to reduce differences to the default Cubase MCU integration ([b421bf1](https://github.com/bjoluc/cubase-mcu-midiremote/commit/b421bf1206ae9c34062812b6404944970abe37d4))
+* Make pushing a plugin / quick control / channel strip encoder toggle its value if it is at its minimum or maximum ([a9c372e](https://github.com/bjoluc/cubase-mcu-midiremote/commit/a9c372eaf53891ac8a13aca1c142b6c0a8279606))
+* Make the "Sends" encoder assignment show send effect names on the scribble strip displays ([9fa005a](https://github.com/bjoluc/cubase-mcu-midiremote/commit/9fa005a39744431c406ed9efce11f3cdb471e8d6))
+
+
+### Bug Fixes
+
+* Avoid displaying encoder parameter value changes upon switching encoder parameters ([a0e493e](https://github.com/bjoluc/cubase-mcu-midiremote/commit/a0e493efbe312a80682d1c2b7bc260e1843857bf))
+* Fix encoder display mode for the "Sends" assignment ([3905764](https://github.com/bjoluc/cubase-mcu-midiremote/commit/3905764c95219a990066b02b033c8427b6a034d5))
+* Show Cubase 14 drum tracks ([ab7e7a2](https://github.com/bjoluc/cubase-mcu-midiremote/commit/ab7e7a236abb9d7f17a6aedff32971f7724323e9))
+
 ## [1.10.1](https://github.com/bjoluc/cubase-mcu-midiremote/compare/v1.10.0...v1.10.1) (2024-06-02)
 
 
