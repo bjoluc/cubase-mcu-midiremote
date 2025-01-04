@@ -83,7 +83,7 @@ export class LcdManager {
     const spaces = LcdManager.makeSpaces(112);
     this.sendText(context, 0, spaces);
 
-    if (deviceConfig.hasSecondaryScribbleStrips) {
+    if (deviceConfig.secondaryScribbleStripSetup) {
       this.sendText(context, 0, spaces, true);
     }
   }
