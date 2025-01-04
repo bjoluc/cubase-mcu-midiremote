@@ -1,8 +1,9 @@
 import { closest as determineClosestColor } from "color-diff";
+import { ColorManager, RgbColor } from "./ColorManager";
 import { Device } from "/devices";
 import { ContextVariable, createElements } from "/util";
 
-export enum ScribbleStripColor {
+enum ScribbleStripColor {
   black = 0x00,
   red = 0x01,
   green = 0x02,
@@ -12,8 +13,6 @@ export enum ScribbleStripColor {
   aqua = 0x06,
   white = 0x07,
 }
-
-export type RgbColor = { r: number; g: number; b: number };
 
 type DeviceColorDefinition = { R: number; G: number; B: number; code: ScribbleStripColor };
 
@@ -28,7 +27,7 @@ const scribbleStripColorsRGB: DeviceColorDefinition[] = [
   { code: ScribbleStripColor.white, R: 0xcc, G: 0xcc, B: 0xcc },
 ];
 
-export class ColorManager {
+export class BehringerColorManager implements ColorManager {
   private static rgbToScribbleStripColor({ r, g, b }: RgbColor) {
     return (
       determineClosestColor(
@@ -44,10 +43,6 @@ export class ColorManager {
     this.colors = createElements(8, () => new ContextVariable(ScribbleStripColor.black));
   }
 
-  /**
-   * Sends all colors to the device in a SysEx message. Unless on initialization, you don't need to
-   * call this method because it is automatically done by `setChannelColor()`.
-   */
   sendColors(context: MR_ActiveDevice) {
     this.device.ports.output.sendSysex(context, [
       0x72,
@@ -56,7 +51,11 @@ export class ColorManager {
     ]);
   }
 
-  setChannelColor(context: MR_ActiveDevice, channelIndex: number, color: ScribbleStripColor) {
+  private setChannelColor(
+    context: MR_ActiveDevice,
+    channelIndex: number,
+    color: ScribbleStripColor,
+  ) {
     const colorVariable = this.colors[channelIndex];
     if (colorVariable.get(context) !== color) {
       colorVariable.set(context, color);
@@ -65,7 +64,11 @@ export class ColorManager {
   }
 
   setChannelColorRgb(context: MR_ActiveDevice, channelIndex: number, color: RgbColor) {
-    this.setChannelColor(context, channelIndex, ColorManager.rgbToScribbleStripColor(color));
+    this.setChannelColor(
+      context,
+      channelIndex,
+      BehringerColorManager.rgbToScribbleStripColor(color),
+    );
   }
 
   resetColors(context: MR_ActiveDevice) {

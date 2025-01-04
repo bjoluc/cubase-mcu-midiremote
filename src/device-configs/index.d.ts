@@ -1,4 +1,4 @@
-import { Except } from "type-fest";
+import { Class, Except, SetRequired } from "type-fest";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
@@ -7,6 +7,7 @@ import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSens
 import { Device, MainDevice } from "/devices";
 import { EncoderMappingConfig } from "/mapping/encoders/EncoderMapper";
 import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
+import { ColorManager } from "/midi/managers/colors/ColorManager";
 import { GlobalState } from "/state";
 import { LifecycleCallbacks } from "/util";
 
@@ -42,8 +43,10 @@ export interface DeviceSurface {
   channelElements: ChannelSurfaceElements[];
 }
 
-export interface MainDeviceSurface extends DeviceSurface {
+export interface MainDeviceSurface<MainDeviceCustomElements extends Record<string, any> = {}>
+  extends DeviceSurface {
   controlSectionElements: PartialControlSectionSurfaceElements;
+  customElements?: MainDeviceCustomElements;
 }
 
 export interface ChannelSurfaceElements {
@@ -51,6 +54,12 @@ export interface ChannelSurfaceElements {
   encoder: LedPushEncoder;
   scribbleStrip: {
     trackTitle: MR_SurfaceCustomValueVariable;
+
+    /**
+     * An optional custom value variable to show meter peak levels on devices with secondary
+     * scribble strips
+     **/
+    meterPeakLevel?: MR_SurfaceCustomValueVariable;
   };
   vuMeter: MR_SurfaceCustomValueVariable;
   buttons: {
@@ -142,30 +151,52 @@ export interface PartialControlSectionButtons {
 
 export type ControlSectionButtons = RequireAllElements<PartialControlSectionButtons>;
 
+interface PartialDisplayLeds {
+  smpte?: Lamp;
+  beats?: Lamp;
+  solo?: Lamp;
+}
+
+type DispalyLeds = RequireAllElements<PartialDisplayLeds>;
+
 export interface PartialControlSectionSurfaceElements {
   mainFader: TouchSensitiveMotorFader;
+  mainVuMeters?: {
+    left: MR_SurfaceCustomValueVariable;
+    right: MR_SurfaceCustomValueVariable;
+  };
+
   jogWheel: JogWheel;
   buttons?: PartialControlSectionButtons;
 
-  displayLeds?: {
-    smpte?: Lamp;
-    beats?: Lamp;
-    solo?: Lamp;
-  };
+  displayLeds?: PartialDisplayLEDs;
 
   expressionPedal?: MR_Knob;
   footSwitch1?: MR_Button;
   footSwitch2?: MR_Button;
 }
 
-export type ControlSectionSurfaceElements =
-  RequireAllElements<PartialControlSectionSurfaceElements>;
+export interface ControlSectionSurfaceElements
+  extends SetRequired<
+    PartialControlSectionSurfaceElements,
+    "expressionPedal" | "footSwitch1" | "footSwitch2"
+  > {
+  buttons: RequireAllElements<PartialControlSectionButtons>;
+  displayLeds: RequireAllElements<PartialDisplayLeds>;
+}
 
-export type ControlSectionSurfaceElementsDefaultsFactory =
-  DefaultElementsFactory<PartialControlSectionSurfaceElements>;
+export type ControlSectionSurfaceElementsDefaultsFactory = DefaultElementsFactory<
+  Except<PartialControlSectionSurfaceElements, "mainVuMeters">
+>;
 
 export interface DeviceConfig {
-  channelColorSupport?: "behringer";
+  colorManager?: Class<ColorManager>;
+
+  /**
+   * If the maximum meter value (sent on clip) should deviate from the default (0xe), specify it
+   * here.
+   */
+  maximumMeterValue?: number;
 
   /**
    * Whether the device has per-channel scribble strip displays, i.e. no display padding characters
@@ -174,6 +205,13 @@ export interface DeviceConfig {
    * @default false
    */
   hasIndividualScribbleStrips?: boolean;
+
+  /**
+   * Whether the device has additional secondary scribble strip displays.
+   *
+   * @default false
+   */
+  hasSecondaryScribbleStrips?: boolean;
 
   /**
    * Whether all encoders shall be mapped in mouse value control mode. This option is intended for
@@ -227,10 +265,10 @@ export interface DeviceConfig {
   getMouseValueModeButton?(device: MainDevice): LedButton;
 
   /**
-   * This optional function receives the default {@link EncoderMappingConfig} and returns an
-   * `EncoderMappingConfig` that will be applied instead of the default.
+   * This optional function receives the default list of {@link EncoderMappingConfig}s and returns a
+   * list of `EncoderMappingConfig`s that will be applied instead of the default.
    *
-   * The default config is defined in {@link file://./../mapping/encoders/index.ts}
+   * The default mappings are defined in {@link file://./../mapping/encoders/index.ts}
    */
   configureEncoderMappings?(
     defaultEncoderMappings: EncoderMappingConfig[],

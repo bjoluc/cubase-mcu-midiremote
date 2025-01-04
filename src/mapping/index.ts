@@ -61,25 +61,42 @@ export function makeHostMapping(
 
         // Fader
         page.makeValueBinding(channelElements.fader.mSurfaceValue, channel.mValue.mVolume);
+
+        // Peak level display
+        if (channelElements.scribbleStrip.meterPeakLevel) {
+          page.makeValueBinding(
+            channelElements.scribbleStrip.meterPeakLevel,
+            channel.mValue.mVUMeterPeak,
+          );
+        }
       }
 
       return channel;
     });
 
+  const mainChannel = page.mHostAccess.mMixConsole
+    .makeMixerBankZone()
+    .includeOutputChannels()
+    .makeMixerBankChannel();
+
   for (const device of devices) {
     if (device instanceof MainDevice) {
       const controlSectionElements = device.controlSectionElements;
 
-      // Main fader
+      // Main Fader
       page.makeValueBinding(
         controlSectionElements.mainFader.mSurfaceValue,
         config.mapMainFaderToControlRoom
           ? page.mHostAccess.mControlRoom.mMainChannel.mLevelValue
-          : page.mHostAccess.mMixConsole
-              .makeMixerBankZone()
-              .includeOutputChannels()
-              .makeMixerBankChannel().mValue.mVolume,
+          : mainChannel.mValue.mVolume,
       );
+
+      // Main VU Meters
+      const mainVuMeters = device.controlSectionElements.mainVuMeters;
+      if (mainVuMeters) {
+        page.makeValueBinding(mainVuMeters.left, mainChannel.mValue.mVUMeter);
+        page.makeValueBinding(mainVuMeters.right, mainChannel.mValue.mVUMeter);
+      }
 
       // Display buttons, 1-8, Modify, Automation, Utility, Transport, Navigation, Jog wheel
       bindControlSection(page, device, mixerBankZone, globalState);

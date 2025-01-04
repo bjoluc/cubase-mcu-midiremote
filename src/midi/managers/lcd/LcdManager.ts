@@ -1,4 +1,5 @@
 import { ChannelTextManager } from "./ChannelTextManager";
+import { deviceConfig } from "/config";
 import { Device } from "/devices";
 import { GlobalState } from "/state";
 import { TimerUtils, createElements } from "/util";
@@ -34,9 +35,29 @@ export class LcdManager {
     );
   }
 
-  private sendText(context: MR_ActiveDevice, startIndex: number, text: string) {
+  private sendText(
+    context: MR_ActiveDevice,
+    startIndex: number,
+    text: string,
+    targetSecondaryDisplay = false,
+  ) {
     const chars = LcdManager.asciiStringToCharArray(text.slice(0, 112));
-    this.device.ports.output.sendSysex(context, [0x12, startIndex, ...chars]);
+
+    if (targetSecondaryDisplay) {
+      this.device.ports.output.sendMidi(context, [
+        0xf0,
+        0x00,
+        0x02,
+        0x4e,
+        0x15,
+        0x13,
+        startIndex,
+        ...chars,
+        0xf7,
+      ]);
+    } else {
+      this.device.ports.output.sendSysex(context, [0x12, startIndex, ...chars]);
+    }
   }
 
   private sendChannelText(
@@ -48,10 +69,22 @@ export class LcdManager {
     while (text.length < 7) {
       text += " ";
     }
-    this.sendText(context, row * 56 + (channelIndex % 8) * 7, text);
+
+    let isSecondaryDisplayRow = false;
+    if (row > 1) {
+      isSecondaryDisplayRow = true;
+      row -= 2;
+    }
+
+    this.sendText(context, row * 56 + (channelIndex % 8) * 7, text, isSecondaryDisplayRow);
   }
 
   clearDisplays(context: MR_ActiveDevice) {
-    this.sendText(context, 0, LcdManager.makeSpaces(112));
+    const spaces = LcdManager.makeSpaces(112);
+    this.sendText(context, 0, spaces);
+
+    if (deviceConfig.hasSecondaryScribbleStrips) {
+      this.sendText(context, 0, spaces, true);
+    }
   }
 }

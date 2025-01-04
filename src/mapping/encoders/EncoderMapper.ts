@@ -1,4 +1,4 @@
-import { EncoderMappingDependencies, EncoderPage, EncoderPageConfig } from "./EncoderPage";
+import { EncoderMappingDependencies, EncoderPageConfig } from "./EncoderPage";
 import { EncoderPageGroup } from "./EncoderPageGroup";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { Device, MainDevice } from "/devices";
@@ -6,11 +6,10 @@ import { SegmentDisplayManager } from "/midi/managers/SegmentDisplayManager";
 import { GlobalState } from "/state";
 
 /**
- * The joint configuration for all "encoder assignments". Each encoder assignment maps a number of
- * encoder pages to a specified button. Each encoder page specifies host mappings ("assignments")
- * for an arbitrary number of encoders.
+ * The configuration object for an encoder mapping. An encoder mapping maps a number of encoder
+ * pages to a specified button.
  */
-export type EncoderMappingConfig = {
+export interface EncoderMappingConfig {
   /**
    * A function that – given a `MainDevice` – returns the device's button that will be mapped to the
    * provided encoder pages.
@@ -18,7 +17,7 @@ export type EncoderMappingConfig = {
   activatorButtonSelector: (device: MainDevice) => LedButton;
 
   pages: EncoderPageConfig[];
-};
+}
 
 export class EncoderMapper {
   private readonly dependencies: EncoderMappingDependencies;

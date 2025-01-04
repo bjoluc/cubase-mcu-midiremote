@@ -10,10 +10,11 @@ import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
 import * as encoderPageConfigs from "/mapping/encoders/page-configs";
+import { BehringerColorManager } from "/midi/managers/colors/BehringerColorManager";
 import { createElements } from "/util";
 
 export const deviceConfig: DeviceConfig = {
-  channelColorSupport: "behringer",
+  colorManager: BehringerColorManager,
   hasIndividualScribbleStrips: true,
   shallMouseValueModeMapAllEncoders: true,
   detectionUnits: [

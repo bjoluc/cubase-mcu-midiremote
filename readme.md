@@ -21,6 +21,7 @@ The following devices are explicitly supported:
 - iCON:
   - Platform M+ / X+ <sup>\*</sup>
   - QCon Pro G2 / QCon EX G2
+  - V1-M / V1-X <sup>\*</sup>
 - Mackie Control Universal (Pro) / XT (Pro)
 - SSL UF1 <sup>\*</sup>
 
@@ -206,6 +207,25 @@ Current limitations of the MIDI Remote API:
   - EQ Bands 1 & 2 (8 encoders), EQ Bands 3 & 4 (8 encoders)
   - Send Levels / Enabled (8 encoders), Send Pre/Post (8 encoders)
   - Channel Strip Gate (8 encoders), Compressor (8 encoders), Tools (8 encoders), Saturation (8 encoders), Limiter (8 encoders)
+
+</details>
+
+<details>
+<summary>iCON V1-M / V1-X</summary>
+
+The iCON V1-M has a touch screen button matrix with customizable button labels (via the iMAP software).
+The mappings of the MIDI Remote Script are available as an iMAP DAW mapping that you can [download](assets/mcu-midiremote.v1m-daw) and load into iMAP (right-click > "Load DAW mapping") so the button layout on the V1-M matches the layout of the MIDI Remote control surface.
+When you customize your mappings in the Cubase MIDI Remote Mapping Assistant, you can use the iMAP software to update the labels on the V1-M.
+The default mapping assigns each button of the first three function layers (blue, green, yellow) to a corresponding virtual button on the MIDI Remote control surface.
+Presuming the provided iMAP DAW mapping has been loaded, the following aspects of the V1-M script differ from the mapping described above:
+
+- All buttons are labelled according to their actual functions (even if these functions differ from the default MCU functions).
+- The first (blue) function layer exposes three buttons that are not available in Cubase's default MCU mapping: Edit Instrument, Reset Meters, and Click.
+- There is no additional touchscreen button for controlling the value under the mouse cursor because the controller can already do this via the Focus button top-right of the jog wheel.
+- The secondary scribble strips show track names and peak meter levels. While a track's fader is touched, its scribble strip switches to the fader's current parameter name and parameter value instead, unless the Shift button is held.
+- All encoder assign buttons are located on the second (green) function layer and there are more encoder assign buttons than traditional MCU devices have: The encoder assignments from the table in the previous section have mostly been split across individual buttons to make them easier to access. The only encoder assignments which you can page through by pressing the assign button multiple times are EQ, Sends, and Focused Insert.
+
+Lastly, thanks to iCON for supporting the development of this script variant!
 
 </details>
 

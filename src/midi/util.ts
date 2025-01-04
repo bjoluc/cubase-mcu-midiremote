@@ -33,6 +33,7 @@ export function sendMeterLevel(
   outputPort: MidiOutputPort,
   channelIndex: number,
   meterLevel: number,
+  midiChannel = 0,
 ) {
-  outputPort.sendMidi(context, [0xd0, (channelIndex << 4) + meterLevel]);
+  outputPort.sendMidi(context, [0xd0 + midiChannel, (channelIndex << 4) + meterLevel]);
 }

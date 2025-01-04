@@ -50,6 +50,10 @@ export type EncoderAssignmentConfigs =
   | EncoderAssignmentConfig[]
   | ((channel: MR_MixerBankChannel, channelIndex: number) => EncoderAssignmentConfig);
 
+/**
+ * An encoder page specifies host mappings ("encoder assignments") for an arbitrary number of
+ * encoders.
+ */
 export interface EncoderPageConfig {
   name: string;
   assignments: EncoderAssignmentConfigs;

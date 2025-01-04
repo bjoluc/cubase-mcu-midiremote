@@ -9,6 +9,7 @@ import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
 import { LedPushEncoder } from "/decorators/surface-elements/LedPushEncoder";
 import { TouchSensitiveMotorFader } from "/decorators/surface-elements/TouchSensitiveFader";
+import { BehringerColorManager } from "/midi/managers/colors/BehringerColorManager";
 import { createElements } from "/util";
 
 const channelWidth = 5;
@@ -78,7 +79,7 @@ const extenderPortPairConfigurator = (
 };
 
 export const deviceConfig: DeviceConfig = {
-  channelColorSupport: "behringer",
+  colorManager: BehringerColorManager,
   hasIndividualScribbleStrips: true,
   detectionUnits: [
     {
