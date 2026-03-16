@@ -207,11 +207,13 @@ export interface DeviceConfig {
   hasIndividualScribbleStrips?: boolean;
 
   /**
-   * Whether the device has additional secondary scribble strip displays.
+   * Specify this if the device has more than two display rows.
    *
-   * @default false
+   * - `undefined` (default): The device does not have secondary scribble strip displays
+   * - `separate` The device has secondary scribble strip displays
+   * - `joint`: The device has a third and fourth row on the primary scribble strip displays
    */
-  hasSecondaryScribbleStrips?: boolean;
+  secondaryScribbleStripSetup?: "separate" | "joint";
 
   /**
    * Whether all encoders shall be mapped in mouse value control mode. This option is intended for
