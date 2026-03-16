@@ -5,6 +5,7 @@ import "core-js/actual/array/at";
 import "core-js/actual/array/from";
 import "core-js/actual/array/includes";
 import "core-js/actual/array/reverse";
+import "core-js/actual/array/flat";
 import "core-js/actual/array/flat-map";
 import "core-js/actual/string/pad-start";
 import "core-js/actual/string/replace-all";

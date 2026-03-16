@@ -177,7 +177,7 @@ function bindChannelElements(device: Device, globalState: GlobalState) {
       setIsMeterUnassigned(context, title2 === "");
     };
 
-    if (deviceConfig.hasSecondaryScribbleStrips && channel.scribbleStrip.meterPeakLevel) {
+    if (deviceConfig.secondaryScribbleStripSetup && channel.scribbleStrip.meterPeakLevel) {
       channel.scribbleStrip.meterPeakLevel.mOnDisplayValueChange = (context, value) => {
         channelTextManager.onMeterPeakLevelChange(context, value);
       };
