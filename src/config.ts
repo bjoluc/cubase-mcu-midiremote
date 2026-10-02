@@ -42,7 +42,7 @@ var CONFIGURATION = {
    * first output port belong to the leftmost device while the last input and the last output port
    * belong to the rightmost device.
    *
-   * @devices !X-Touch One, !UF1
+   * @devices !X-Touch One, !UF1, !P1 Nano
    */
   devices: ["main"],
 
@@ -106,7 +106,7 @@ var CONFIGURATION = {
    *    always be white unless a display's channel and encoder is unassigned, in which case the
    *    display will revert to black.
    *
-   * @devices X-Touch, X-Touch One, V1-M
+   * @devices X-Touch, X-Touch One, V1-M, P1-M, P1 Nano
    */
   displayColorMode: "encoders",
 
