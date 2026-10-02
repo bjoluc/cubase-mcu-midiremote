@@ -106,7 +106,7 @@ var CONFIGURATION = {
    *    always be white unless a display's channel and encoder is unassigned, in which case the
    *    display will revert to black.
    *
-   * @devices X-Touch, X-Touch One, V1-M
+   * @devices X-Touch, X-Touch One, V1-M, P1-M
    */
   displayColorMode: "encoders",
 
