@@ -178,6 +178,7 @@ Current limitations of the MIDI Remote API:
 <details>
 <summary>Behringer X-Touch One</summary>
 
+- The X-Touch One must run in `MC Std` mode. To change the operation mode, hold down the pan knob while powering the device on, then select `MC Std` from the menu.
 - The X-Touch One script does not provide a `devices` config option. If you want to use an X-Touch One with an extender, please use the X-Touch One script and the X-Touch script separately.
 - The X-Touch One does not have encoder assign buttons. To make up for this, the F1 button is mapped to cycle through the following encoder assignments:
   - **1** Pan
