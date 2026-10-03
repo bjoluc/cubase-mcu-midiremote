@@ -20,7 +20,7 @@ build: ## Build all device scripts into dist/
 watch: ## Build and watch for changes
 	npm start
 
-typecheck: ## Run the TypeScript type check
+typecheck: api ## Run the TypeScript type check (copies the Cubase API types if needed)
 	npm run tsc
 
 format: ## Format all files with Prettier
@@ -30,19 +30,22 @@ format-check: ## Check that all files are formatted with Prettier
 	npx prettier --check .
 
 api: ## Copy Cubase's MIDI Remote API types into .api/ (required for typecheck)
-	@if [ ! -d "$(CUBASE_API_DIR)" ]; then \
+	@if [ -d ".api/v1" ]; then \
+		echo "MIDI Remote API types already present in .api/ (remove it to refresh)."; \
+	elif [ ! -d "$(CUBASE_API_DIR)" ]; then \
 		echo "Cubase API folder not found at:"; \
 		echo "  $(CUBASE_API_DIR)"; \
 		echo "Launch Cubase once, then override CUBASE_API_DIR if needed."; \
 		exit 1; \
+	else \
+		mkdir -p .api; \
+		cp -R "$(CUBASE_API_DIR)/." .api/; \
+		echo "Copied MIDI Remote API types to .api/"; \
 	fi
-	@mkdir -p .api
-	rsync -a "$(CUBASE_API_DIR)/" .api/
-	@echo "Copied MIDI Remote API types to .api/"
 
 cubase-install: build ## Copy the built scripts into Cubase's MIDI Remote Driver Scripts folder
 	@mkdir -p "$(CUBASE_SCRIPTS_DIR)"
-	rsync -a dist/ "$(CUBASE_SCRIPTS_DIR)/"
+	cp -R dist/. "$(CUBASE_SCRIPTS_DIR)/"
 	@echo ""
 	@echo "Installed scripts to: $(CUBASE_SCRIPTS_DIR)"
 	@echo "Restart Cubase to pick them up."

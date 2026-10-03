@@ -26,7 +26,7 @@ Run `make` (or `make help`) to list all available targets:
 | `make build`          | Build all device scripts into `dist/`                                  |
 | `make watch`          | Build and rebuild on file changes                                      |
 | `make api`            | Copy Cubase's MIDI Remote API types into `.api/` (needed to typecheck) |
-| `make typecheck`      | Run the TypeScript type checker                                        |
+| `make typecheck`      | Copy the API types (if needed) and run the TypeScript type checker     |
 | `make format`         | Format all files with Prettier                                         |
 | `make format-check`   | Check that all files are formatted with Prettier                       |
 | `make cubase-install` | Build and copy the scripts into Cubase's MIDI Remote drivers folder    |
@@ -52,13 +52,14 @@ Once Cubase has been launched at least once, they are located in the `.api` fold
 - macOS: `~/Documents/Steinberg/Cubase/MIDI Remote/Driver Scripts/.api`
 - Windows: `%USERPROFILE%\Documents\Steinberg\Cubase\MIDI Remote\Driver Scripts\.api`
 
-Copy that folder into the repository root (it is git-ignored) with:
+`make typecheck` copies this folder into the git-ignored `.api/` directory (via `make api`) and then runs the type checker.
+If your folder differs, override `CUBASE_API_DIR`:
 
 ```sh
-make api
+CUBASE_API_DIR="/path/to/Driver Scripts/.api" make typecheck
 ```
 
-If your folder differs, override `CUBASE_API_DIR` (it defaults to the `.api` folder next to `CUBASE_SCRIPTS_DIR`) and then run `make typecheck`.
+The copy is skipped when `.api/v1` already exists; remove the `.api` directory to refresh it.
 
 ## Testing in Cubase
 
