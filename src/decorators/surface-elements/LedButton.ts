@@ -25,6 +25,7 @@ class LedButtonDecorator {
   private ports?: MidiPortPair;
   private channelNumber?: number;
   private note?: number;
+  private isSurfaceValueChangeCallbackBound = false;
 
   constructor(
     private surface: MR_DeviceSurface,
@@ -57,9 +58,12 @@ class LedButtonDecorator {
     this.button.mSurfaceValue.mMidiBinding
       .setInputPort(ports.input)
       .bindToNote(channelNumber, note);
-    this.onSurfaceValueChange.addCallback((context, newValue) => {
-      this.sendNoteOn(context, newValue || this.ledValue.get(context));
-    });
+    if (!this.isSurfaceValueChangeCallbackBound) {
+      this.onSurfaceValueChange.addCallback((context, newValue) => {
+        this.sendNoteOn(context, newValue || this.ledValue.get(context));
+      });
+      this.isSurfaceValueChangeCallbackBound = true;
+    }
 
     // Binding the button's mSurfaceValue to a host function may alter it to not change when the
     // button is pressed. Hence, `shadowValue` is used to make the button light up while it's

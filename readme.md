@@ -38,6 +38,7 @@ Feel free to open a discussion on GitHub if you would like your MCU-like device 
 - [Drawbacks](#drawbacks)
 - [Supplementary Remarks for Individual Scripts](#supplementary-remarks-for-individual-scripts)
 - [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
 
 ## TL;DR
 
@@ -178,6 +179,7 @@ Current limitations of the MIDI Remote API:
 <details>
 <summary>Behringer X-Touch One</summary>
 
+- The X-Touch One must run in `MC Std` mode. To change the operation mode, hold down the pan knob while powering the device on, then select `MC Std` from the menu.
 - The X-Touch One script does not provide a `devices` config option. If you want to use an X-Touch One with an extender, please use the X-Touch One script and the X-Touch script separately.
 - The X-Touch One does not have encoder assign buttons. To make up for this, the F1 button is mapped to cycle through the following encoder assignments:
   - **1** Pan
@@ -268,3 +270,7 @@ If that doesn't solve it and the unresponsive device is connected via network MI
 ### How to disable and re-enable a controller script?
 
 ![How to disable and re-enable a controller script](images/disable-enable-controller-script.gif)
+
+## Contributing
+
+See [contributing.md](contributing.md) for development setup, Makefile usage, and how to submit changes.
