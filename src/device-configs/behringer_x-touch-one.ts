@@ -4,6 +4,7 @@
  */
 
 import { DeviceConfig } from ".";
+import { MainDevice } from "/devices";
 import { JogWheel } from "/decorators/surface-elements/JogWheel";
 import { Lamp } from "/decorators/surface-elements/Lamp";
 import { LedButton } from "/decorators/surface-elements/LedButton";
@@ -191,5 +192,20 @@ export const deviceConfig: DeviceConfig = {
         ],
       },
     ];
+  },
+
+  enhanceMapping({ devices }) {
+    for (const device of devices) {
+      if (device instanceof MainDevice) {
+        const { ports } = device;
+        const { read, write } = device.controlSectionElements.buttons.automation;
+
+        // The X-Touch One's physical READ and WRITE buttons (labeled by its Cubase overlay) emit
+        // MIDI notes 58 (0x3A) and 59 (0x3B) instead of the standard MCU notes 74 (0x4A) and 75
+        // (0x4B). Rebind them so they toggle automation read/write.
+        read.bindToNote(ports, 0x3a);
+        write.bindToNote(ports, 0x3b);
+      }
+    }
   },
 };
