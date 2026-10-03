@@ -38,6 +38,7 @@ Feel free to open a discussion on GitHub if you would like your MCU-like device 
 - [Drawbacks](#drawbacks)
 - [Supplementary Remarks for Individual Scripts](#supplementary-remarks-for-individual-scripts)
 - [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
 
 ## TL;DR
 
@@ -269,3 +270,7 @@ If that doesn't solve it and the unresponsive device is connected via network MI
 ### How to disable and re-enable a controller script?
 
 ![How to disable and re-enable a controller script](images/disable-enable-controller-script.gif)
+
+## Contributing
+
+See [contributing.md](contributing.md) for development setup, Makefile usage, and how to submit changes.
